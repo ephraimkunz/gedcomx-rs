@@ -1,0 +1,21 @@
+[package]
+name = "gedcomx"
+version = "0.1.0"
+authors = ["Ephraim Kunz <ephraimkunz@me.com>"]
+edition = "2018"
+description = "A library for working with GEDCOMX"
+keywords = ["genealogy", "gedcomx", "family-trees"]
+license = "MIT"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[lib]
+name = "gedcomx"
+path = "src/lib.rs"
+
+[[bin]]
+name = "gedcomx_cli"
+path = "src/main.rs"
