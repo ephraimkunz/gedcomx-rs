@@ -1,6 +1,6 @@
 // Originally from https://github.com/Greedeuh/gedcomx/blob/master/src/components.rs
 
-use crate::*;
+use crate::{Agent, Document, Person, PlaceDescription, SourceDescription, Uri};
 
 #[derive(Debug)]
 pub struct Identifier {

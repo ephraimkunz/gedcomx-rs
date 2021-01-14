@@ -1,6 +1,10 @@
 // Originally from https://github.com/Greedeuh/gedcomx/blob/master/src/lib.rs.
 
-use crate::components::*;
+use crate::components::{
+    Address, Attribution, Conclusion, ConclusionData, Coverage, Date, EventRole, Fact, Gender,
+    GroupRole, Id, Identifiable, Identifier, Lang, Name, Note, OnlineAccount, PlaceReference,
+    SourceCitation, SourceReference, Subject, SubjectData, TextValue, Timestamp,
+};
 
 #[derive(Debug)]
 pub enum Uri<T> {

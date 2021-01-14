@@ -4,6 +4,8 @@
 #![deny(clippy::cargo)]
 // #![deny(missing_docs)]
 #![allow(clippy::pub_enum_variant_names)]
+#![allow(clippy::clippy::must_use_candidate)]
+#![allow(clippy::missing_const_for_fn)]
 
 mod components;
 pub use components::*;
