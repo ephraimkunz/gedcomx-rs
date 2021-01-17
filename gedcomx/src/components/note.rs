@@ -18,7 +18,7 @@ pub struct Note {
 
 impl Note {
     pub fn new(text: String) -> Self {
-        Note {
+        Self {
             text,
             lang: None,
             subject: None,

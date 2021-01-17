@@ -46,11 +46,11 @@ impl TestData {
         let mut attribution = Attribution::new();
         attribution.contributor = Some(ResourceReference::from("A-1"));
         attribution.modified = Some(chrono::DateTime::from_utc(
-            chrono::NaiveDateTime::from_timestamp(1394175600, 0),
+            chrono::NaiveDateTime::from_timestamp(1_394_175_600, 0),
             chrono::Utc,
         ));
 
-        TestData { attribution }
+        Self { attribution }
     }
 
     fn attribution(&self) -> Option<Attribution> {
