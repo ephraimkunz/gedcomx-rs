@@ -1,19 +1,45 @@
 // Originally from https://github.com/Greedeuh/gedcomx/blob/master/src/lib.rs.
 
-use crate::components::{
-    Address, Attribution, Conclusion, ConclusionData, Coverage, Date, EventRole, Fact, Gender,
-    GroupRole, Id, Identifiable, Identifier, Lang, Name, Note, OnlineAccount, PlaceReference,
-    SourceCitation, SourceReference, Subject, SubjectData, TextValue, Timestamp,
+use crate::{
+    components::{
+        Address, Attribution, Conclusion, ConclusionData, Coverage, Date, EventRole, Fact, Gender,
+        GroupRole, Id, Identifiable, Identifier, Lang, Name, Note, OnlineAccount, PlaceReference,
+        SourceCitation, SourceReference, SourceReferenceQualifier, Subject, SubjectData, TextValue,
+        Timestamp,
+    },
+    ResourceReference,
 };
 
-#[derive(Debug)]
-pub enum Uri<T> {
-    Some(Box<T>),
-    //    Ref(&'a T),
-    Id(String),
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct Uri(String);
+
+impl From<&str> for Uri {
+    fn from(s: &str) -> Self {
+        Self(s.to_owned())
+    }
 }
 
-#[derive(Debug)]
+impl From<&String> for Uri {
+    fn from(s: &String) -> Self {
+        Self(s.to_owned())
+    }
+}
+
+impl From<String> for Uri {
+    fn from(s: String) -> Self {
+        Self(s)
+    }
+}
+
+impl From<SourceReferenceQualifier> for Uri {
+    fn from(s: SourceReferenceQualifier) -> Self {
+        s.name().into()
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct Person {
     pub subject: SubjectData,
     pub private: Option<bool>,
@@ -39,7 +65,7 @@ impl Identifiable for Person {
         &self.conclusion().id
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum Relationship {
     Unknow(RelationshipData),
     Couple(RelationshipData),
@@ -47,12 +73,12 @@ pub enum Relationship {
     EnslavedBy(RelationshipData),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct RelationshipData {
     pub subject: SubjectData,
-    pub person1: Uri<Person>,
-    pub person2: Uri<Person>,
-    pub facts: Vec<Uri<Fact>>,
+    pub person1: ResourceReference,
+    pub person2: ResourceReference,
+    pub facts: Vec<ResourceReference>,
 }
 
 impl Conclusion for Relationship {
@@ -77,17 +103,17 @@ impl Identifiable for Relationship {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct SourceDescription {
     pub id: Id,
     pub resource_type: Option<ResourceType>,
     pub citations: Vec<SourceCitation>,
     pub media_type: Option<String>,
-    pub about: Uri<Box<dyn Identifiable>>,
-    pub mediator: Option<Uri<Agent>>,
-    pub publisher: Option<Uri<Agent>>,
+    pub about: ResourceReference,
+    pub mediator: Option<ResourceReference>,
+    pub publisher: Option<ResourceReference>,
     pub sources: Vec<SourceReference>,
-    pub analysis: Option<Uri<Document>>,
+    pub analysis: Option<ResourceReference>,
     pub component_of: Option<SourceReference>,
     pub titles: Vec<TextValue>,
     pub notes: Option<Note>,
@@ -100,14 +126,21 @@ pub struct SourceDescription {
     pub modified: Option<Timestamp>,
     pub repository: Option<Agent>,
 }
-#[derive(Debug)]
+
+impl Identifiable for SourceDescription {
+    fn id(&self) -> &Id {
+        &self.id
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum ResourceType {
     Collection,
     PhysicalArtifact,
     DigitalArtifact,
     Record,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct Agent {
     pub id: Id,
     pub identifiers: Vec<String>,
@@ -118,9 +151,16 @@ pub struct Agent {
     pub emails: Vec<String>,
     pub phones: Vec<String>,
     pub addresses: Vec<Address>,
-    pub person: Option<Uri<Person>>,
+    pub person: Option<ResourceReference>,
 }
-#[derive(Debug)]
+
+impl Identifiable for Agent {
+    fn id(&self) -> &Id {
+        &self.id
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum Event {
     Adoption(EventData),
     Birth(EventData),
@@ -158,14 +198,14 @@ impl Subject for Event {
         }
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct EventData {
     pub subject: SubjectData,
     pub date: Option<Date>,
     pub place: Option<PlaceReference>,
     pub roles: Vec<EventRole>,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum Document {
     Analysis(DocumentData),
     Abstract(DocumentData),
@@ -189,17 +229,17 @@ impl Identifiable for Document {
         &self.conclusion().id
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct DocumentData {
     pub conclusion: ConclusionData,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct PlaceDescription {
     pub subject: SubjectData,
     pub names: NonEmptyVec<TextValue>,
     pub typee: Option<PlaceType>,
     pub place: Option<String>,
-    pub jurisdiction: Option<Uri<Box<PlaceDescription>>>,
+    pub jurisdiction: Option<ResourceReference>,
     pub latitude: Option<f32>,
     pub longitude: Option<f32>,
     pub temporal_description: Option<Date>,
@@ -229,7 +269,7 @@ pub type NonEmptyVec<T> = Vec<T>;
 pub type PlaceType = String;
 
 pub type Kml = String;
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct Group {
     pub subject: SubjectData,
     pub names: Vec<TextValue>,
@@ -256,6 +296,9 @@ impl Subject for Group {
     }
 }
 
+// This struct holds the "real copies" of all the structs that will be serialized to a given format.
+// Other structs may hold refs to, for example, SourceDescription, keyed off the ids.
+#[derive(Serialize, Debug, PartialEq)]
 pub struct Gedcomx {
     pub id: Option<Id>,
     pub lang: Option<Lang>,
@@ -268,5 +311,5 @@ pub struct Gedcomx {
     pub documents: Vec<Document>,
     pub places: Vec<PlaceDescription>,
     pub groups: Vec<Group>,
-    pub description: Option<Uri<SourceDescription>>,
+    pub description: Option<ResourceReference>,
 }

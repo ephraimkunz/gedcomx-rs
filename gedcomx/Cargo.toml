@@ -1,0 +1,18 @@
+[package]
+name = "gedcomx"
+version = "0.1.0"
+authors = ["Ephraim Kunz <ephraimkunz@me.com>"]
+edition = "2018"
+description = "A library for working with GEDCOMX"
+keywords = ["genealogy", "gedcomx", "family-trees"]
+categories = ["encoding", "parsing"]
+license = "MIT"
+repository = "https://github.com/ephraimkunz/gedcomx-rs"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }

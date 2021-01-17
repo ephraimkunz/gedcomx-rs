@@ -1,101 +1,87 @@
-// Originally from https://github.com/Greedeuh/gedcomx/blob/master/src/components.rs
+mod attribution;
+pub use attribution::Attribution;
+
+mod note;
+pub use note::Note;
+
+mod textvalue;
+pub use textvalue::TextValue;
+
+mod sourcecitation;
+pub use sourcecitation::SourceCitation;
+
+mod sourcereference;
+pub use sourcereference::{SourceReference, SourceReferenceQualifier};
+
+mod evidencereference;
+pub use evidencereference::EvidenceReference;
+
+mod onlineaccount;
+pub use onlineaccount::OnlineAccount;
+
+mod address;
+pub use address::Address;
 
 use crate::{Agent, Document, Person, PlaceDescription, SourceDescription, Uri};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+// I think this will need custom JSON serialization / deserialization. Needs to be a map of typee -> [uri].
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct Identifier {
-    pub uri: String,
+    pub uri: Uri,
     pub typee: Option<IdentifierType>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum IdentifierType {
     None,
 }
 
-#[derive(Debug)]
-pub struct Attribution {
-    pub contributor: Option<Uri<Agent>>,
-    pub modified: Option<Timestamp>,
-    pub change_message: Option<String>,
-    pub creator: Option<Uri<Agent>>,
-    pub created: Option<Timestamp>,
-}
-#[derive(Debug)]
-pub struct Note {
-    pub lang: Option<Lang>,
-    pub subject: Option<String>,
-    pub text: String,
-    pub attribution: Option<Attribution>,
-}
-#[derive(Debug)]
-pub struct TextValue {
-    pub lang: Option<Lang>,
-    pub value: String,
-}
-#[derive(Debug)]
-pub struct SourceCitation {
-    pub lang: String,
-    pub value: String,
-}
-#[derive(Debug)]
-pub struct SourceReference {
-    pub description: Uri<Box<SourceDescription>>,
-    pub description_id: Option<Id>,
-    pub attribution: Option<Attribution>,
-    pub qualifiers: Vec<SourceReferenceQualifier>,
-}
-#[derive(Debug)]
-pub enum SourceReferenceQualifier {
-    CharacterRegion,
-    RectangleRegion,
-    TimeRegion,
-}
-#[derive(Debug)]
-pub struct EvidenceReference {
-    pub resource: Uri<Box<dyn Subject>>,
-    pub attribution: Option<Attribution>,
-}
-#[derive(Debug)]
-pub struct OnlineAccount {
-    pub service_homepage: String,
-    pub account_name: String,
-}
-#[derive(Debug)]
-pub struct Address {
-    pub value: Option<String>,
-    pub city: Option<String>,
-    pub country: Option<String>,
-    pub postal_code: Option<String>,
-    pub state_or_province: Option<String>,
-    pub street: Option<String>,
-    pub street2: Option<String>,
-    pub street3: Option<String>,
-    pub street4: Option<String>,
-    pub street5: Option<String>,
-    pub street6: Option<String>,
+struct TestData {
+    attribution: Attribution,
 }
 
+impl TestData {
+    fn new() -> Self {
+        let mut attribution = Attribution::new();
+        attribution.contributor = Some(ResourceReference::from("A-1"));
+        attribution.modified = Some(chrono::DateTime::from_utc(
+            chrono::NaiveDateTime::from_timestamp(1394175600, 0),
+            chrono::Utc,
+        ));
+
+        TestData { attribution }
+    }
+
+    fn attribution(&self) -> Option<Attribution> {
+        Some(self.attribution.clone())
+    }
+}
+
+#[cfg(test)]
+mod identifier {
+    use super::super::*;
+}
+
+pub type Id = String;
 pub trait Identifiable: std::fmt::Debug {
     fn id(&self) -> &Id;
 }
 
-pub type Id = String;
-
 pub trait Conclusion: Identifiable {
     fn conclusion(&self) -> &ConclusionData;
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ConclusionData {
     pub id: Id,
     pub lang: Option<String>,
     pub sources: Vec<SourceReference>,
-    pub analysis: Option<Uri<Document>>,
+    pub analysis: Option<ResourceReference>,
     pub notes: Vec<Note>,
     pub confidence: Option<ConfidenceLevel>,
     pub attribution: Option<Attribution>,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum ConfidenceLevel {
     High,
     Medium,
@@ -105,7 +91,7 @@ pub enum ConfidenceLevel {
 pub trait Subject: Conclusion {
     fn subject(&self) -> &SubjectData;
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct SubjectData {
     pub conclusion: ConclusionData,
     pub extracted: Option<bool>,
@@ -113,7 +99,7 @@ pub struct SubjectData {
     pub media: Vec<SourceReference>,
     pub identifiers: Vec<Identifier>,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum Gender {
     Male(ConclusionData),
     Female(ConclusionData),
@@ -134,7 +120,7 @@ impl Identifiable for Gender {
         &self.conclusion().id
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum Name {
     None(NameData),
     BirthName(NameData),
@@ -160,7 +146,7 @@ impl Name {
         }
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct NameData {
     pub conclusion: ConclusionData,
     pub name_forms: Vec<NameForm>,
@@ -178,7 +164,7 @@ impl Identifiable for Name {
         &self.conclusion().id
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum Fact {
     Adoption(FactData),
     Birth(FactData),
@@ -204,7 +190,7 @@ impl Fact {
         }
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct FactData {
     pub conclusion: ConclusionData,
     pub date: Option<Date>,
@@ -212,7 +198,7 @@ pub struct FactData {
     pub value: Option<String>,
     pub qualifiers: Vec<FactQualifier>,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum FactQualifier {
     Age,
     Cause,
@@ -232,7 +218,7 @@ impl Identifiable for Fact {
         &self.conclusion().id
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum EventRole {
     None(EventRoleData),
     Principal(EventRoleData),
@@ -240,24 +226,25 @@ pub enum EventRole {
     Official(EventRoleData),
     Witness(EventRoleData),
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct EventRoleData {
-    pub person: Uri<Person>,
+    pub person: ResourceReference,
     pub details: Option<String>,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct Date {
     pub original: Option<String>,
     pub formal: Option<DateX>,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct DateX;
-#[derive(Debug)]
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct PlaceReference {
     pub original: Option<String>,
-    pub description_ref: Option<Uri<PlaceDescription>>,
+    pub description_ref: Option<ResourceReference>,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum NamePart {
     None(NamePartData),
     Prefix(NamePartData),
@@ -265,12 +252,12 @@ pub enum NamePart {
     Given(NamePartData),
     Surname(NamePartData),
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct NamePartData {
     pub value: String,
     pub qualifiers: Vec<NamePartQualifier>,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum NamePartQualifier {
     Title,
     Primary,
@@ -289,28 +276,62 @@ pub enum NamePartQualifier {
     Particle,
     RootName,
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct NameForm {
     pub lang: Option<Lang>,
     pub full_text: Option<String>,
     pub parts: Vec<NamePart>,
 }
-#[derive(Debug)]
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+pub struct Qualifier {
+    name: Uri,
+    value: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct Coverage {
     pub spatial: Option<PlaceReference>,
     pub temporal: Option<Date>,
 }
-#[derive(Debug)]
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum GroupRole {
-    Unknow(GroupRoleData),
+    Unknown(GroupRoleData),
 }
-#[derive(Debug)]
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct GroupRoleData {
-    pub person: Uri<Person>,
+    pub person: ResourceReference,
     pub date: Option<Date>,
     pub details: Option<String>,
 }
 
 pub type Lang = String;
-#[derive(Debug)]
-pub struct Timestamp {}
+
+pub type Timestamp = chrono::DateTime<chrono::Utc>;
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct ResourceReference {
+    pub resource: Uri,
+}
+
+impl From<Agent> for ResourceReference {
+    fn from(a: Agent) -> Self {
+        Self::from_identifiable(&a)
+    }
+}
+
+impl From<&str> for ResourceReference {
+    fn from(s: &str) -> Self {
+        Self { resource: s.into() }
+    }
+}
+
+impl ResourceReference {
+    fn from_identifiable<I: Identifiable>(identifiable: &I) -> Self {
+        Self {
+            resource: identifiable.id().into(),
+        }
+    }
+}
