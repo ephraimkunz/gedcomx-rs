@@ -1,55 +1,16 @@
-// Originally from https://github.com/Greedeuh/gedcomx/blob/master/src/lib.rs.
+mod uri;
+pub use uri::Uri;
 
 use crate::{
     components::{
         Address, Attribution, Conclusion, ConclusionData, Coverage, Date, EventRole, Fact, Gender,
-        GroupRole, Id, Identifiable, Identifier, Lang, Name, NamePartQualifier, Note,
-        OnlineAccount, PlaceReference, SourceCitation, SourceReference, SourceReferenceQualifier,
-        Subject, SubjectData, TextValue, Timestamp,
+        GroupRole, Id, Identifiable, Identifier, Lang, Name, Note, OnlineAccount, PlaceReference,
+        SourceCitation, SourceReference, Subject, SubjectData, TextValue, Timestamp,
     },
-    FactQualifier, ResourceReference,
+    ResourceReference,
 };
 
 use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct Uri(String);
-
-impl From<&str> for Uri {
-    fn from(s: &str) -> Self {
-        Self(s.to_owned())
-    }
-}
-
-impl From<&String> for Uri {
-    fn from(s: &String) -> Self {
-        Self(s.to_owned())
-    }
-}
-
-impl From<String> for Uri {
-    fn from(s: String) -> Self {
-        Self(s)
-    }
-}
-
-impl From<SourceReferenceQualifier> for Uri {
-    fn from(s: SourceReferenceQualifier) -> Self {
-        s.to_string().into()
-    }
-}
-
-impl From<NamePartQualifier> for Uri {
-    fn from(n: NamePartQualifier) -> Self {
-        n.to_string().into()
-    }
-}
-
-impl From<FactQualifier> for Uri {
-    fn from(f: FactQualifier) -> Self {
-        f.to_string().into()
-    }
-}
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct Person {
@@ -310,7 +271,7 @@ impl Subject for Group {
 
 // This struct holds the "real copies" of all the structs that will be serialized to a given format.
 // Other structs may hold refs to, for example, SourceDescription, keyed off the ids.
-#[derive(Serialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub struct Gedcomx {
     pub id: Option<Id>,
     pub lang: Option<Lang>,

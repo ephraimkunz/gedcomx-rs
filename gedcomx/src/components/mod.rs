@@ -58,7 +58,7 @@ pub use qualifier::Qualifier;
 mod coverage;
 pub use coverage::Coverage;
 
-use crate::{Agent, Uri};
+use crate::Uri;
 use serde::{Deserialize, Serialize};
 
 // I think this will need custom JSON serialization / deserialization. Needs to be a map of typee -> [uri].
@@ -73,6 +73,7 @@ pub enum IdentifierType {
     None,
 }
 
+#[allow(dead_code)]
 struct TestData {
     attribution: Attribution,
     source_reference: SourceReference,
@@ -83,6 +84,7 @@ struct TestData {
 }
 
 impl TestData {
+    #[allow(dead_code)]
     fn new() -> Self {
         let mut attribution = Attribution::new();
         attribution.contributor = Some(ResourceReference::from("A-1"));
