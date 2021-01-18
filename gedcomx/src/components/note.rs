@@ -1,7 +1,7 @@
 use crate::components::{Attribution, Lang};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct Note {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -55,7 +55,7 @@ mod test {
                 lang: Some("en".to_string()),
                 subject: Some("TestSubject".to_string()),
                 text: "This is a note".to_string(),
-                attribution: data.attribution(),
+                attribution: Some(data.attribution),
             }
         )
     }
@@ -78,7 +78,7 @@ mod test {
             lang: Some("en".to_string()),
             subject: Some("TestSubject".to_string()),
             text: "This is a note".to_string(),
-            attribution: data.attribution(),
+            attribution: Some(data.attribution),
         };
 
         let json = serde_json::to_string(&note).unwrap();

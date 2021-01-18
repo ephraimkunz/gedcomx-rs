@@ -3,11 +3,11 @@
 use crate::{
     components::{
         Address, Attribution, Conclusion, ConclusionData, Coverage, Date, EventRole, Fact, Gender,
-        GroupRole, Id, Identifiable, Identifier, Lang, Name, Note, OnlineAccount, PlaceReference,
-        SourceCitation, SourceReference, SourceReferenceQualifier, Subject, SubjectData, TextValue,
-        Timestamp,
+        GroupRole, Id, Identifiable, Identifier, Lang, Name, NamePartQualifier, Note,
+        OnlineAccount, PlaceReference, SourceCitation, SourceReference, SourceReferenceQualifier,
+        Subject, SubjectData, TextValue, Timestamp,
     },
-    ResourceReference,
+    FactQualifier, ResourceReference,
 };
 
 use serde::{Deserialize, Serialize};
@@ -35,7 +35,19 @@ impl From<String> for Uri {
 
 impl From<SourceReferenceQualifier> for Uri {
     fn from(s: SourceReferenceQualifier) -> Self {
-        s.name().into()
+        s.to_string().into()
+    }
+}
+
+impl From<NamePartQualifier> for Uri {
+    fn from(n: NamePartQualifier) -> Self {
+        n.to_string().into()
+    }
+}
+
+impl From<FactQualifier> for Uri {
+    fn from(f: FactQualifier) -> Self {
+        f.to_string().into()
     }
 }
 

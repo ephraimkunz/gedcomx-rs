@@ -1,7 +1,7 @@
 use crate::components::{Attribution, Uri};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct EvidenceReference {
     pub resource: Uri,
@@ -39,13 +39,7 @@ mod test {
         }"#;
 
         let evidence_reference: EvidenceReference = serde_json::from_str(json).unwrap();
-        assert_eq!(
-            evidence_reference,
-            EvidenceReference {
-                resource: Uri::from("S-1"),
-                attribution: data.attribution(),
-            }
-        )
+        assert_eq!(evidence_reference, data.evidence_reference)
     }
 
     #[test]
@@ -62,10 +56,7 @@ mod test {
     fn json_serialize() {
         let data = TestData::new();
 
-        let evidence_reference = EvidenceReference {
-            resource: Uri::from("S-1"),
-            attribution: data.attribution(),
-        };
+        let evidence_reference = data.evidence_reference;
 
         let json = serde_json::to_string(&evidence_reference).unwrap();
 

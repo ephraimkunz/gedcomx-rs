@@ -1,7 +1,8 @@
 use crate::components::{Attribution, Id, Qualifier, Uri};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct SourceReference {
@@ -36,13 +37,9 @@ pub enum SourceReferenceQualifier {
     TimeRegion,
 }
 
-impl SourceReferenceQualifier {
-    pub fn name(&self) -> &str {
-        match self {
-            Self::CharacterRegion => "http://gedcomx.org/CharacterRegion",
-            Self::RectangleRegion => "http://gedcomx.org/RectangleRegion",
-            Self::TimeRegion => "http://gedcomx.org/TimeRegion",
-        }
+impl fmt::Display for SourceReferenceQualifier {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "http://gedcomx.org/{:?}", self)
     }
 }
 
@@ -69,18 +66,7 @@ mod test {
 
         let source_reference: SourceReference = serde_json::from_str(json).unwrap();
 
-        assert_eq!(
-            source_reference,
-            SourceReference {
-                description: Uri::from("SD-1"),
-                description_id: Some("Description id of the target source".to_string()),
-                attribution: data.attribution(),
-                qualifiers: vec![Qualifier {
-                    name: SourceReferenceQualifier::RectangleRegion.into(),
-                    value: Some("rectangle region value".to_string())
-                }],
-            }
-        )
+        assert_eq!(source_reference, data.source_reference)
     }
 
     #[test]
@@ -97,15 +83,7 @@ mod test {
     fn json_serialize() {
         let data = TestData::new();
 
-        let source_reference = SourceReference {
-            description: Uri::from("SD-1"),
-            description_id: Some("Description id of the target source".to_string()),
-            attribution: data.attribution(),
-            qualifiers: vec![Qualifier {
-                name: SourceReferenceQualifier::RectangleRegion.into(),
-                value: Some("rectangle region value".to_string()),
-            }],
-        };
+        let source_reference = data.source_reference;
 
         let json = serde_json::to_string(&source_reference).unwrap();
         assert_eq!(
