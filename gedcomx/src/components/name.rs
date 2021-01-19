@@ -1,5 +1,6 @@
+use super::EnumAsString;
 use crate::{
-    components::{Conclusion, ConclusionData, Date, Lang},
+    components::{Conclusion, ConclusionData, Date, Lang, Uri},
     Qualifier,
 };
 use serde::{Deserialize, Serialize};
@@ -38,29 +39,48 @@ impl Conclusion for Name {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NameType {
-    #[serde(rename = "http://gedcomx.org/BirthName")]
     BirthName,
-
-    #[serde(rename = "http://gedcomx.org/MarriedName")]
     MarriedName,
-
-    #[serde(rename = "http://gedcomx.org/AlsoKnownAs")]
     AlsoKnownAs,
-
-    #[serde(rename = "http://gedcomx.org/Nickname")]
     Nickname,
-
-    #[serde(rename = "http://gedcomx.org/AdoptiveName")]
     AdoptiveName,
-
-    #[serde(rename = "http://gedcomx.org/FormalName")]
     FormalName,
-
-    #[serde(rename = "http://gedcomx.org/ReligiousName")]
     ReligiousName,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for NameType {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/BirthName" => Self::BirthName,
+            "http://gedcomx.org/MarriedName" => Self::MarriedName,
+            "http://gedcomx.org/AlsoKnownAs" => Self::AlsoKnownAs,
+            "http://gedcomx.org/Nickname" => Self::Nickname,
+            "http://gedcomx.org/AdoptiveName" => Self::AdoptiveName,
+            "http://gedcomx.org/FormalName" => Self::FormalName,
+            "http://gedcomx.org/ReligiousName" => Self::ReligiousName,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
+}
+
+impl fmt::Display for NameType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::BirthName => write!(f, "http://gedcomx.org/BirthName"),
+            Self::MarriedName => write!(f, "http://gedcomx.org/MarriedName"),
+            Self::AlsoKnownAs => write!(f, "http://gedcomx.org/AlsoKnownAs"),
+            Self::Nickname => write!(f, "http://gedcomx.org/Nickname"),
+            Self::AdoptiveName => write!(f, "http://gedcomx.org/AdoptiveName"),
+            Self::FormalName => write!(f, "http://gedcomx.org/FormalName"),
+            Self::ReligiousName => write!(f, "http://gedcomx.org/ReligiousName"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -89,24 +109,44 @@ pub struct NamePart {
     pub qualifiers: Vec<Qualifier>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NamePartType {
-    #[serde(rename = "http://gedcomx.org/Prefix")]
     Prefix,
-
-    #[serde(rename = "http://gedcomx.org/Suffix")]
     Suffix,
-
-    #[serde(rename = "http://gedcomx.org/Given")]
     Given,
-
-    #[serde(rename = "http://gedcomx.org/Surname")]
     Surname,
+    Custom(Uri),
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+impl From<EnumAsString> for NamePartType {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/Prefix" => Self::Prefix,
+            "http://gedcomx.org/Suffix" => Self::Suffix,
+            "http://gedcomx.org/Given" => Self::Given,
+            "http://gedcomx.org/Surname" => Self::Surname,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
+}
+
+impl fmt::Display for NamePartType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::Prefix => write!(f, "http://gedcomx.org/Prefix"),
+            Self::Suffix => write!(f, "http://gedcomx.org/Suffix"),
+            Self::Given => write!(f, "http://gedcomx.org/Given"),
+            Self::Surname => write!(f, "http://gedcomx.org/Surname"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NamePartQualifier {
     Title,
     Primary,
@@ -124,11 +164,54 @@ pub enum NamePartQualifier {
     Postnom,
     Particle,
     RootName,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for NamePartQualifier {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/Title" => Self::Title,
+            "http://gedcomx.org/Primary" => Self::Primary,
+            "http://gedcomx.org/Secondary" => Self::Secondary,
+            "http://gedcomx.org/Middle" => Self::Middle,
+            "http://gedcomx.org/Familiar" => Self::Familiar,
+            "http://gedcomx.org/Religious" => Self::Religious,
+            "http://gedcomx.org/Family" => Self::Family,
+            "http://gedcomx.org/Maiden" => Self::Maiden,
+            "http://gedcomx.org/Patronymic" => Self::Patronymic,
+            "http://gedcomx.org/Matronymic" => Self::Matronymic,
+            "http://gedcomx.org/Geographic" => Self::Geographic,
+            "http://gedcomx.org/Occupational" => Self::Occupational,
+            "http://gedcomx.org/Characteristic" => Self::Characteristic,
+            "http://gedcomx.org/Postnom" => Self::Postnom,
+            "http://gedcomx.org/Particle" => Self::Particle,
+            "http://gedcomx.org/RootName" => Self::RootName,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
 }
 
 impl fmt::Display for NamePartQualifier {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "http://gedcomx.org/{:?}", self)
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::Title => write!(f, "http://gedcomx.org/Title"),
+            Self::Primary => write!(f, "http://gedcomx.org/Primary"),
+            Self::Secondary => write!(f, "http://gedcomx.org/Secondary"),
+            Self::Middle => write!(f, "http://gedcomx.org/Middle"),
+            Self::Familiar => write!(f, "http://gedcomx.org/Familiar"),
+            Self::Religious => write!(f, "http://gedcomx.org/Religious"),
+            Self::Family => write!(f, "http://gedcomx.org/Family"),
+            Self::Maiden => write!(f, "http://gedcomx.org/Maiden"),
+            Self::Patronymic => write!(f, "http://gedcomx.org/Patronymic"),
+            Self::Matronymic => write!(f, "http://gedcomx.org/Matronymic"),
+            Self::Geographic => write!(f, "http://gedcomx.org/Geographic"),
+            Self::Occupational => write!(f, "http://gedcomx.org/Occupational"),
+            Self::Characteristic => write!(f, "http://gedcomx.org/Characteristic"),
+            Self::Postnom => write!(f, "http://gedcomx.org/Postnom"),
+            Self::Particle => write!(f, "http://gedcomx.org/Particle"),
+            Self::RootName => write!(f, "http://gedcomx.org/RootName"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
     }
 }
 

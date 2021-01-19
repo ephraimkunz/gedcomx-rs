@@ -25,6 +25,7 @@ name = "gedcomx"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "gedcomx_date",
  "serde",
  "serde_json",
 ]
@@ -38,6 +39,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "gedcomx_date"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "31433b36bbcc62c6ff388d8278823ec47702634bd16e989fa45675ac3fd08b7e"
+dependencies = [
+ "nom",
+]
+
+[[package]]
 name = "itoa"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -48,6 +58,12 @@ name = "libc"
 version = "0.2.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "89203f3fba0a3795506acaad8ebce3c80c0af93f994d5a1d7a0b1eeb23271929"
+
+[[package]]
+name = "nom"
+version = "1.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5b8c256fd9471521bcb84c3cdba98921497f1a331cbc15b8030fc63b82050ce"
 
 [[package]]
 name = "num-integer"

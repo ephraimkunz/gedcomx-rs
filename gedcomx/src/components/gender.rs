@@ -1,5 +1,7 @@
-use crate::components::{Conclusion, ConclusionData};
+use super::EnumAsString;
+use crate::components::{Conclusion, ConclusionData, Uri};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[non_exhaustive]
@@ -20,20 +22,39 @@ impl Gender {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum GenderType {
-    #[serde(rename = "http://gedcomx.org/Male")]
     Male,
-
-    #[serde(rename = "http://gedcomx.org/Female")]
     Female,
-
-    #[serde(rename = "http://gedcomx.org/Unknown")]
     Unknown,
-
-    #[serde(rename = "http://gedcomx.org/Intersex")]
     Intersex,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for GenderType {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/Male" => Self::Male,
+            "http://gedcomx.org/Female" => Self::Female,
+            "http://gedcomx.org/Unknown" => Self::Unknown,
+            "http://gedcomx.org/Intersex" => Self::Intersex,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
+}
+
+impl fmt::Display for GenderType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::Male => write!(f, "http://gedcomx.org/Male"),
+            Self::Female => write!(f, "http://gedcomx.org/Female"),
+            Self::Unknown => write!(f, "http://gedcomx.org/Unknown"),
+            Self::Intersex => write!(f, "http://gedcomx.org/Intersex"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
 }
 
 impl Conclusion for Gender {

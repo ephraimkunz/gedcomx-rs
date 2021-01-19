@@ -1,5 +1,7 @@
-use crate::{Conclusion, ConclusionData, Fact, ResourceReference, Subject, SubjectData};
+use crate::components::EnumAsString;
+use crate::{Conclusion, ConclusionData, Fact, ResourceReference, Subject, SubjectData, Uri};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[non_exhaustive]
@@ -33,17 +35,42 @@ impl Relationship {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum RelationshipType {
-    #[serde(rename = "http://gedcomx.org/Couple")]
+    AncestorDescendant,
     Couple,
-
-    #[serde(rename = "http://gedcomx.org/ParentChild")]
-    ParentChild,
-
-    #[serde(rename = "http://gedcomx.org/EnslavedBy")]
     EnslavedBy,
+    Godparent,
+    ParentChild,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for RelationshipType {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/AncestorDescendant" => Self::AncestorDescendant,
+            "http://gedcomx.org/Couple" => Self::Couple,
+            "http://gedcomx.org/EnslavedBy" => Self::EnslavedBy,
+            "http://gedcomx.org/Godparent" => Self::Godparent,
+            "http://gedcomx.org/ParentChild" => Self::ParentChild,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
+}
+
+impl fmt::Display for RelationshipType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::AncestorDescendant => write!(f, "http://gedcomx.org/AncestorDescendant"),
+            Self::Couple => write!(f, "http://gedcomx.org/Couple"),
+            Self::EnslavedBy => write!(f, "http://gedcomx.org/EnslavedBy"),
+            Self::Godparent => write!(f, "http://gedcomx.org/Godparent"),
+            Self::ParentChild => write!(f, "http://gedcomx.org/ParentChild"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
 }
 
 impl Conclusion for Relationship {

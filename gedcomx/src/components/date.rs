@@ -7,7 +7,7 @@ pub struct Date {
     pub original: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub formal: Option<DateX>,
+    pub formal: Option<String>,
 }
 
 impl Date {

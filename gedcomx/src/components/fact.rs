@@ -1,5 +1,5 @@
 use crate::{
-    components::{Conclusion, ConclusionData, Date, PlaceReference, Uri},
+    components::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Uri},
     Qualifier,
 };
 use serde::{Deserialize, Serialize};
@@ -33,21 +33,9 @@ impl Conclusion for Fact {
     }
 }
 
-// I can't figure out how to get Serde to properly serialize the custom enum variant of FactType with annotations,
-// so rather than write a Deserializer / Serializer implementation we'll just serialize to this newtype and then
-// Serde will automatically convert it to FactType.
-#[derive(Serialize, Deserialize)]
-struct FactTypeSerde(String);
-
-impl From<FactType> for FactTypeSerde {
-    fn from(f: FactType) -> Self {
-        Self(f.to_string())
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
-#[serde(from = "FactTypeSerde", into = "FactTypeSerde")]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum FactType {
     // Person fact types.
     Adoption,
@@ -270,9 +258,9 @@ impl fmt::Display for FactType {
     }
 }
 
-impl From<FactTypeSerde> for FactType {
+impl From<EnumAsString> for FactType {
     #[allow(clippy::too_many_lines)]
-    fn from(f: FactTypeSerde) -> Self {
+    fn from(f: EnumAsString) -> Self {
         // If you need to generate this mapping in the future, the easiest way is to copy and paste the tables in
         // https://github.com/FamilySearch/gedcomx/blob/master/specifications/fact-types-specification.md.
         // Then use VSCode's find and replace with regex feature with a find regex: (http://gedcomx.org/([a-zA-Z]+)).*
@@ -383,19 +371,41 @@ impl From<FactTypeSerde> for FactType {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum FactQualifier {
     Age,
     Cause,
     Religion,
     Transport,
     NonConsensual,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for FactQualifier {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/Age" => Self::Age,
+            "http://gedcomx.org/Cause" => Self::Cause,
+            "http://gedcomx.org/Religion" => Self::Religion,
+            "http://gedcomx.org/Transport" => Self::Transport,
+            "http://gedcomx.org/NonConsensual" => Self::NonConsensual,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
 }
 
 impl fmt::Display for FactQualifier {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "http://gedcomx.org/{:?}", self)
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::Age => write!(f, "http://gedcomx.org/Age"),
+            Self::Cause => write!(f, "http://gedcomx.org/Cause"),
+            Self::Religion => write!(f, "http://gedcomx.org/Religion"),
+            Self::Transport => write!(f, "http://gedcomx.org/Transport"),
+            Self::NonConsensual => write!(f, "http://gedcomx.org/NonConsensual"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
     }
 }
 

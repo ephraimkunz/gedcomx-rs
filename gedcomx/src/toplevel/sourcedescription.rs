@@ -1,9 +1,11 @@
+use crate::components::EnumAsString;
 use crate::{
     Attribution, Coverage, Id, Identifier, Note, ResourceReference, SourceCitation,
     SourceReference, TextValue, Timestamp, Uri,
 };
 use chrono::serde::ts_milliseconds_option;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[non_exhaustive]
@@ -84,18 +86,37 @@ pub struct SourceDescription {
     pub repository: Option<ResourceReference>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum ResourceType {
-    #[serde(rename = "http://gedcomx.org/Collection")]
     Collection,
-
-    #[serde(rename = "http://gedcomx.org/PhysicalArtifact")]
     PhysicalArtifact,
-
-    #[serde(rename = "http://gedcomx.org/DigitalArtifact")]
     DigitalArtifact,
-
-    #[serde(rename = "http://gedcomx.org/Record")]
     Record,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for ResourceType {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/Collection" => Self::Collection,
+            "http://gedcomx.org/PhysicalArtifact" => Self::PhysicalArtifact,
+            "http://gedcomx.org/DigitalArtifact" => Self::DigitalArtifact,
+            "http://gedcomx.org/Record" => Self::Record,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
+}
+
+impl fmt::Display for ResourceType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::Collection => write!(f, "http://gedcomx.org/Collection"),
+            Self::PhysicalArtifact => write!(f, "http://gedcomx.org/PhysicalArtifact"),
+            Self::DigitalArtifact => write!(f, "http://gedcomx.org/DigitalArtifact"),
+            Self::Record => write!(f, "http://gedcomx.org/Record"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
 }

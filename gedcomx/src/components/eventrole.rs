@@ -1,5 +1,7 @@
-use crate::{components::ResourceReference, ConclusionData};
+use super::EnumAsString;
+use crate::{components::ResourceReference, ConclusionData, Uri};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[non_exhaustive]
@@ -27,20 +29,39 @@ impl EventRole {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum EventRoleType {
-    #[serde(rename = "http://gedcomx.org/Principal")]
     Principal,
-
-    #[serde(rename = "http://gedcomx.org/Participant")]
     Participant,
-
-    #[serde(rename = "http://gedcomx.org/Official")]
     Official,
-
-    #[serde(rename = "http://gedcomx.org/Witness")]
     Witness,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for EventRoleType {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/Principal" => Self::Principal,
+            "http://gedcomx.org/Participant" => Self::Participant,
+            "http://gedcomx.org/Official" => Self::Official,
+            "http://gedcomx.org/Witness" => Self::Witness,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
+}
+
+impl fmt::Display for EventRoleType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::Principal => write!(f, "http://gedcomx.org/Principal"),
+            Self::Participant => write!(f, "http://gedcomx.org/Participant"),
+            Self::Official => write!(f, "http://gedcomx.org/Official"),
+            Self::Witness => write!(f, "http://gedcomx.org/Witness"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
 }
 
 #[cfg(test)]

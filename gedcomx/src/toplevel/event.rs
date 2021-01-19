@@ -1,5 +1,9 @@
-use crate::{Conclusion, ConclusionData, Date, EventRole, PlaceReference, Subject, SubjectData};
+use crate::components::EnumAsString;
+use crate::{
+    Conclusion, ConclusionData, Date, EventRole, PlaceReference, Subject, SubjectData, Uri,
+};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[non_exhaustive]
@@ -20,17 +24,129 @@ pub struct Event {
     pub roles: Vec<EventRole>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum EventType {
     Adoption,
+    AdultChristening,
+    Annulment,
+    Baptism,
+    BarMitzvah,
+    BatMitzvah,
     Birth,
+    Blessing,
     Burial,
     Census,
     Christening,
+    Circumcision,
+    Confirmation,
+    Cremation,
     Death,
     Divorce,
-    Marriage, // TODO: See https://github.com/FamilySearch/gedcomx/blob/master/specifications/event-types-specification.md for more.
+    DivorceFiling,
+    Education,
+    Engagement,
+    Emigration,
+    Excommunication,
+    FirstCommunion,
+    Funeral,
+    Immigration,
+    LandTransaction,
+    Marriage,
+    MilitaryAward,
+    MilitaryDischarge,
+    Mission,
+    MoveFrom,
+    MoveTo,
+    Naturalization,
+    Ordination,
+    Retirement,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for EventType {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/Adoption" => Self::Adoption,
+            "http://gedcomx.org/AdultChristening" => Self::AdultChristening,
+            "http://gedcomx.org/Annulment" => Self::Annulment,
+            "http://gedcomx.org/Baptism" => Self::Baptism,
+            "http://gedcomx.org/BarMitzvah" => Self::BarMitzvah,
+            "http://gedcomx.org/BatMitzvah" => Self::BatMitzvah,
+            "http://gedcomx.org/Birth" => Self::Birth,
+            "http://gedcomx.org/Blessing" => Self::Blessing,
+            "http://gedcomx.org/Burial" => Self::Burial,
+            "http://gedcomx.org/Census" => Self::Census,
+            "http://gedcomx.org/Christening" => Self::Christening,
+            "http://gedcomx.org/Circumcision" => Self::Circumcision,
+            "http://gedcomx.org/Confirmation" => Self::Confirmation,
+            "http://gedcomx.org/Cremation" => Self::Cremation,
+            "http://gedcomx.org/Death" => Self::Death,
+            "http://gedcomx.org/Divorce" => Self::Divorce,
+            "http://gedcomx.org/DivorceFiling" => Self::DivorceFiling,
+            "http://gedcomx.org/Education" => Self::Education,
+            "http://gedcomx.org/Engagement" => Self::Engagement,
+            "http://gedcomx.org/Emigration" => Self::Emigration,
+            "http://gedcomx.org/Excommunication" => Self::Excommunication,
+            "http://gedcomx.org/FirstCommunion" => Self::FirstCommunion,
+            "http://gedcomx.org/Funeral" => Self::Funeral,
+            "http://gedcomx.org/Immigration" => Self::Immigration,
+            "http://gedcomx.org/LandTransaction" => Self::LandTransaction,
+            "http://gedcomx.org/Marriage" => Self::Marriage,
+            "http://gedcomx.org/MilitaryAward" => Self::MilitaryAward,
+            "http://gedcomx.org/MilitaryDischarge" => Self::MilitaryDischarge,
+            "http://gedcomx.org/Mission" => Self::Mission,
+            "http://gedcomx.org/MoveFrom" => Self::MoveFrom,
+            "http://gedcomx.org/MoveTo" => Self::MoveTo,
+            "http://gedcomx.org/Naturalization" => Self::Naturalization,
+            "http://gedcomx.org/Ordination" => Self::Ordination,
+            "http://gedcomx.org/Retirement" => Self::Retirement,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
+}
+
+impl fmt::Display for EventType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::Adoption => write!(f, "http://gedcomx.org/Adoption"),
+            Self::AdultChristening => write!(f, "http://gedcomx.org/AdultChristening"),
+            Self::Annulment => write!(f, "http://gedcomx.org/Annulment"),
+            Self::Baptism => write!(f, "http://gedcomx.org/Baptism"),
+            Self::BarMitzvah => write!(f, "http://gedcomx.org/BarMitzvah"),
+            Self::BatMitzvah => write!(f, "http://gedcomx.org/BatMitzvah"),
+            Self::Birth => write!(f, "http://gedcomx.org/Birth"),
+            Self::Blessing => write!(f, "http://gedcomx.org/Blessing"),
+            Self::Burial => write!(f, "http://gedcomx.org/Burial"),
+            Self::Census => write!(f, "http://gedcomx.org/Census"),
+            Self::Christening => write!(f, "http://gedcomx.org/Christening"),
+            Self::Circumcision => write!(f, "http://gedcomx.org/Circumcision"),
+            Self::Confirmation => write!(f, "http://gedcomx.org/Confirmation"),
+            Self::Cremation => write!(f, "http://gedcomx.org/Cremation"),
+            Self::Death => write!(f, "http://gedcomx.org/Death"),
+            Self::Divorce => write!(f, "http://gedcomx.org/Divorce"),
+            Self::DivorceFiling => write!(f, "http://gedcomx.org/DivorceFiling"),
+            Self::Education => write!(f, "http://gedcomx.org/Education"),
+            Self::Engagement => write!(f, "http://gedcomx.org/Engagement"),
+            Self::Emigration => write!(f, "http://gedcomx.org/Emigration"),
+            Self::Excommunication => write!(f, "http://gedcomx.org/Excommunication"),
+            Self::FirstCommunion => write!(f, "http://gedcomx.org/FirstCommunion"),
+            Self::Funeral => write!(f, "http://gedcomx.org/Funeral"),
+            Self::Immigration => write!(f, "http://gedcomx.org/Immigration"),
+            Self::LandTransaction => write!(f, "http://gedcomx.org/LandTransaction"),
+            Self::Marriage => write!(f, "http://gedcomx.org/Marriage"),
+            Self::MilitaryAward => write!(f, "http://gedcomx.org/MilitaryAward"),
+            Self::MilitaryDischarge => write!(f, "http://gedcomx.org/MilitaryDischarge"),
+            Self::Mission => write!(f, "http://gedcomx.org/Mission"),
+            Self::MoveFrom => write!(f, "http://gedcomx.org/MoveFrom"),
+            Self::MoveTo => write!(f, "http://gedcomx.org/MoveTo"),
+            Self::Naturalization => write!(f, "http://gedcomx.org/Naturalization"),
+            Self::Ordination => write!(f, "http://gedcomx.org/Ordination"),
+            Self::Retirement => write!(f, "http://gedcomx.org/Retirement"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
 }
 
 impl Conclusion for Event {

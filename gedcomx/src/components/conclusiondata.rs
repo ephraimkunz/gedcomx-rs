@@ -1,5 +1,8 @@
-use crate::components::{Attribution, Id, Note, ResourceReference, SourceReference};
+use crate::components::{Attribution, Id, Note, ResourceReference, SourceReference, Uri};
 use serde::{Deserialize, Serialize};
+use std::fmt;
+
+use super::EnumAsString;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
@@ -42,15 +45,34 @@ impl ConclusionData {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum ConfidenceLevel {
-    #[serde(rename = "http://gedcomx.org/High")]
     High,
-
-    #[serde(rename = "http://gedcomx.org/Medium")]
     Medium,
-
-    #[serde(rename = "http://gedcomx.org/Low")]
     Low,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for ConfidenceLevel {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/High" => Self::High,
+            "http://gedcomx.org/Medium" => Self::Medium,
+            "http://gedcomx.org/Low" => Self::Low,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
+}
+
+impl fmt::Display for ConfidenceLevel {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::High => write!(f, "http://gedcomx.org/High"),
+            Self::Medium => write!(f, "http://gedcomx.org/Medium"),
+            Self::Low => write!(f, "http://gedcomx.org/Low"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
 }
 
 #[cfg(test)]

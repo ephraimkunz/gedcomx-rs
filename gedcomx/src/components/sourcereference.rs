@@ -1,3 +1,4 @@
+use super::EnumAsString;
 use crate::components::{Attribution, Id, Qualifier, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -29,17 +30,35 @@ impl SourceReference {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum SourceReferenceQualifier {
     CharacterRegion,
     RectangleRegion,
     TimeRegion,
+    Custom(Uri),
+}
+
+impl From<EnumAsString> for SourceReferenceQualifier {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "http://gedcomx.org/CharacterRegion" => Self::CharacterRegion,
+            "http://gedcomx.org/RectangleRegion" => Self::RectangleRegion,
+            "http://gedcomx.org/TimeRegion" => Self::TimeRegion,
+            _ => Self::Custom(f.0.into()),
+        }
+    }
 }
 
 impl fmt::Display for SourceReferenceQualifier {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "http://gedcomx.org/{:?}", self)
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::CharacterRegion => write!(f, "http://gedcomx.org/CharacterRegion"),
+            Self::RectangleRegion => write!(f, "http://gedcomx.org/RectangleRegion"),
+            Self::TimeRegion => write!(f, "http://gedcomx.org/TimeRegion"),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
     }
 }
 
