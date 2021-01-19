@@ -35,7 +35,7 @@ impl GroupRole {
 #[non_exhaustive]
 #[serde(untagged)]
 pub enum GroupRoleType {
-    Unknown(Uri),
+    Custom(Uri),
 }
 
 #[cfg(test)]

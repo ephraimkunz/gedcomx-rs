@@ -1,0 +1,44 @@
+{
+    "persons": [
+        {
+            "facts": [
+                {
+                    "type": "http://gedcomx.org/Apprenticeship",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Education",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Occupation",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Retirement",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                }
+            ]
+        }
+    ]
+}

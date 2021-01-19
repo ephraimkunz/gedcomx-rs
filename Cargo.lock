@@ -34,6 +34,7 @@ name = "gedcomx-cli"
 version = "0.1.0"
 dependencies = [
  "gedcomx",
+ "serde_json",
 ]
 
 [[package]]

@@ -1,0 +1,17 @@
+{
+    "persons": [
+        {
+            "facts": [
+                {
+                    "type": "data:,Eagle%20Scout",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,164 @@
+{
+    "attribution": {
+        "contributor": {
+            "resource": "#A-1"
+        },
+        "modified": 1394175600000
+    },
+    "persons": [
+        {
+            "names": [
+                {
+                    "nameForms": [
+                        {
+                            "fullText": "Emma Bocock"
+                        }
+                    ]
+                }
+            ],
+            "gender": {
+                "type": "http://gedcomx.org/Female"
+            },
+            "facts": [
+                {
+                    "type": "http://gedcomx.org/Birth",
+                    "date": {
+                        "original": "23 June 1843"
+                    },
+                    "place": {
+                        "original": "Broadfield Bar, Abbeydale Road, Ecclesall-Bierlow, York, England, United Kingdom"
+                    }
+                }
+            ],
+            "extracted": true,
+            "sources": [
+                {
+                    "description": "#S-1"
+                }
+            ],
+            "id": "P-1"
+        },
+        {
+            "names": [
+                {
+                    "nameForms": [
+                        {
+                            "fullText": "William Bocock"
+                        }
+                    ]
+                }
+            ],
+            "facts": [
+                {
+                    "value": "Toll Collector",
+                    "type": "http://gedcomx.org/Occupation"
+                }
+            ],
+            "extracted": true,
+            "sources": [
+                {
+                    "description": "#S-1"
+                }
+            ],
+            "id": "P-2"
+        },
+        {
+            "names": [
+                {
+                    "nameForms": [
+                        {
+                            "fullText": "Sarah Bocock formerly Brough"
+                        }
+                    ]
+                }
+            ],
+            "extracted": true,
+            "sources": [
+                {
+                    "description": "#S-1"
+                }
+            ],
+            "id": "P-3"
+        },
+        {
+            "evidence": [
+                {
+                    "resource": "#P-1"
+                }
+            ],
+            "analysis": {
+                "resource": "#D-1"
+            },
+            "id": "C-1"
+        }
+    ],
+    "relationships": [
+        {
+            "type": "http://gedcomx.org/ParentChild",
+            "person1": {
+                "resource": "#P-2"
+            },
+            "person2": {
+                "resource": "#P-1"
+            }
+        },
+        {
+            "type": "http://gedcomx.org/ParentChild",
+            "person1": {
+                "resource": "#P-3"
+            },
+            "person2": {
+                "resource": "#P-1"
+            }
+        }
+    ],
+    "sourceDescriptions": [
+        {
+            "resourceType": "http://gedcomx.org/PhysicalArtifact",
+            "citations": [
+                {
+                    "value": "England, birth certificate for Emma Bocock, born 23 July 1843; citing 1843 Birth in District and Sub-district of Ecclesall-Bierlow in the County of York, 303; General Registry Office, Southport."
+                }
+            ],
+            "titles": [
+                {
+                    "value": "Birth Certificate of Emma Bocock, 23 July 1843, General Registry Office"
+                }
+            ],
+            "created": -3989840400000,
+            "repository": {
+                "resource": "#A-2"
+            },
+            "id": "S-1"
+        }
+    ],
+    "agents": [
+        {
+            "names": [
+                {
+                    "value": "Jane Doe"
+                }
+            ],
+            "emails": [
+                {
+                    "resource": "mailto:example@example.org"
+                }
+            ],
+            "id": "A-1"
+        },
+        {
+            "names": [
+                {
+                    "value": "General Registry Office, Southport"
+                }
+            ],
+            "id": "A-2"
+        }
+    ],
+    "documents": [
+        {
+            "text": "...Jane Doe's analysis document...",
+            "id": "D-1"
+        }
+    ]
+}

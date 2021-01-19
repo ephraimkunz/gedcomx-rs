@@ -1,0 +1,30 @@
+{
+    "persons": [
+        {
+            "names": [
+                {
+                    "nameForms": [
+                        {
+                            "lang": "en",
+                            "fullText": "John Fitzgerald Kennedy",
+                            "parts": [
+                                {
+                                    "value": "John",
+                                    "type": "http://gedcomx.org/Given"
+                                },
+                                {
+                                    "value": "Fitzgerald",
+                                    "type": "http://gedcomx.org/Given"
+                                },
+                                {
+                                    "value": "Kennedy",
+                                    "type": "http://gedcomx.org/Surname"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

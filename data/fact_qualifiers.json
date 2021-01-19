@@ -1,0 +1,53 @@
+{
+    "persons": [
+        {
+            "facts": [
+                {
+                    "type": "http://gedcomx.org/Christening",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    },
+                    "qualifiers": [
+                        {
+                            "name": "http://gedcomx.org/Religion",
+                            "value": "Catholic"
+                        }
+                    ]
+                },
+                {
+                    "type": "http://gedcomx.org/Census",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    },
+                    "qualifiers": [
+                        {
+                            "name": "http://gedcomx.org/Age",
+                            "value": "44"
+                        }
+                    ]
+                },
+                {
+                    "type": "http://gedcomx.org/Death",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    },
+                    "qualifiers": [
+                        {
+                            "name": "http://gedcomx.org/Cause",
+                            "value": "Heart failure"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

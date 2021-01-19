@@ -1,0 +1,26 @@
+{
+    "persons": [
+        {
+            "names": [
+                {
+                    "nameForms": [
+                        {
+                            "lang": "pt-BR",
+                            "fullText": "José Eduardo Santos Tavares Melo Silva",
+                            "parts": [
+                                {
+                                    "value": "José Eduardo",
+                                    "type": "http://gedcomx.org/Given"
+                                },
+                                {
+                                    "value": "Santos Tavares Melo Silva",
+                                    "type": "http://gedcomx.org/Surname"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

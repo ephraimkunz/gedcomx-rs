@@ -4,7 +4,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct ConclusionData {
-    pub id: Id,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<Id>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<String>,
@@ -26,9 +27,9 @@ pub struct ConclusionData {
 }
 
 impl ConclusionData {
-    pub fn new(id: Id) -> Self {
+    pub fn new() -> Self {
         Self {
-            id,
+            id: None,
             lang: None,
             sources: vec![],
             analysis: None,
@@ -105,10 +106,10 @@ mod test {
 
     #[test]
     fn json_deserialize_optional_fields() {
-        let json = r#"{"id": "test id"}"#;
+        let json = r#"{}"#;
 
         let conclusion_data: ConclusionData = serde_json::from_str(json).unwrap();
-        assert_eq!(conclusion_data, ConclusionData::new("test id".to_string()))
+        assert_eq!(conclusion_data, ConclusionData::new())
     }
 
     #[test]
@@ -127,8 +128,8 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let conclusion_data = ConclusionData::new("test id".to_string());
+        let conclusion_data = ConclusionData::new();
         let json = serde_json::to_string(&conclusion_data).unwrap();
-        assert_eq!(json, r#"{"id":"test id"}"#);
+        assert_eq!(json, r#"{}"#);
     }
 }

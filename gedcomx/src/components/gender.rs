@@ -1,4 +1,4 @@
-use crate::components::{Conclusion, ConclusionData, Id, Identifiable};
+use crate::components::{Conclusion, ConclusionData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -39,12 +39,6 @@ pub enum GenderType {
 impl Conclusion for Gender {
     fn conclusion(&self) -> &ConclusionData {
         &self.conclusion
-    }
-}
-
-impl Identifiable for Gender {
-    fn id(&self) -> &Id {
-        &self.conclusion().id
     }
 }
 

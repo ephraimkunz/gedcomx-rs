@@ -1,0 +1,122 @@
+{
+    "relationships": [
+        {
+            "type": "http://gedcomx.org/Couple",
+            "facts": [
+                {
+                    "type": "http://gedcomx.org/CivilUnion",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/DomesticPartnership",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Divorce",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Marriage",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/MarriageBanns",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/MarriageContract",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/MarriageLicense",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                }
+            ]
+        },
+        {
+            "type": "http://gedcomx.org/ParentChild",
+            "facts": [
+                {
+                    "type": "http://gedcomx.org/AdoptiveParent",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/BiologicalParent",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/FosterParent",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/GuardianParent",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/StepParent",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                }
+            ]
+        }
+    ]
+}

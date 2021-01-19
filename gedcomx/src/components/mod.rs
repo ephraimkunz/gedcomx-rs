@@ -107,7 +107,8 @@ impl TestData {
         note.lang = Some("en".to_string());
         note.subject = Some("subject".to_string());
 
-        let mut conclusion_data = ConclusionData::new("local_id".to_string());
+        let mut conclusion_data = ConclusionData::new();
+        conclusion_data.id = Some("local_id".to_string());
         conclusion_data.lang = Some("en".to_string());
         conclusion_data.sources = vec![source_reference.clone()];
         conclusion_data.analysis = Some(ResourceReference::from(
@@ -141,11 +142,7 @@ impl TestData {
 // TODO: Implement custom serializer / deserializer?
 pub type Id = String;
 
-pub trait Identifiable: std::fmt::Debug {
-    fn id(&self) -> &Id;
-}
-
-pub trait Conclusion: Identifiable {
+pub trait Conclusion {
     fn conclusion(&self) -> &ConclusionData;
 }
 

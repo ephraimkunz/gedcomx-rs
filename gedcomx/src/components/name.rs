@@ -1,5 +1,5 @@
 use crate::{
-    components::{Conclusion, ConclusionData, Date, Id, Identifiable, Lang},
+    components::{Conclusion, ConclusionData, Date, Lang},
     Qualifier,
 };
 use serde::{Deserialize, Serialize};
@@ -35,12 +35,6 @@ impl Name {
 impl Conclusion for Name {
     fn conclusion(&self) -> &ConclusionData {
         &self.conclusion
-    }
-}
-
-impl Identifiable for Name {
-    fn id(&self) -> &Id {
-        &self.conclusion().id
     }
 }
 

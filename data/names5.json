@@ -1,0 +1,30 @@
+{
+    "persons": [
+        {
+            "names": [
+                {
+                    "nameForms": [
+                        {
+                            "lang": "is",
+                            "fullText": "Björk Guðmundsdóttir",
+                            "parts": [
+                                {
+                                    "value": "Björk",
+                                    "type": "http://gedcomx.org/Given"
+                                },
+                                {
+                                    "value": "Guðmundsdóttir",
+                                    "qualifiers": [
+                                        {
+                                            "name": "http://gedcomx.org/Patronymic"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

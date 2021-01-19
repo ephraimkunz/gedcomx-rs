@@ -1,0 +1,143 @@
+{
+    "persons": [
+        {
+            "facts": [
+                {
+                    "type": "http://gedcomx.org/AdultChristening",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Baptism",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/BarMitzvah",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/BatMitzvah",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Caste",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Christening",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Circumcision",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Clan",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Confirmation",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Excommunication",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/FirstCommunion",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Nationality",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Ordination",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Religion",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Yahrzeit",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                }
+            ]
+        }
+    ]
+}

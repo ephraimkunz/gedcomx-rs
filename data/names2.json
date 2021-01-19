@@ -1,0 +1,54 @@
+{
+    "persons": [
+        {
+            "names": [
+                {
+                    "nameForms": [
+                        {
+                            "lang": "ja-Hani",
+                            "fullText": "山田太郎",
+                            "parts": [
+                                {
+                                    "value": "山田",
+                                    "type": "http://gedcomx.org/Surname"
+                                },
+                                {
+                                    "value": "太郎",
+                                    "type": "http://gedcomx.org/Given"
+                                }
+                            ]
+                        },
+                        {
+                            "lang": "ja-Kana",
+                            "fullText": "ヤマダタロー",
+                            "parts": [
+                                {
+                                    "value": "ヤマダ",
+                                    "type": "http://gedcomx.org/Surname"
+                                },
+                                {
+                                    "value": "タロー",
+                                    "type": "http://gedcomx.org/Given"
+                                }
+                            ]
+                        },
+                        {
+                            "lang": "ja-Latn",
+                            "fullText": "Yamada Tarō",
+                            "parts": [
+                                {
+                                    "value": "Tarō",
+                                    "type": "http://gedcomx.org/Surname"
+                                },
+                                {
+                                    "value": "Yamada",
+                                    "type": "http://gedcomx.org/Given"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

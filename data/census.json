@@ -1,0 +1,71 @@
+{
+    "persons": [
+        {
+            "facts": [
+                {
+                    "type": "http://gedcomx.org/Census",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Emigration",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Immigration",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/LandTransaction",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/MoveTo",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/MoveFrom",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/Residence",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                }
+            ]
+        }
+    ]
+}

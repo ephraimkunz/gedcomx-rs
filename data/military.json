@@ -1,0 +1,53 @@
+{
+    "persons": [
+        {
+            "facts": [
+                {
+                    "type": "http://gedcomx.org/MilitaryAward",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/MilitaryDischarge",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/MilitaryDraftRegistration",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/MilitaryInduction",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                },
+                {
+                    "type": "http://gedcomx.org/MilitaryService",
+                    "date": {
+                        "original": "..."
+                    },
+                    "place": {
+                        "original": "..."
+                    }
+                }
+            ]
+        }
+    ]
+}
