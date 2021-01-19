@@ -29,7 +29,7 @@ mod subjectdata;
 pub use subjectdata::SubjectData;
 
 mod gender;
-pub use gender::Gender;
+pub use gender::{Gender, GenderType};
 
 mod name;
 pub use name::{Name, NameForm, NamePart, NamePartQualifier, NameType};
@@ -38,7 +38,7 @@ mod fact;
 pub use fact::{Fact, FactQualifier, FactType};
 
 mod eventrole;
-pub use eventrole::EventRole;
+pub use eventrole::{EventRole, EventRoleType};
 
 mod date;
 pub use date::Date;
@@ -47,7 +47,7 @@ mod placereference;
 pub use placereference::PlaceReference;
 
 mod grouprole;
-pub use grouprole::GroupRole;
+pub use grouprole::{GroupRole, GroupRoleType};
 
 mod resourcereference;
 pub use resourcereference::ResourceReference;

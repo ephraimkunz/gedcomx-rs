@@ -5,16 +5,16 @@ mod person;
 pub use person::Person;
 
 mod relationship;
-pub use relationship::Relationship;
+pub use relationship::{Relationship, RelationshipType};
 
 mod sourcedescription;
-pub use sourcedescription::SourceDescription;
+pub use sourcedescription::{ResourceType, SourceDescription};
 
 mod agent;
 pub use agent::Agent;
 
 mod event;
-pub use event::Event;
+pub use event::{Event, EventType};
 
 mod document;
 pub use document::Document;
