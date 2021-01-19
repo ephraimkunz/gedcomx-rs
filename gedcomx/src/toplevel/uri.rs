@@ -1,5 +1,6 @@
 use crate::{FactQualifier, NamePartQualifier, SourceReferenceQualifier};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
@@ -38,5 +39,11 @@ impl From<NamePartQualifier> for Uri {
 impl From<FactQualifier> for Uri {
     fn from(f: FactQualifier) -> Self {
         f.to_string().into()
+    }
+}
+
+impl fmt::Display for Uri {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        write!(f, "{}", self.0)
     }
 }
