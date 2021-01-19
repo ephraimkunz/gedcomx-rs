@@ -103,7 +103,7 @@ mod test {
                     original: Some("the original text".to_string()),
                     formal: None
                 }),
-                group_role_type: Some(GroupRoleType::Unknown("testType".into())),
+                group_role_type: Some(GroupRoleType::Custom("testType".into())),
                 details: Some("details".to_string()),
                 person: ResourceReference::from("http://identifier/for/person/1")
             }
@@ -179,7 +179,7 @@ mod test {
                 original: Some("the original text".to_string()),
                 formal: None,
             }),
-            group_role_type: Some(GroupRoleType::Unknown("testType".into())),
+            group_role_type: Some(GroupRoleType::Custom("testType".into())),
             details: Some("details".to_string()),
             person: ResourceReference::from("http://identifier/for/person/1"),
         };
