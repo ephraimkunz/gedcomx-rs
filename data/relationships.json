@@ -1,6 +1,12 @@
 {
     "relationships": [
         {
+            "person1": {
+                "resource": "#p1"
+            },
+            "person2": {
+                "resource": "#p2"
+            },
             "type": "http://gedcomx.org/Couple",
             "facts": [
                 {
@@ -69,6 +75,12 @@
             ]
         },
         {
+            "person1": {
+                "resource": "#p1"
+            },
+            "person2": {
+                "resource": "#p2"
+            },
             "type": "http://gedcomx.org/ParentChild",
             "facts": [
                 {
