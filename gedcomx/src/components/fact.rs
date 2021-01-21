@@ -87,6 +87,11 @@ impl FactBuilder {
         self
     }
 
+    pub fn qualifier(&mut self, qualifier: Qualifier) -> &mut Self {
+        self.0.qualifiers.push(qualifier);
+        self
+    }
+
     pub fn build(&self) -> Fact {
         Fact::new(
             self.0.fact_type.clone(),

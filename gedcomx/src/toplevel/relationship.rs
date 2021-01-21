@@ -82,6 +82,11 @@ impl RelationshipBuilder {
         self
     }
 
+    pub fn fact(&mut self, fact: Fact) -> &mut Self {
+        self.0.facts.push(fact);
+        self
+    }
+
     pub fn facts(&mut self, facts: Vec<Fact>) -> &mut Self {
         self.0.facts = facts;
         self
