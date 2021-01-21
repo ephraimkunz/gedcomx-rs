@@ -1,9 +1,9 @@
 use crate::components::EnumAsString;
-use crate::{Attribution, Conclusion, ConclusionData, Uri};
+use crate::{Attribution, Conclusion, ConclusionData, Id, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Document {
@@ -23,6 +23,57 @@ pub struct Document {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution: Option<Attribution>,
+}
+
+impl Document {
+    pub fn new(
+        conclusion: ConclusionData,
+        document_type: Option<DocumentType>,
+        extracted: Option<bool>,
+        text_type: Option<String>,
+        text: String,
+        attribution: Option<Attribution>,
+    ) -> Self {
+        Self {
+            conclusion,
+            document_type,
+            extracted,
+            text_type,
+            text,
+            attribution,
+        }
+    }
+
+    pub fn builder<I: Into<String>>(text: I) -> DocumentBuilder {
+        DocumentBuilder::new(text)
+    }
+}
+
+pub struct DocumentBuilder(Document);
+
+impl DocumentBuilder {
+    pub(crate) fn new<I: Into<String>>(text: I) -> Self {
+        Self(Document {
+            text: text.into(),
+            ..Document::default()
+        })
+    }
+
+    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
+        self.0.conclusion.id = Some(id.into());
+        self
+    }
+
+    pub fn build(&self) -> Document {
+        Document::new(
+            self.0.conclusion.clone(),
+            self.0.document_type.clone(),
+            self.0.extracted,
+            self.0.text_type.clone(),
+            self.0.text.clone(),
+            self.0.attribution.clone(),
+        )
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]

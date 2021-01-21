@@ -1,13 +1,13 @@
-use crate::components::EnumAsString;
+use crate::{components::EnumAsString, Result};
 use crate::{
-    Attribution, Coverage, Id, Identifier, Note, ResourceReference, SourceCitation,
+    Agent, Attribution, Coverage, Id, Identifier, Note, ResourceReference, SourceCitation,
     SourceReference, TextValue, Timestamp, Uri,
 };
 use chrono::serde::ts_milliseconds_option;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{convert::TryInto, fmt};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SourceDescription {
@@ -84,6 +84,128 @@ pub struct SourceDescription {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub repository: Option<ResourceReference>,
+}
+
+#[allow(clippy::similar_names)]
+impl SourceDescription {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        id: Option<Id>,
+        resource_type: Option<ResourceType>,
+        citations: Vec<SourceCitation>,
+        media_type: Option<String>,
+        about: Option<Uri>,
+        mediator: Option<ResourceReference>,
+        publisher: Option<ResourceReference>,
+        sources: Vec<SourceReference>,
+        analysis: Option<ResourceReference>,
+        component_of: Option<SourceReference>,
+        titles: Vec<TextValue>,
+        notes: Option<Note>,
+        attribution: Option<Attribution>,
+        rights: Vec<ResourceReference>,
+        coverage: Vec<Coverage>,
+        descriptions: Vec<TextValue>,
+        identifiers: Vec<Identifier>,
+        created: Option<Timestamp>,
+        modified: Option<Timestamp>,
+        published: Option<Timestamp>,
+        repository: Option<ResourceReference>,
+    ) -> Self {
+        Self {
+            id,
+            resource_type,
+            citations,
+            media_type,
+            about,
+            mediator,
+            publisher,
+            sources,
+            analysis,
+            component_of,
+            titles,
+            notes,
+            attribution,
+            rights,
+            coverage,
+            descriptions,
+            identifiers,
+            created,
+            modified,
+            published,
+            repository,
+        }
+    }
+
+    pub fn builder() -> SourceDescriptionBuilder {
+        SourceDescriptionBuilder::new()
+    }
+}
+
+pub struct SourceDescriptionBuilder(SourceDescription);
+
+impl SourceDescriptionBuilder {
+    pub(crate) fn new() -> Self {
+        Self(SourceDescription {
+            ..SourceDescription::default()
+        })
+    }
+
+    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
+        self.0.id = Some(id.into());
+        self
+    }
+
+    pub fn title<I: Into<TextValue>>(&mut self, title: I) -> &mut Self {
+        self.0.titles.push(title.into());
+        self
+    }
+
+    pub fn citation(&mut self, source_citation: SourceCitation) -> &mut Self {
+        self.0.citations.push(source_citation);
+        self
+    }
+
+    pub fn resource_type(&mut self, resource_type: ResourceType) -> &mut Self {
+        self.0.resource_type = Some(resource_type);
+        self
+    }
+
+    pub fn created(&mut self, created: Timestamp) -> &mut Self {
+        self.0.created = Some(created);
+        self
+    }
+
+    pub fn repository(&mut self, agent: &Agent) -> Result<&mut Self> {
+        self.0.repository = Some(agent.try_into()?);
+        Ok(self)
+    }
+
+    pub fn build(&self) -> SourceDescription {
+        SourceDescription::new(
+            self.0.id.clone(),
+            self.0.resource_type.clone(),
+            self.0.citations.clone(),
+            self.0.media_type.clone(),
+            self.0.about.clone(),
+            self.0.mediator.clone(),
+            self.0.publisher.clone(),
+            self.0.sources.clone(),
+            self.0.analysis.clone(),
+            self.0.component_of.clone(),
+            self.0.titles.clone(),
+            self.0.notes.clone(),
+            self.0.attribution.clone(),
+            self.0.rights.clone(),
+            self.0.coverage.clone(),
+            self.0.descriptions.clone(),
+            self.0.identifiers.clone(),
+            self.0.created,
+            self.0.modified,
+            self.0.published,
+            self.0.repository.clone(),
+        )
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]

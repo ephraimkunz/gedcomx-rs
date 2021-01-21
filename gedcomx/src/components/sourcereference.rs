@@ -1,9 +1,12 @@
 use super::EnumAsString;
-use crate::components::{Attribution, Id, Qualifier, Uri};
+use crate::{
+    components::{Attribution, Id, Qualifier, Uri},
+    GedcomxError, SourceDescription,
+};
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{convert::TryFrom, fmt};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct SourceReference {
@@ -20,12 +23,58 @@ pub struct SourceReference {
 }
 
 impl SourceReference {
-    pub fn new(description: Uri) -> Self {
+    pub fn new(
+        description: Uri,
+        description_id: Option<Id>,
+
+        attribution: Option<Attribution>,
+
+        qualifiers: Vec<Qualifier>,
+    ) -> Self {
         Self {
             description,
-            description_id: None,
-            attribution: None,
-            qualifiers: vec![],
+            description_id,
+            attribution,
+            qualifiers,
+        }
+    }
+
+    pub fn builder(description: Uri) -> SourceReferenceBuilder {
+        SourceReferenceBuilder::new(description)
+    }
+}
+
+pub struct SourceReferenceBuilder(SourceReference);
+
+impl SourceReferenceBuilder {
+    pub(crate) fn new(description: Uri) -> Self {
+        Self(SourceReference {
+            description,
+            ..SourceReference::default()
+        })
+    }
+
+    pub fn description_id<I: Into<String>>(&mut self, id: I) -> &mut Self {
+        self.0.description_id = Some(id.into());
+        self
+    }
+
+    pub fn build(&self) -> SourceReference {
+        SourceReference::new(
+            self.0.description.clone(),
+            self.0.description_id.clone(),
+            self.0.attribution.clone(),
+            self.0.qualifiers.clone(),
+        )
+    }
+}
+
+impl TryFrom<&SourceDescription> for SourceReference {
+    type Error = GedcomxError;
+    fn try_from(s: &SourceDescription) -> Result<Self, Self::Error> {
+        match &s.id {
+            Some(id) => Ok(Self::builder(format!("#{}", id).into()).build()),
+            None => Err(GedcomxError::NoId("SourceDescription".to_string())),
         }
     }
 }
@@ -95,7 +144,10 @@ mod test {
         }"#;
 
         let source_reference: SourceReference = serde_json::from_str(json).unwrap();
-        assert_eq!(source_reference, SourceReference::new(Uri::from("SD-1")))
+        assert_eq!(
+            source_reference,
+            SourceReference::builder(Uri::from("SD-1")).build()
+        )
     }
 
     #[test]
@@ -113,7 +165,7 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let source_reference = SourceReference::new(Uri::from("SD-1"));
+        let source_reference = SourceReference::builder(Uri::from("SD-1")).build();
 
         let json = serde_json::to_string(&source_reference).unwrap();
         assert_eq!(json, r#"{"description":"SD-1"}"#);

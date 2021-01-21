@@ -5,7 +5,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct Fact {
     #[serde(rename = "type")]
@@ -30,6 +30,67 @@ pub struct Fact {
 impl Conclusion for Fact {
     fn conclusion(&self) -> &ConclusionData {
         &self.conclusion
+    }
+}
+
+impl Fact {
+    pub fn new(
+        fact_type: FactType,
+        conclusion: ConclusionData,
+        date: Option<Date>,
+        place: Option<PlaceReference>,
+        value: Option<String>,
+        qualifiers: Vec<Qualifier>,
+    ) -> Self {
+        Self {
+            fact_type,
+            conclusion,
+            date,
+            place,
+            value,
+            qualifiers,
+        }
+    }
+
+    pub fn builder(fact_type: FactType) -> FactBuilder {
+        FactBuilder::new(fact_type)
+    }
+}
+
+pub struct FactBuilder(Fact);
+
+impl FactBuilder {
+    pub(crate) fn new(fact_type: FactType) -> Self {
+        Self(Fact {
+            fact_type,
+            ..Fact::default()
+        })
+    }
+
+    pub fn date(&mut self, date: Date) -> &mut Self {
+        self.0.date = Some(date);
+        self
+    }
+
+    pub fn place(&mut self, place: PlaceReference) -> &mut Self {
+        self.0.place = Some(place);
+        self
+    }
+
+    pub fn value<I: Into<String>>(&mut self, value: I) -> &mut Self {
+        self.0.value = Some(value.into());
+        self
+    }
+
+    pub fn build(&self) -> Fact {
+        Fact::new(
+            self.0.fact_type.clone(),
+            self.0.conclusion.clone(),
+            self.0.date.clone(),
+            self.0.place.clone(),
+            self.0.value.clone(),
+            self.0.qualifiers.clone(),
+        )
     }
 }
 
@@ -368,6 +429,12 @@ impl From<EnumAsString> for FactType {
             "http://gedcomx.org/SurrogateParent" => Self::SurrogateParent,
             _ => Self::Custom(f.0.into()),
         }
+    }
+}
+
+impl Default for FactType {
+    fn default() -> Self {
+        Self::Custom(Uri::from(String::default()))
     }
 }
 

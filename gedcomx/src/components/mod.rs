@@ -63,7 +63,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 // I think this will need custom JSON serialization / deserialization. Needs to be a map of typee -> [uri].
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Identifier {
     pub uri: Uri,
     pub typee: Option<IdentifierType>,
@@ -114,18 +114,20 @@ struct TestData {
 impl TestData {
     #[allow(dead_code)]
     fn new() -> Self {
-        let mut attribution = Attribution::new();
-        attribution.contributor = Some(ResourceReference::from("A-1"));
-        attribution.modified = Some(chrono::DateTime::from_utc(
-            chrono::NaiveDateTime::from_timestamp(1_394_175_600, 0),
-            chrono::Utc,
-        ));
+        let attribution = Attribution {
+            contributor: Some(ResourceReference::from("A-1")),
+            modified: Some(chrono::DateTime::from_utc(
+                chrono::NaiveDateTime::from_timestamp(1_394_175_600, 0),
+                chrono::Utc,
+            )),
+            ..Attribution::default()
+        };
 
         let qualifier = Qualifier {
             name: SourceReferenceQualifier::RectangleRegion.into(),
             value: Some("rectangle region value".to_string()),
         };
-        let mut source_reference = SourceReference::new(Uri::from("SD-1"));
+        let mut source_reference = SourceReference::builder(Uri::from("SD-1")).build();
         source_reference.description_id = Some("Description id of the target source".to_string());
         source_reference.attribution = Some(attribution.clone());
         source_reference.qualifiers = vec![qualifier];
@@ -146,7 +148,7 @@ impl TestData {
         conclusion_data.confidence = Some(ConfidenceLevel::High);
         conclusion_data.attribution = Some(attribution.clone());
 
-        let mut evidence_reference = EvidenceReference::new(Uri::from("S-1"));
+        let mut evidence_reference = EvidenceReference::builder(Uri::from("S-1")).build();
         evidence_reference.attribution = Some(attribution.clone());
 
         let mut subject_data = SubjectData::new(conclusion_data.clone());

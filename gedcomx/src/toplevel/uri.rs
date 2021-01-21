@@ -1,8 +1,11 @@
-use crate::{FactQualifier, NamePartQualifier, SourceReferenceQualifier};
+use crate::{
+    FactQualifier, GedcomxError, NamePartQualifier, PlaceDescription, SourceDescription,
+    SourceReferenceQualifier,
+};
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{convert::TryFrom, fmt};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Uri(String);
 
@@ -21,6 +24,26 @@ impl From<&String> for Uri {
 impl From<String> for Uri {
     fn from(s: String) -> Self {
         Self(s)
+    }
+}
+
+impl TryFrom<&PlaceDescription> for Uri {
+    type Error = GedcomxError;
+    fn try_from(pd: &PlaceDescription) -> Result<Self, Self::Error> {
+        match &pd.subject.conclusion.id {
+            Some(id) => Ok(Self::from(format!("{}{}", "#", id))),
+            None => Err(GedcomxError::NoId("PlaceDescription".to_string())),
+        }
+    }
+}
+
+impl TryFrom<&SourceDescription> for Uri {
+    type Error = GedcomxError;
+    fn try_from(sd: &SourceDescription) -> Result<Self, Self::Error> {
+        match &sd.id {
+            Some(id) => Ok(Self::from(format!("{}{}", "#", id))),
+            None => Err(GedcomxError::NoId("SourceDescription".to_string())),
+        }
     }
 }
 

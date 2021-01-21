@@ -16,4 +16,7 @@ repository = "https://github.com/ephraimkunz/gedcomx-rs"
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 chrono = { version = "0.4", features = ["serde"] }
-gedcomx_date = "0.0.1"
+thiserror = "1"
+
+[dev-dependencies]
+pretty_assertions = "0.6"

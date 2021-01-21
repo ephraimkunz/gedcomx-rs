@@ -1,7 +1,7 @@
 use crate::components::{ConclusionData, EvidenceReference, Identifier, SourceReference};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct SubjectData {
     #[serde(flatten)]

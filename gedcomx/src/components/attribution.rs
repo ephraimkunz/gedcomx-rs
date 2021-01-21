@@ -1,10 +1,14 @@
-use crate::components::{ResourceReference, Timestamp};
+use crate::{
+    components::{ResourceReference, Timestamp},
+    toplevel::Agent,
+    Result,
+};
 use chrono::serde::ts_milliseconds_option;
 use serde::{Deserialize, Serialize};
+use std::convert::TryInto;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
-#[non_exhaustive]
 pub struct Attribution {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contributor: Option<ResourceReference>,
@@ -31,14 +35,59 @@ pub struct Attribution {
 }
 
 impl Attribution {
-    pub fn new() -> Self {
+    pub fn new(
+        contributor: Option<ResourceReference>,
+        modified: Option<Timestamp>,
+        change_message: Option<String>,
+        creator: Option<ResourceReference>,
+        created: Option<Timestamp>,
+    ) -> Self {
         Self {
-            contributor: None,
-            change_message: None,
-            modified: None,
-            creator: None,
-            created: None,
+            contributor,
+            modified,
+            change_message,
+            creator,
+            created,
         }
+    }
+
+    pub fn builder() -> AttributionBuilder {
+        AttributionBuilder::new()
+    }
+}
+
+pub struct AttributionBuilder(Attribution);
+
+impl AttributionBuilder {
+    pub(crate) fn new() -> Self {
+        Self(Attribution {
+            ..Attribution::default()
+        })
+    }
+
+    pub fn contributor(&mut self, agent: &Agent) -> Result<&mut Self> {
+        self.0.contributor = Some(agent.try_into()?);
+        Ok(self)
+    }
+
+    pub fn modified<I: Into<Timestamp>>(&mut self, timestamp: I) -> &mut Self {
+        self.0.modified = Some(timestamp.into());
+        self
+    }
+
+    pub fn change_message<I: Into<String>>(&mut self, change_message: I) -> &mut Self {
+        self.0.change_message = Some(change_message.into());
+        self
+    }
+
+    pub fn build(&self) -> Attribution {
+        Attribution::new(
+            self.0.contributor.clone(),
+            self.0.modified,
+            self.0.change_message.clone(),
+            self.0.creator.clone(),
+            self.0.created,
+        )
     }
 }
 
@@ -84,7 +133,7 @@ mod test {
         let json = r#"{}"#;
 
         let attribution: Attribution = serde_json::from_str(json).unwrap();
-        assert_eq!(attribution, Attribution::new())
+        assert_eq!(attribution, Attribution::default())
     }
 
     #[test]
@@ -113,7 +162,7 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let attribution = Attribution::new();
+        let attribution = Attribution::default();
 
         let json = serde_json::to_string(&attribution).unwrap();
 

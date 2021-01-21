@@ -17,7 +17,7 @@ mod event;
 pub use event::{Event, EventType};
 
 mod document;
-pub use document::Document;
+pub use document::{Document, DocumentType};
 
 mod placedescription;
 pub use placedescription::PlaceDescription;

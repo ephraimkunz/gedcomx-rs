@@ -1,7 +1,7 @@
 use crate::components::Lang;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct SourceCitation {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -10,8 +10,27 @@ pub struct SourceCitation {
 }
 
 impl SourceCitation {
-    pub fn new(value: String) -> Self {
-        Self { value, lang: None }
+    pub fn new(value: String, lang: Option<Lang>) -> Self {
+        Self { value, lang }
+    }
+
+    pub fn builder<I: Into<String>>(value: I) -> SourceCitationBuilder {
+        SourceCitationBuilder::new(value)
+    }
+}
+
+pub struct SourceCitationBuilder(SourceCitation);
+
+impl SourceCitationBuilder {
+    pub(crate) fn new<I: Into<String>>(value: I) -> Self {
+        Self(SourceCitation {
+            value: value.into(),
+            ..SourceCitation::default()
+        })
+    }
+
+    pub fn build(&self) -> SourceCitation {
+        SourceCitation::new(self.0.value.clone(), self.0.lang.clone())
     }
 }
 
@@ -45,7 +64,10 @@ mod test {
         let source_citation: SourceCitation = serde_json::from_str(json).unwrap();
         assert_eq!(
             source_citation,
-            SourceCitation::new("a rendering of the full citation as a string".to_string())
+            SourceCitation::new(
+                "a rendering of the full citation as a string".to_string(),
+                None
+            )
         )
     }
 
@@ -66,8 +88,10 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let source_citation =
-            SourceCitation::new("a rendering of the full citation as a string".to_string());
+        let source_citation = SourceCitation::new(
+            "a rendering of the full citation as a string".to_string(),
+            None,
+        );
 
         let json = serde_json::to_string(&source_citation).unwrap();
 

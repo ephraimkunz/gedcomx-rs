@@ -1,7 +1,7 @@
 use crate::{ConclusionData, Date, ResourceReference, Uri};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct GroupRole {
     #[serde(flatten)]
@@ -31,7 +31,7 @@ impl GroupRole {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(untagged)]
 pub enum GroupRoleType {

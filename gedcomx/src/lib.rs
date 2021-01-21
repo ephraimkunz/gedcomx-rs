@@ -14,3 +14,16 @@ pub use components::*;
 
 mod toplevel;
 pub use toplevel::*;
+
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum GedcomxError {
+    #[error("Can't get a non-None id for `{0}`")]
+    NoId(String),
+
+    #[error("Wrong type. Expected: {0}, Actual: {1}")]
+    WrongType(String, String),
+}
+
+pub type Result<T> = std::result::Result<T, GedcomxError>;

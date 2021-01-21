@@ -3,7 +3,7 @@ use crate::components::{Conclusion, ConclusionData, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Gender {
     #[serde(rename = "type")]
@@ -22,6 +22,15 @@ impl Gender {
     }
 }
 
+impl From<GenderType> for Gender {
+    fn from(gender_type: GenderType) -> Self {
+        Self {
+            gender_type,
+            ..Self::default()
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
@@ -31,6 +40,12 @@ pub enum GenderType {
     Unknown,
     Intersex,
     Custom(Uri),
+}
+
+impl Default for GenderType {
+    fn default() -> Self {
+        Self::Custom(Uri::from(String::default()))
+    }
 }
 
 impl From<EnumAsString> for GenderType {

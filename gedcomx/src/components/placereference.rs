@@ -1,7 +1,8 @@
-use crate::Uri;
+use crate::{PlaceDescription, Result, Uri};
 use serde::{Deserialize, Serialize};
+use std::convert::TryInto;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct PlaceReference {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -12,11 +13,37 @@ pub struct PlaceReference {
 }
 
 impl PlaceReference {
-    pub fn new() -> Self {
+    pub fn new(original: Option<String>, description_ref: Option<Uri>) -> Self {
         Self {
-            original: None,
-            description_ref: None,
+            original,
+            description_ref,
         }
+    }
+
+    pub fn builder() -> PlaceReferenceBuilder {
+        PlaceReferenceBuilder::new()
+    }
+}
+
+pub struct PlaceReferenceBuilder(PlaceReference);
+
+impl PlaceReferenceBuilder {
+    pub(crate) fn new() -> Self {
+        Self(PlaceReference::default())
+    }
+
+    pub fn description_ref(&mut self, description: &PlaceDescription) -> Result<&mut Self> {
+        self.0.description_ref = Some(description.try_into()?);
+        Ok(self)
+    }
+
+    pub fn original<I: Into<String>>(&mut self, original: I) -> &mut Self {
+        self.0.original = Some(original.into());
+        self
+    }
+
+    pub fn build(&self) -> PlaceReference {
+        PlaceReference::new(self.0.original.clone(), self.0.description_ref.clone())
     }
 }
 
@@ -50,7 +77,7 @@ mod test {
 
         let place_ref: PlaceReference = serde_json::from_str(json).unwrap();
 
-        assert_eq!(place_ref, PlaceReference::new())
+        assert_eq!(place_ref, PlaceReference::default())
     }
 
     #[test]
@@ -70,7 +97,7 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let place_ref = PlaceReference::new();
+        let place_ref = PlaceReference::default();
 
         let json = serde_json::to_string(&place_ref).unwrap();
 

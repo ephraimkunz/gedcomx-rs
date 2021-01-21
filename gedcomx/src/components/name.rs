@@ -6,7 +6,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Name {
@@ -29,6 +29,18 @@ impl Name {
             name_forms,
             name_type: None,
             date: None,
+        }
+    }
+}
+
+impl From<&str> for Name {
+    fn from(s: &str) -> Self {
+        Self {
+            name_forms: vec![NameForm {
+                full_text: Some(s.to_string()),
+                ..NameForm::default()
+            }],
+            ..Self::default()
         }
     }
 }
@@ -83,7 +95,7 @@ impl fmt::Display for NameType {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NameForm {
@@ -97,7 +109,7 @@ pub struct NameForm {
     pub parts: Vec<NamePart>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct NamePart {
     #[serde(skip_serializing_if = "Option::is_none", rename = "type")]

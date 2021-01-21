@@ -3,7 +3,7 @@ use crate::{components::ResourceReference, ConclusionData, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct EventRole {
     #[serde(flatten)]

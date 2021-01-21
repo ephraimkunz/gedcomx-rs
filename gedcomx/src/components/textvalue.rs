@@ -1,7 +1,7 @@
 use crate::components::Lang;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct TextValue {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -12,6 +12,12 @@ pub struct TextValue {
 impl TextValue {
     pub fn new(value: String) -> Self {
         Self { value, lang: None }
+    }
+}
+
+impl From<&str> for TextValue {
+    fn from(s: &str) -> Self {
+        Self::new(s.into())
     }
 }
 

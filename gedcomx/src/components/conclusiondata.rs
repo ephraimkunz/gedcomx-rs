@@ -4,7 +4,7 @@ use std::fmt;
 
 use super::EnumAsString;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct ConclusionData {
     #[serde(skip_serializing_if = "Option::is_none")]

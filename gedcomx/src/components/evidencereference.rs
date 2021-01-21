@@ -1,7 +1,8 @@
-use crate::components::{Attribution, Uri};
+use crate::{Attribution, GedcomxError, Person, Uri};
 use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct EvidenceReference {
     pub resource: Uri,
@@ -11,10 +12,39 @@ pub struct EvidenceReference {
 }
 
 impl EvidenceReference {
-    pub fn new(resource: Uri) -> Self {
+    pub fn new(resource: Uri, attribution: Option<Attribution>) -> Self {
         Self {
             resource,
-            attribution: None,
+            attribution,
+        }
+    }
+
+    pub fn builder(resource: Uri) -> EvidenceReferenceBuilder {
+        EvidenceReferenceBuilder::new(resource)
+    }
+}
+
+pub struct EvidenceReferenceBuilder(EvidenceReference);
+
+impl EvidenceReferenceBuilder {
+    pub(crate) fn new(resource: Uri) -> Self {
+        Self(EvidenceReference {
+            resource,
+            ..EvidenceReference::default()
+        })
+    }
+
+    pub fn build(&self) -> EvidenceReference {
+        EvidenceReference::new(self.0.resource.clone(), self.0.attribution.clone())
+    }
+}
+
+impl TryFrom<&Person> for EvidenceReference {
+    type Error = GedcomxError;
+    fn try_from(person: &Person) -> Result<Self, Self::Error> {
+        match &person.subject.conclusion.id {
+            Some(id) => Ok(Self::builder(format!("#{}", id).into()).build()),
+            None => Err(GedcomxError::NoId("Person".to_string())),
         }
     }
 }
@@ -49,7 +79,10 @@ mod test {
         }"#;
 
         let evidence_reference: EvidenceReference = serde_json::from_str(json).unwrap();
-        assert_eq!(evidence_reference, EvidenceReference::new(Uri::from("S-1")))
+        assert_eq!(
+            evidence_reference,
+            EvidenceReference::builder(Uri::from("S-1")).build()
+        )
     }
 
     #[test]
@@ -68,7 +101,7 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let evidence_reference = EvidenceReference::new(Uri::from("S-1"));
+        let evidence_reference = EvidenceReference::builder(Uri::from("S-1")).build();
 
         let json = serde_json::to_string(&evidence_reference).unwrap();
 

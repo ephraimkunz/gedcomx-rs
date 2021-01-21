@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Date {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -11,11 +11,29 @@ pub struct Date {
 }
 
 impl Date {
-    pub fn new() -> Self {
-        Self {
-            original: None,
-            formal: None,
-        }
+    pub fn new(original: Option<String>, formal: Option<String>) -> Self {
+        Self { original, formal }
+    }
+
+    pub fn builder() -> DateBuilder {
+        DateBuilder::new()
+    }
+}
+
+pub struct DateBuilder(Date);
+
+impl DateBuilder {
+    pub(crate) fn new() -> Self {
+        Self(Date::default())
+    }
+
+    pub fn original<I: Into<String>>(&mut self, original: I) -> &mut Self {
+        self.0.original = Some(original.into());
+        self
+    }
+
+    pub fn build(&self) -> Date {
+        Date::new(self.0.original.clone(), self.0.formal.clone())
     }
 }
 
