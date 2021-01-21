@@ -1,6 +1,6 @@
 use super::EnumAsString;
 use crate::{
-    components::{Conclusion, ConclusionData, Date, Lang, Uri},
+    components::{Conclusion, ConclusionData, Date, Id, Lang, Uri},
     Qualifier,
 };
 use serde::{Deserialize, Serialize};
@@ -23,13 +23,54 @@ pub struct Name {
 }
 
 impl Name {
-    pub fn new(conclusion: ConclusionData, name_forms: Vec<NameForm>) -> Self {
+    pub fn new(
+        conclusion: ConclusionData,
+        name_type: Option<NameType>,
+        name_forms: Vec<NameForm>,
+        date: Option<Date>,
+    ) -> Self {
         Self {
             conclusion,
+            name_type,
             name_forms,
-            name_type: None,
-            date: None,
+            date,
         }
+    }
+
+    pub fn builder() -> NameBuilder {
+        NameBuilder::new()
+    }
+}
+
+pub struct NameBuilder(Name);
+
+impl NameBuilder {
+    pub(crate) fn new() -> Self {
+        Self(Name::default())
+    }
+
+    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
+        self.0.conclusion.id = Some(id.into());
+        self
+    }
+
+    pub fn name_form(&mut self, name_form: NameForm) -> &mut Self {
+        self.0.name_forms.push(name_form);
+        self
+    }
+
+    pub fn name_forms(&mut self, name_forms: Vec<NameForm>) -> &mut Self {
+        self.0.name_forms = name_forms;
+        self
+    }
+
+    pub fn build(&self) -> Name {
+        Name::new(
+            self.0.conclusion.clone(),
+            self.0.name_type.clone(),
+            self.0.name_forms.clone(),
+            self.0.date.clone(),
+        )
     }
 }
 
@@ -109,7 +150,47 @@ pub struct NameForm {
     pub parts: Vec<NamePart>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+impl NameForm {
+    pub fn new(lang: Option<Lang>, full_text: Option<String>, parts: Vec<NamePart>) -> Self {
+        Self {
+            lang,
+            full_text,
+            parts,
+        }
+    }
+
+    pub fn builder() -> NameFormBuilder {
+        NameFormBuilder::new()
+    }
+}
+
+pub struct NameFormBuilder(NameForm);
+
+impl NameFormBuilder {
+    pub(crate) fn new() -> Self {
+        Self(NameForm::default())
+    }
+
+    pub fn full_text<I: Into<String>>(&mut self, full_text: I) -> &mut Self {
+        self.0.full_text = Some(full_text.into());
+        self
+    }
+
+    pub fn parts(&mut self, parts: Vec<NamePart>) -> &mut Self {
+        self.0.parts = parts;
+        self
+    }
+
+    pub fn build(&self) -> NameForm {
+        NameForm::new(
+            self.0.lang.clone(),
+            self.0.full_text.clone(),
+            self.0.parts.clone(),
+        )
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct NamePart {
     #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
@@ -119,6 +200,44 @@ pub struct NamePart {
 
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
+}
+
+impl NamePart {
+    pub fn new(part_type: Option<NamePartType>, value: String, qualifiers: Vec<Qualifier>) -> Self {
+        Self {
+            part_type,
+            value,
+            qualifiers,
+        }
+    }
+
+    pub fn builder<I: Into<String>>(value: I) -> NamePartBuilder {
+        NamePartBuilder::new(value)
+    }
+}
+
+pub struct NamePartBuilder(NamePart);
+
+impl NamePartBuilder {
+    pub(crate) fn new<I: Into<String>>(value: I) -> Self {
+        Self(NamePart {
+            value: value.into(),
+            ..NamePart::default()
+        })
+    }
+
+    pub fn part_type(&mut self, part_type: NamePartType) -> &mut Self {
+        self.0.part_type = Some(part_type);
+        self
+    }
+
+    pub fn build(&self) -> NamePart {
+        NamePart::new(
+            self.0.part_type.clone(),
+            self.0.value.clone(),
+            self.0.qualifiers.clone(),
+        )
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]

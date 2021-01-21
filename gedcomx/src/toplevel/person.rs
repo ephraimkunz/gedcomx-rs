@@ -53,6 +53,18 @@ impl Person {
         }
     }
 
+    /// # Errors
+    ///
+    /// Will return `GedcomxError` if a conversion into `SourceReference` fails.
+    /// This happens if the argument we are converting has no Id set.
+    pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
+        &mut self,
+        source: I,
+    ) -> Result<&mut Self> {
+        self.subject.conclusion.sources.push(source.try_into()?);
+        Ok(self)
+    }
+
     pub fn builder() -> PersonBuilder {
         PersonBuilder::new()
     }
@@ -90,6 +102,11 @@ impl PersonBuilder {
 
     pub fn name<I: Into<Name>>(&mut self, name: I) -> &mut Self {
         self.0.names.push(name.into());
+        self
+    }
+
+    pub fn names(&mut self, names: Vec<Name>) -> &mut Self {
+        self.0.names = names;
         self
     }
 

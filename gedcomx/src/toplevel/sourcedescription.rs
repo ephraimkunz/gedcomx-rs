@@ -161,6 +161,11 @@ impl SourceDescriptionBuilder {
         self
     }
 
+    pub fn about(&mut self, uri: Uri) -> &mut Self {
+        self.0.about = Some(uri);
+        self
+    }
+
     pub fn citation(&mut self, source_citation: SourceCitation) -> &mut Self {
         self.0.citations.push(source_citation);
         self

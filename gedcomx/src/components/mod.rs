@@ -32,7 +32,7 @@ mod gender;
 pub use gender::{Gender, GenderType};
 
 mod name;
-pub use name::{Name, NameForm, NamePart, NamePartQualifier, NameType};
+pub use name::{Name, NameForm, NamePart, NamePartQualifier, NamePartType, NameType};
 
 mod fact;
 pub use fact::{Fact, FactQualifier, FactType};

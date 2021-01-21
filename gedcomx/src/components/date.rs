@@ -32,6 +32,11 @@ impl DateBuilder {
         self
     }
 
+    pub fn formal<I: Into<String>>(&mut self, formal: I) -> &mut Self {
+        self.0.formal = Some(formal.into());
+        self
+    }
+
     pub fn build(&self) -> Date {
         Date::new(self.0.original.clone(), self.0.formal.clone())
     }

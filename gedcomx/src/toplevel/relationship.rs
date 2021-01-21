@@ -1,6 +1,7 @@
 use crate::{components::EnumAsString, Result};
 use crate::{
-    Conclusion, ConclusionData, Fact, Person, ResourceReference, Subject, SubjectData, Uri,
+    Conclusion, ConclusionData, Fact, GedcomxError, Id, Person, ResourceReference, SourceReference,
+    Subject, SubjectData, Uri,
 };
 use serde::{Deserialize, Serialize};
 use std::{convert::TryInto, fmt};
@@ -41,6 +42,18 @@ impl Relationship {
 
     /// # Errors
     ///
+    /// Will return `GedcomxError` if a conversion into `SourceReference` fails.
+    /// This happens if the argument we are converting has no Id set.
+    pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
+        &mut self,
+        source: I,
+    ) -> Result<&mut Self> {
+        self.subject.conclusion.sources.push(source.try_into()?);
+        Ok(self)
+    }
+
+    /// # Errors
+    ///
     /// Will return `GedcomxError::NoId` if either of the two people in the relationship does not have an id, which
     /// is required for them to be part of a `Relationship`.
     pub fn builder(person1: &Person, person2: &Person) -> Result<RelationshipBuilder> {
@@ -61,6 +74,16 @@ impl RelationshipBuilder {
 
     pub fn relationship_type(&mut self, relationship_type: RelationshipType) -> &mut Self {
         self.0.relationship_type = Some(relationship_type);
+        self
+    }
+
+    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
+        self.0.subject.conclusion.id = Some(id.into());
+        self
+    }
+
+    pub fn facts(&mut self, facts: Vec<Fact>) -> &mut Self {
+        self.0.facts = facts;
         self
     }
 

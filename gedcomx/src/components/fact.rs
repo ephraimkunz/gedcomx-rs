@@ -1,5 +1,5 @@
 use crate::{
-    components::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Uri},
+    components::{Conclusion, ConclusionData, Date, EnumAsString, Id, PlaceReference, Uri},
     Qualifier,
 };
 use serde::{Deserialize, Serialize};
@@ -79,6 +79,11 @@ impl FactBuilder {
 
     pub fn value<I: Into<String>>(&mut self, value: I) -> &mut Self {
         self.0.value = Some(value.into());
+        self
+    }
+
+    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
+        self.0.conclusion.id = Some(id.into());
         self
     }
 

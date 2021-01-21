@@ -101,8 +101,18 @@ impl GedcomxBuilder {
         self
     }
 
+    pub fn persons(&mut self, persons: Vec<Person>) -> &mut Self {
+        self.0.persons = persons;
+        self
+    }
+
     pub fn relationship(&mut self, relationship: Relationship) -> &mut Self {
         self.0.relationships.push(relationship);
+        self
+    }
+
+    pub fn relationships(&mut self, relationships: Vec<Relationship>) -> &mut Self {
+        self.0.relationships = relationships;
         self
     }
 
@@ -118,6 +128,24 @@ impl GedcomxBuilder {
 
     pub fn source_description(&mut self, source_description: SourceDescription) -> &mut Self {
         self.0.source_descriptions.push(source_description);
+        self
+    }
+
+    pub fn source_descriptions(
+        &mut self,
+        source_descriptions: Vec<SourceDescription>,
+    ) -> &mut Self {
+        self.0.source_descriptions = source_descriptions;
+        self
+    }
+
+    pub fn agents(&mut self, agents: Vec<Agent>) -> &mut Self {
+        self.0.agents = agents;
+        self
+    }
+
+    pub fn places(&mut self, places: Vec<PlaceDescription>) -> &mut Self {
+        self.0.places = places;
         self
     }
 
