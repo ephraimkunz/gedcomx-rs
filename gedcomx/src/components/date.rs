@@ -42,10 +42,6 @@ impl DateBuilder {
     }
 }
 
-// TODO: Implement custom serializer / deserializer on top of gedcomx_date library?
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct DateX;
-
 #[cfg(test)]
 mod test {
     use super::*;

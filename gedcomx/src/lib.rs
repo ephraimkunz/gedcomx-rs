@@ -19,9 +19,14 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum GedcomxError {
+    /// An object with an `Id` was needed for an operation, but the object had
+    /// no id. TODO: Maybe should hold the object without id rather than a string?
     #[error("Can't get a non-None id for `{0}`")]
     NoId(String),
 
+    /// An object with a certain type enum variant was needed for an operation, but
+    /// the object had a different type. First value is the expected type, second is 
+    /// the actual type.
     #[error("Wrong type. Expected: {0}, Actual: {1}")]
     WrongType(String, String),
 }

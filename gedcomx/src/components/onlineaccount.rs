@@ -1,7 +1,7 @@
 use crate::components::ResourceReference;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct OnlineAccount {

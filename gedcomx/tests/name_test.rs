@@ -92,18 +92,29 @@ fn test_multiple_japanese_forms() {
     common::assert_matching_json(gx, "names2");
 }
 
-// #[test]
-// fn test_multiple_name_parts_one_part_per_type()  {
-//   NameForm nameForm = new NameForm("José Eduardo Santos Tavares Melo Silva")
-//     .lang("pt-BR")
-//     .part(NamePartType.Given, "José Eduardo")
-//     .part(NamePartType.Surname, "Santos Tavares Melo Silva");
-//   Name name = new Name().nameForm(nameForm);
+#[test]
+fn test_multiple_name_parts_one_part_per_type() {
+    let name_form = NameForm::builder()
+        .full_text("José Eduardo Santos Tavares Melo Silva")
+        .lang("pt-BR")
+        .part(
+            NamePart::builder("José Eduardo")
+                .part_type(NamePartType::Given)
+                .build(),
+        )
+        .part(
+            NamePart::builder("Santos Tavares Melo Silva")
+                .part_type(NamePartType::Surname)
+                .build(),
+        )
+        .build();
+    let name = Name::builder().name_form(name_form).build();
+    let gx = Gedcomx::builder()
+        .person(Person::builder().name(name).build())
+        .build();
 
-//   Gedcomx gx = new Gedcomx().person(new Person().name(name));
-//   SerializationUtil.processThroughXml(gx);
-//   SerializationUtil.processThroughJson(gx);
-// }
+    common::assert_matching_json(gx, "names3");
+}
 
 // #[test]
 // fn test_multiple_name_parts_multiple_parts_per_type()  {

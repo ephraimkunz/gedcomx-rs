@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 // This struct holds the "real copies" of all the structs that will be serialized to a given format.
 // Other structs may hold refs to, for example, SourceDescription, keyed off the ids.
-#[derive(Deserialize, Serialize, Debug, PartialEq, Default)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Gedcomx {
