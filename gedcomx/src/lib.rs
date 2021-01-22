@@ -25,7 +25,7 @@ pub enum GedcomxError {
     NoId(String),
 
     /// An object with a certain type enum variant was needed for an operation, but
-    /// the object had a different type. First value is the expected type, second is 
+    /// the object had a different type. First value is the expected type, second is
     /// the actual type.
     #[error("Wrong type. Expected: {0}, Actual: {1}")]
     WrongType(String, String),
