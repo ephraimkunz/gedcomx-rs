@@ -3,8 +3,7 @@ use gedcomx::{
     RelationshipType,
 };
 
-#[cfg(test)]
-use pretty_assertions::assert_eq;
+mod common;
 
 #[test]
 fn test_census_and_residence_like_facts() {
@@ -54,13 +53,8 @@ fn test_census_and_residence_like_facts() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    let json_value = serde_json::to_value(&gx).unwrap();
 
-    let expected_json = std::fs::read_to_string("../data/census.json").unwrap();
-    let expected_value: serde_json::Value = serde_json::from_str(&expected_json).unwrap();
-
-    assert_eq!(json_value, expected_value);
-    assert_eq!(gx, serde_json::from_str::<Gedcomx>(&expected_json).unwrap())
+    common::assert_matching_json(gx, "census");
 }
 
 #[test]
@@ -99,13 +93,7 @@ fn test_military_service_facts() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    let json_value = serde_json::to_value(&gx).unwrap();
-
-    let expected_json = std::fs::read_to_string("../data/military.json").unwrap();
-    let expected_value: serde_json::Value = serde_json::from_str(&expected_json).unwrap();
-
-    assert_eq!(json_value, expected_value);
-    assert_eq!(gx, serde_json::from_str::<Gedcomx>(&expected_json).unwrap())
+    common::assert_matching_json(gx, "military");
 }
 
 #[test]
@@ -138,13 +126,7 @@ fn test_education_and_occupation_facts() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    let json_value = serde_json::to_value(&gx).unwrap();
-
-    let expected_json = std::fs::read_to_string("../data/education.json").unwrap();
-    let expected_value: serde_json::Value = serde_json::from_str(&expected_json).unwrap();
-
-    assert_eq!(json_value, expected_value);
-    assert_eq!(gx, serde_json::from_str::<Gedcomx>(&expected_json).unwrap())
+    common::assert_matching_json(gx, "education");
 }
 
 #[test]
@@ -243,13 +225,7 @@ fn test_religious_or_cultural_facts() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    let json_value = serde_json::to_value(&gx).unwrap();
-
-    let expected_json = std::fs::read_to_string("../data/religious.json").unwrap();
-    let expected_value: serde_json::Value = serde_json::from_str(&expected_json).unwrap();
-
-    assert_eq!(json_value, expected_value);
-    assert_eq!(gx, serde_json::from_str::<Gedcomx>(&expected_json).unwrap())
+    common::assert_matching_json(gx, "religious");
 }
 
 #[test]
@@ -279,13 +255,7 @@ fn test_fact_qualifiers() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    let json_value = serde_json::to_value(&gx).unwrap();
-
-    let expected_json = std::fs::read_to_string("../data/fact_qualifiers.json").unwrap();
-    let expected_value: serde_json::Value = serde_json::from_str(&expected_json).unwrap();
-
-    assert_eq!(json_value, expected_value);
-    assert_eq!(gx, serde_json::from_str::<Gedcomx>(&expected_json).unwrap())
+    common::assert_matching_json(gx, "fact_qualifiers");
 }
 
 #[test]
@@ -300,13 +270,7 @@ fn test_custom_fact() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    let json_value = serde_json::to_value(&gx).unwrap();
-
-    let expected_json = std::fs::read_to_string("../data/custom_facts.json").unwrap();
-    let expected_value: serde_json::Value = serde_json::from_str(&expected_json).unwrap();
-
-    assert_eq!(json_value, expected_value);
-    assert_eq!(gx, serde_json::from_str::<Gedcomx>(&expected_json).unwrap())
+    common::assert_matching_json(gx, "custom_facts");
 }
 
 #[test]
@@ -401,11 +365,5 @@ fn test_relationship_facts() {
         .relationship(parent_child)
         .build();
 
-    let json_value = serde_json::to_value(&gx).unwrap();
-
-    let expected_json = std::fs::read_to_string("../data/relationships.json").unwrap();
-    let expected_value: serde_json::Value = serde_json::from_str(&expected_json).unwrap();
-
-    assert_eq!(json_value, expected_value);
-    assert_eq!(gx, serde_json::from_str::<Gedcomx>(&expected_json).unwrap())
+    common::assert_matching_json(gx, "relationships");
 }

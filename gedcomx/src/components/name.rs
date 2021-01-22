@@ -181,6 +181,16 @@ impl NameFormBuilder {
         self
     }
 
+    pub fn part(&mut self, part: NamePart) -> &mut Self {
+        self.0.parts.push(part);
+        self
+    }
+
+    pub fn lang<I: Into<Lang>>(&mut self, lang: I) -> &mut Self {
+        self.0.lang = Some(lang.into());
+        self
+    }
+
     pub fn build(&self) -> NameForm {
         NameForm::new(
             self.0.lang.clone(),

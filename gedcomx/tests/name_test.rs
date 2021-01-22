@@ -1,40 +1,99 @@
+use gedcomx::{Gedcomx, Name, NameForm, NamePart, NamePartType, Person};
+
+mod common;
+
+#[test]
+fn test_basic_western_name() {
+    let name_form = NameForm::builder()
+        .full_text("John Fitzgerald Kennedy")
+        .lang("en")
+        .part(
+            NamePart::builder("John")
+                .part_type(NamePartType::Given)
+                .build(),
+        )
+        .part(
+            NamePart::builder("Fitzgerald")
+                .part_type(NamePartType::Given)
+                .build(),
+        )
+        .part(
+            NamePart::builder("Kennedy")
+                .part_type(NamePartType::Surname)
+                .build(),
+        )
+        .build();
+
+    let name = Name::builder().name_form(name_form).build();
+
+    let gx = Gedcomx::builder()
+        .person(Person::builder().name(name).build())
+        .build();
+
+    common::assert_matching_json(gx, "names1");
+}
+
+#[test]
+fn test_multiple_japanese_forms() {
+    let kanji = NameForm::builder()
+        .full_text("山田太郎")
+        .lang("ja-Hani")
+        .part(
+            NamePart::builder("山田")
+                .part_type(NamePartType::Surname)
+                .build(),
+        )
+        .part(
+            NamePart::builder("太郎")
+                .part_type(NamePartType::Given)
+                .build(),
+        )
+        .build();
+
+    let katakana = NameForm::builder()
+        .full_text("ヤマダタロー")
+        .lang("ja-Kana")
+        .part(
+            NamePart::builder("ヤマダ")
+                .part_type(NamePartType::Surname)
+                .build(),
+        )
+        .part(
+            NamePart::builder("タロー")
+                .part_type(NamePartType::Given)
+                .build(),
+        )
+        .build();
+
+    let romanized = NameForm::builder()
+        .full_text("Yamada Tarō")
+        .lang("ja-Latn")
+        .part(
+            NamePart::builder("Tarō")
+                .part_type(NamePartType::Surname)
+                .build(),
+        )
+        .part(
+            NamePart::builder("Yamada")
+                .part_type(NamePartType::Given)
+                .build(),
+        )
+        .build();
+
+    let name = Name::builder()
+        .name_form(kanji)
+        .name_form(katakana)
+        .name_form(romanized)
+        .build();
+    let gx = Gedcomx::builder()
+        .person(Person::builder().name(name).build())
+        .build();
+
+    common::assert_matching_json(gx, "names2");
+}
+
 // #[test]
-// fn testBasicWesternName()  {
-//   NameForm nameForm = new NameForm("John Fitzgerald Kennedy")
-//     .lang("en")
-//     .part(NamePartType.Given, "John")
-//     .part(NamePartType.Given, "Fitzgerald")
-//     .part(NamePartType.Surname, "Kennedy");
-//   Name name = new Name().nameForm(nameForm);
-
-//   Gedcomx gx = new Gedcomx().person(new Person().name(name));
-//   SerializationUtil.processThroughXml(gx);
-//   SerializationUtil.processThroughJson(gx);
-// }
-
-// #[test]
-// fn testMultipleJapaneseForms()  {
-//   NameForm kanji = new NameForm("山田太郎")
-//     .lang("ja-Hani")
-//     .part(NamePartType.Surname, "山田")
-//     .part(NamePartType.Given, "太郎");
-//   NameForm katakana = new NameForm("ヤマダタロー")
-//     .lang("ja-Kana")
-//     .part(NamePartType.Surname, "ヤマダ")
-//     .part(NamePartType.Given, "タロー");
-//   NameForm romanized = new NameForm("Yamada Tarō")
-//     .lang("ja-Latn")
-//     .part(NamePartType.Surname, "Tarō")
-//     .part(NamePartType.Given, "Yamada");
-//   Name name = new Name().nameForm(kanji).nameForm(katakana).nameForm(romanized);
-
-//   Gedcomx gx = new Gedcomx().person(new Person().name(name));
-//   SerializationUtil.processThroughXml(gx);
-//   SerializationUtil.processThroughJson(gx);
-// }
-
-// #[test]
-// fn testMultipleNamePartsOnePartPerType()  {
+// fn test_multiple_name_parts_one_part_per_type()  {
 //   NameForm nameForm = new NameForm("José Eduardo Santos Tavares Melo Silva")
 //     .lang("pt-BR")
 //     .part(NamePartType.Given, "José Eduardo")
@@ -47,7 +106,7 @@
 // }
 
 // #[test]
-// fn testMultipleNamePartsMultiplePartsPerType()  {
+// fn test_multiple_name_parts_multiple_parts_per_type()  {
 //   NameForm nameForm = new NameForm("José Eduardo Santos Tavares Melo Silva")
 //     .lang("pt-BR")
 //     .part(NamePartType.Given, "José")
@@ -64,7 +123,7 @@
 // }
 
 // #[test]
-// fn testPatronymic()  {
+// fn test_patronymic()  {
 //   NameForm nameForm = new NameForm("Björk Guðmundsdóttir")
 //     .lang("is")
 //     .part(NamePartType.Given, "Björk")
@@ -77,7 +136,7 @@
 // }
 
 // #[test]
-// fn testGetPart()  {
+// fn test_get_part()  {
 //   NameForm nameForm = new NameForm("John Fitzgerald Kennedy")
 //     .lang("en")
 //     .part(NamePartType.Given, "John")

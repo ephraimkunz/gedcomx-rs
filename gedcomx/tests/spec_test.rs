@@ -4,8 +4,7 @@ use gedcomx::{
     SourceDescription, TextValue, Uri,
 };
 
-#[cfg(test)]
-use pretty_assertions::assert_eq;
+mod common;
 
 fn test_struct() -> Gedcomx {
     let popes_creek = create_popes_creek();
@@ -238,23 +237,7 @@ fn cite_george_martha_and_marriage(
     return vec![george_source, martha_source];
 }
 
-fn test_json() -> String {
-    std::fs::read_to_string("../data/spec.json").unwrap()
-}
-
 #[test]
-fn deserialize() {
-    assert_eq!(
-        serde_json::from_str::<Gedcomx>(&test_json()).unwrap(),
-        test_struct()
-    )
-}
-
-#[test]
-fn serialize() {
-    // Instead of comparing string, which may yield false negatives because of whitespace, etc,
-    // we'll compare serde_json::Values, which is loosly typed json.
-    let actual = serde_json::to_value(test_struct()).unwrap();
-    let expected: serde_json::Value = serde_json::from_str(&test_json()).unwrap();
-    assert_eq!(actual, expected)
+fn deserialize_and_serialize() {
+    common::assert_matching_json(test_struct(), "spec");
 }
