@@ -37,6 +37,16 @@ impl Name {
         }
     }
 
+    pub fn part_for_type(&self, name_type: &NamePartType) -> Option<&str> {
+        self.name_forms.get(0)?.parts.iter().find_map(|n| {
+            if n.part_type == Some(name_type.clone()) {
+                Some(n.value.as_ref())
+            } else {
+                None
+            }
+        })
+    }
+
     pub fn builder() -> NameBuilder {
         NameBuilder::new()
     }
@@ -238,6 +248,11 @@ impl NamePartBuilder {
 
     pub fn part_type(&mut self, part_type: NamePartType) -> &mut Self {
         self.0.part_type = Some(part_type);
+        self
+    }
+
+    pub fn qualifier(&mut self, qualifier: Qualifier) -> &mut Self {
+        self.0.qualifiers.push(qualifier);
         self
     }
 
