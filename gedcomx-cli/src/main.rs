@@ -76,7 +76,6 @@ fn main() {
     </gedcomx>
     "##;
 
-
     let gx: Gedcomx = quick_xml::de::from_str(s).unwrap();
     println!("{:?}", gx);
     // for dir_entry in std::fs::read_dir("data").unwrap() {
