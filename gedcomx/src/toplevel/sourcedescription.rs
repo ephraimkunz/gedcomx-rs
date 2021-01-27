@@ -171,6 +171,16 @@ impl SourceDescriptionBuilder {
         self
     }
 
+    pub fn source(&mut self, source: SourceReference) -> &mut Self {
+        self.0.sources.push(source);
+        self
+    }
+
+    pub fn description<I: Into<TextValue>>(&mut self, description: I) -> &mut Self {
+        self.0.descriptions.push(description.into());
+        self
+    }
+
     pub fn resource_type(&mut self, resource_type: ResourceType) -> &mut Self {
         self.0.resource_type = Some(resource_type);
         self
@@ -178,6 +188,11 @@ impl SourceDescriptionBuilder {
 
     pub fn created(&mut self, created: Timestamp) -> &mut Self {
         self.0.created = Some(created);
+        self
+    }
+
+    pub fn attribution(&mut self, attribution: Attribution) -> &mut Self {
+        self.0.attribution = Some(attribution);
         self
     }
 

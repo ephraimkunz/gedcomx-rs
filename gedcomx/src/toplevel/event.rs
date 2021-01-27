@@ -1,4 +1,4 @@
-use crate::components::EnumAsString;
+use crate::{components::EnumAsString, subject_builder_functions};
 use crate::{
     Conclusion, ConclusionData, Date, EventRole, PlaceReference, Subject, SubjectData, Uri,
 };
@@ -22,6 +22,68 @@ pub struct Event {
 
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub roles: Vec<EventRole>,
+}
+
+impl Event {
+    pub fn new(
+        subject: SubjectData,
+        event_type: Option<EventType>,
+        date: Option<Date>,
+        place: Option<PlaceReference>,
+        roles: Vec<EventRole>,
+    ) -> Self {
+        Self {
+            subject,
+            event_type,
+            date,
+            place,
+            roles,
+        }
+    }
+
+    pub fn builder() -> EventBuilder {
+        EventBuilder::new()
+    }
+}
+
+pub struct EventBuilder(Event);
+
+impl EventBuilder {
+    pub(crate) fn new() -> Self {
+        Self(Event::default())
+    }
+
+    subject_builder_functions!();
+
+    pub fn event_type(&mut self, event_type: EventType) -> &mut Self {
+        self.0.event_type = Some(event_type);
+        self
+    }
+
+    pub fn date(&mut self, date: Date) -> &mut Self {
+        self.0.date = Some(date);
+        self
+    }
+
+    pub fn place(&mut self, place: PlaceReference) -> &mut Self {
+        self.0.place = Some(place);
+        self
+    }
+
+    pub fn role(&mut self, role: EventRole) -> &mut Self {
+        self.0.roles.push(role);
+        self
+    }
+
+    pub fn build(&self) -> Event {
+        Event::new(
+            self.0.subject.clone(),
+            self.0.event_type.clone(),
+            self.0.date.clone(),
+            self.0.place.clone(),
+            self.0.roles.clone(),
+        )
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]

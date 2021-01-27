@@ -1,4 +1,3 @@
-use chrono::{DateTime, NaiveDateTime, ParseResult, Utc};
 use gedcomx::{
     Agent, Attribution, Date, Document, Fact, FactType, Gedcomx, GenderType, Person,
     PlaceReference, Relationship, RelationshipType, ResourceType, SourceCitation,
@@ -6,11 +5,6 @@ use gedcomx::{
 };
 
 mod common;
-
-fn parse(s: &str) -> ParseResult<DateTime<Utc>> {
-    let date_time = NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S")?;
-    Ok(DateTime::from_utc(date_time, Utc))
-}
 
 fn test_struct() -> Gedcomx {
     let contributor = Agent::builder()
@@ -27,7 +21,7 @@ fn test_struct() -> Gedcomx {
     let attribution = Attribution::builder()
         .contributor(&contributor)
         .unwrap()
-        .modified(parse("2014-03-07 07:00:00").unwrap())
+        .modified(common::parse("2014-03-07 07:00:00").unwrap())
         .change_message("change message example")
         .build();
 
@@ -35,7 +29,7 @@ fn test_struct() -> Gedcomx {
           .title("Birth Certificate of Emma Bocock, 23 July 1843, General Registry Office")
           .citation(SourceCitation::builder("England, birth certificate for Emma Bocock, born 23 July 1843; citing 1843 Birth in District and Sub-district of Ecclesall-Bierlow in the County of York, 303; General Registry Office, Southport.").build())
           .resource_type(ResourceType::PhysicalArtifact)
-          .created(parse("1843-07-27 07:00:00").unwrap())
+          .created(common::parse("1843-07-27 07:00:00").unwrap())
           .repository(&repository).unwrap().build();
 
     let birth = Fact::builder(FactType::Birth)

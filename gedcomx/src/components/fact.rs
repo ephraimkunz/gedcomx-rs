@@ -1,6 +1,6 @@
 use crate::{
-    components::{Conclusion, ConclusionData, Date, EnumAsString, Id, PlaceReference, Uri},
-    Qualifier,
+    components::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Uri},
+    conclusion_builder_functions, Qualifier,
 };
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -67,6 +67,8 @@ impl FactBuilder {
         })
     }
 
+    conclusion_builder_functions!();
+
     pub fn date(&mut self, date: Date) -> &mut Self {
         self.0.date = Some(date);
         self
@@ -79,11 +81,6 @@ impl FactBuilder {
 
     pub fn value<I: Into<String>>(&mut self, value: I) -> &mut Self {
         self.0.value = Some(value.into());
-        self
-    }
-
-    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
-        self.0.conclusion.id = Some(id.into());
         self
     }
 

@@ -1,6 +1,6 @@
-use crate::{components::EnumAsString, Result};
+use crate::{components::EnumAsString, subject_builder_functions, Result};
 use crate::{
-    Conclusion, ConclusionData, Fact, GedcomxError, Id, Person, ResourceReference, SourceReference,
+    Conclusion, ConclusionData, Fact, GedcomxError, Person, ResourceReference, SourceReference,
     Subject, SubjectData, Uri,
 };
 use serde::{Deserialize, Serialize};
@@ -72,13 +72,10 @@ impl RelationshipBuilder {
         }))
     }
 
+    subject_builder_functions!();
+
     pub fn relationship_type(&mut self, relationship_type: RelationshipType) -> &mut Self {
         self.0.relationship_type = Some(relationship_type);
-        self
-    }
-
-    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
-        self.0.subject.conclusion.id = Some(id.into());
         self
     }
 

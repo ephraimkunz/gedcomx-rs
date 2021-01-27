@@ -32,6 +32,47 @@ impl SubjectData {
     }
 }
 
+#[macro_export]
+macro_rules! subject_builder_functions {
+    () => {
+        pub fn id<I: Into<crate::Id>>(&mut self, id: I) -> &mut Self {
+            self.0.subject.conclusion.id = Some(id.into());
+            self
+        }
+
+        pub fn extracted(&mut self, extracted: bool) -> &mut Self {
+            self.0.subject.extracted = Some(extracted);
+            self
+        }
+
+        pub fn evidence<
+            I: std::convert::TryInto<crate::EvidenceReference, Error = crate::GedcomxError>,
+        >(
+            &mut self,
+            e: I,
+        ) -> crate::Result<&mut Self> {
+            self.0.subject.evidence.push(e.try_into()?);
+            Ok(self)
+        }
+
+        pub fn analysis(&mut self, document: &crate::Document) -> crate::Result<&mut Self> {
+            use std::convert::TryInto;
+            self.0.subject.conclusion.analysis = Some(document.try_into()?);
+            Ok(self)
+        }
+
+        pub fn source<
+            I: std::convert::TryInto<crate::SourceReference, Error = crate::GedcomxError>,
+        >(
+            &mut self,
+            source: I,
+        ) -> crate::Result<&mut Self> {
+            self.0.subject.conclusion.sources.push(source.try_into()?);
+            Ok(self)
+        }
+    };
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

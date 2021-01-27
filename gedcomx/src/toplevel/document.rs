@@ -1,5 +1,5 @@
 use crate::components::EnumAsString;
-use crate::{Attribution, Conclusion, ConclusionData, Id, Uri};
+use crate::{conclusion_builder_functions, Attribution, Conclusion, ConclusionData, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -59,8 +59,10 @@ impl DocumentBuilder {
         })
     }
 
-    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
-        self.0.conclusion.id = Some(id.into());
+    conclusion_builder_functions!();
+
+    pub fn document_type(&mut self, document_type: DocumentType) -> &mut Self {
+        self.0.document_type = Some(document_type);
         self
     }
 

@@ -1,4 +1,4 @@
-use crate::components::{Attribution, Id, Note, ResourceReference, SourceReference, Uri};
+use crate::components::{Attribution, Id, Lang, Note, ResourceReference, SourceReference, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -11,7 +11,7 @@ pub struct ConclusionData {
     pub id: Option<Id>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub lang: Option<String>,
+    pub lang: Option<Lang>,
 
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub sources: Vec<SourceReference>,
@@ -41,6 +41,37 @@ impl ConclusionData {
             attribution: None,
         }
     }
+}
+
+#[macro_export]
+macro_rules! conclusion_builder_functions {
+    () => {
+        pub fn id<I: Into<crate::Id>>(&mut self, id: I) -> &mut Self {
+            self.0.conclusion.id = Some(id.into());
+            self
+        }
+
+        pub fn lang<I: Into<crate::Lang>>(&mut self, lang: I) -> &mut Self {
+            self.0.conclusion.lang = Some(lang.into());
+            self
+        }
+
+        pub fn analysis(&mut self, document: &crate::Document) -> crate::Result<&mut Self> {
+            use std::convert::TryInto;
+            self.0.conclusion.analysis = Some(document.try_into()?);
+            Ok(self)
+        }
+
+        pub fn source<
+            I: std::convert::TryInto<crate::SourceReference, Error = crate::GedcomxError>,
+        >(
+            &mut self,
+            source: I,
+        ) -> crate::Result<&mut Self> {
+            self.0.conclusion.sources.push(source.try_into()?);
+            Ok(self)
+        }
+    };
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]

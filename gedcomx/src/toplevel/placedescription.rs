@@ -1,5 +1,6 @@
 use crate::{
-    Conclusion, ConclusionData, Date, Id, ResourceReference, Subject, SubjectData, TextValue, Uri,
+    subject_builder_functions, Conclusion, ConclusionData, Date, ResourceReference, Subject,
+    SubjectData, TextValue, Uri,
 };
 use serde::{Deserialize, Serialize};
 
@@ -72,10 +73,7 @@ impl PlaceDescriptionBuilder {
         Self(PlaceDescription::default())
     }
 
-    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
-        self.0.subject.conclusion.id = Some(id.into());
-        self
-    }
+    subject_builder_functions!();
 
     pub fn latitude(&mut self, latitude: f64) -> &mut Self {
         self.0.latitude = Some(latitude);

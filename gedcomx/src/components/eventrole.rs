@@ -1,7 +1,10 @@
 use super::EnumAsString;
-use crate::{components::ResourceReference, ConclusionData, Uri};
+use crate::{
+    components::ResourceReference, conclusion_builder_functions, ConclusionData, Person, Result,
+    Uri,
+};
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{convert::TryInto, fmt};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
@@ -19,13 +22,53 @@ pub struct EventRole {
 }
 
 impl EventRole {
-    pub fn new(conclusion: ConclusionData, person: ResourceReference) -> Self {
+    pub fn new(
+        conclusion: ConclusionData,
+        person: ResourceReference,
+        event_role_type: Option<EventRoleType>,
+        details: Option<String>,
+    ) -> Self {
         Self {
             conclusion,
             person,
-            event_role_type: None,
-            details: None,
+            event_role_type,
+            details,
         }
+    }
+
+    /// # Errors
+    ///
+    /// Will return `GedcomxError` if a conversion into `ResourceReference` fails.
+    /// This happens if the argument we are converting has no Id set.
+    pub fn builder(person: &Person) -> Result<EventRoleBuilder> {
+        EventRoleBuilder::new(person)
+    }
+}
+
+pub struct EventRoleBuilder(EventRole);
+
+impl EventRoleBuilder {
+    pub(crate) fn new(person: &Person) -> Result<Self> {
+        Ok(Self(EventRole {
+            person: person.try_into()?,
+            ..EventRole::default()
+        }))
+    }
+
+    conclusion_builder_functions!();
+
+    pub fn event_role_type(&mut self, event_role_type: EventRoleType) -> &mut Self {
+        self.0.event_role_type = Some(event_role_type);
+        self
+    }
+
+    pub fn build(&self) -> EventRole {
+        EventRole::new(
+            self.0.conclusion.clone(),
+            self.0.person.clone(),
+            self.0.event_role_type.clone(),
+            self.0.details.clone(),
+        )
     }
 }
 

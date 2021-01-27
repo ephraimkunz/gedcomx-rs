@@ -126,6 +126,11 @@ impl GedcomxBuilder {
         self
     }
 
+    pub fn event(&mut self, event: Event) -> &mut Self {
+        self.0.events.push(event);
+        self
+    }
+
     pub fn source_description(&mut self, source_description: SourceDescription) -> &mut Self {
         self.0.source_descriptions.push(source_description);
         self

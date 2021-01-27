@@ -1,7 +1,7 @@
 use super::EnumAsString;
 use crate::{
-    components::{Conclusion, ConclusionData, Date, Id, Lang, Uri},
-    Qualifier,
+    components::{Conclusion, ConclusionData, Date, Lang, Uri},
+    conclusion_builder_functions, Qualifier,
 };
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -59,8 +59,10 @@ impl NameBuilder {
         Self(Name::default())
     }
 
-    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
-        self.0.conclusion.id = Some(id.into());
+    conclusion_builder_functions!();
+
+    pub fn name_type(&mut self, name_type: NameType) -> &mut Self {
+        self.0.name_type = Some(name_type);
         self
     }
 

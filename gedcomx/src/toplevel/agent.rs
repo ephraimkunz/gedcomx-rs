@@ -84,6 +84,11 @@ impl AgentBuilder {
         self
     }
 
+    pub fn address(&mut self, address: Address) -> &mut Self {
+        self.0.addresses.push(address);
+        self
+    }
+
     pub fn email<I: Into<String>>(&mut self, email: I) -> &mut Self {
         self.0
             .emails

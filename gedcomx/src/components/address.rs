@@ -39,20 +39,116 @@ pub struct Address {
 }
 
 impl Address {
-    pub fn new() -> Self {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        value: Option<String>,
+        city: Option<String>,
+        country: Option<String>,
+        postal_code: Option<String>,
+        state_or_province: Option<String>,
+        street: Option<String>,
+        street2: Option<String>,
+        street3: Option<String>,
+        street4: Option<String>,
+        street5: Option<String>,
+        street6: Option<String>,
+    ) -> Self {
         Self {
-            value: None,
-            city: None,
-            country: None,
-            postal_code: None,
-            state_or_province: None,
-            street: None,
-            street2: None,
-            street3: None,
-            street4: None,
-            street5: None,
-            street6: None,
+            value,
+            city,
+            country,
+            postal_code,
+            state_or_province,
+            street,
+            street2,
+            street3,
+            street4,
+            street5,
+            street6,
         }
+    }
+
+    pub fn builder() -> AddressBuilder {
+        AddressBuilder::new()
+    }
+}
+
+pub struct AddressBuilder(Address);
+
+impl AddressBuilder {
+    pub(crate) fn new() -> Self {
+        Self(Address::default())
+    }
+
+    pub fn value<I: Into<String>>(&mut self, value: I) -> &mut Self {
+        self.0.value = Some(value.into());
+        self
+    }
+
+    pub fn city<I: Into<String>>(&mut self, city: I) -> &mut Self {
+        self.0.city = Some(city.into());
+        self
+    }
+
+    pub fn country<I: Into<String>>(&mut self, country: I) -> &mut Self {
+        self.0.country = Some(country.into());
+        self
+    }
+
+    pub fn postal_code<I: Into<String>>(&mut self, postal_code: I) -> &mut Self {
+        self.0.postal_code = Some(postal_code.into());
+        self
+    }
+
+    pub fn state_or_province<I: Into<String>>(&mut self, state_or_province: I) -> &mut Self {
+        self.0.state_or_province = Some(state_or_province.into());
+        self
+    }
+
+    pub fn street<I: Into<String>>(&mut self, street: I) -> &mut Self {
+        self.0.street = Some(street.into());
+        self
+    }
+
+    pub fn street2<I: Into<String>>(&mut self, street2: I) -> &mut Self {
+        self.0.street2 = Some(street2.into());
+        self
+    }
+
+    pub fn street3<I: Into<String>>(&mut self, street3: I) -> &mut Self {
+        self.0.street3 = Some(street3.into());
+        self
+    }
+
+    pub fn street4<I: Into<String>>(&mut self, street4: I) -> &mut Self {
+        self.0.street4 = Some(street4.into());
+        self
+    }
+
+    pub fn street5<I: Into<String>>(&mut self, street5: I) -> &mut Self {
+        self.0.street5 = Some(street5.into());
+        self
+    }
+
+    pub fn street6<I: Into<String>>(&mut self, street6: I) -> &mut Self {
+        self.0.street6 = Some(street6.into());
+        self
+    }
+
+    pub fn build(&self) -> Address {
+        Address::new(
+            self.0.value.clone(),
+            self.0.city.clone(),
+            self.0.country.clone(),
+            self.0.postal_code.clone(),
+            self.0.state_or_province.clone(),
+            self.0.street.clone(),
+            self.0.street2.clone(),
+            self.0.street3.clone(),
+            self.0.street4.clone(),
+            self.0.street5.clone(),
+            self.0.street6.clone(),
+        )
     }
 }
 
@@ -100,7 +196,7 @@ mod test {
         let json = r#"{}"#;
 
         let address: Address = serde_json::from_str(json).unwrap();
-        assert_eq!(address, Address::new())
+        assert_eq!(address, Address::default())
     }
 
     #[test]
@@ -129,7 +225,7 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let address = Address::new();
+        let address = Address::default();
 
         let json = serde_json::to_string(&address).unwrap();
 

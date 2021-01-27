@@ -1,6 +1,6 @@
 use crate::{
-    Conclusion, ConclusionData, Document, Fact, GedcomxError, Gender, Id, Name, Result,
-    SourceReference, Subject, SubjectData,
+    subject_builder_functions, Conclusion, ConclusionData, Fact, GedcomxError, Gender, Name,
+    Result, SourceReference, Subject, SubjectData,
 };
 use serde::{Deserialize, Serialize};
 use std::convert::TryInto;
@@ -77,28 +77,7 @@ impl PersonBuilder {
         Self(Person::default())
     }
 
-    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
-        self.0.subject.conclusion.id = Some(id.into());
-        self
-    }
-
-    pub fn extracted(&mut self, extracted: bool) -> &mut Self {
-        self.0.subject.extracted = Some(extracted);
-        self
-    }
-
-    pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
-        &mut self,
-        source: I,
-    ) -> Result<&mut Self> {
-        self.0.subject.conclusion.sources.push(source.try_into()?);
-        Ok(self)
-    }
-
-    pub fn evidence(&mut self, person: &Person) -> Result<&mut Self> {
-        self.0.subject.evidence.push(person.try_into()?);
-        Ok(self)
-    }
+    subject_builder_functions!();
 
     pub fn name<I: Into<Name>>(&mut self, name: I) -> &mut Self {
         self.0.names.push(name.into());
@@ -108,11 +87,6 @@ impl PersonBuilder {
     pub fn names(&mut self, names: Vec<Name>) -> &mut Self {
         self.0.names = names;
         self
-    }
-
-    pub fn analysis(&mut self, document: &Document) -> Result<&mut Self> {
-        self.0.subject.conclusion.analysis = Some(document.try_into()?);
-        Ok(self)
     }
 
     pub fn gender<I: Into<Gender>>(&mut self, gender: I) -> &mut Self {

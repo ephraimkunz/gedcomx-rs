@@ -1,10 +1,13 @@
 use super::EnumAsString;
 use crate::{
     components::{Attribution, Id, Qualifier, Uri},
-    GedcomxError, SourceDescription,
+    GedcomxError, Result, SourceDescription,
 };
 use serde::{Deserialize, Serialize};
-use std::{convert::TryFrom, fmt};
+use std::{
+    convert::{TryFrom, TryInto},
+    fmt,
+};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
@@ -39,8 +42,16 @@ impl SourceReference {
         }
     }
 
-    pub fn builder(description: Uri) -> SourceReferenceBuilder {
+    pub fn builder_with_raw(description: Uri) -> SourceReferenceBuilder {
         SourceReferenceBuilder::new(description)
+    }
+
+    /// # Errors
+    ///
+    /// Will return `GedcomxError` if a conversion into `SourceReference` fails.
+    /// This happens if the argument we are converting has no Id set.
+    pub fn builder(description: &SourceDescription) -> Result<SourceReferenceBuilder> {
+        Ok(SourceReferenceBuilder::new(description.try_into()?))
     }
 }
 
@@ -71,9 +82,9 @@ impl SourceReferenceBuilder {
 
 impl TryFrom<&SourceDescription> for SourceReference {
     type Error = GedcomxError;
-    fn try_from(s: &SourceDescription) -> Result<Self, Self::Error> {
+    fn try_from(s: &SourceDescription) -> std::result::Result<Self, Self::Error> {
         match &s.id {
-            Some(id) => Ok(Self::builder(format!("#{}", id).into()).build()),
+            Some(id) => Ok(Self::builder_with_raw(format!("#{}", id).into()).build()),
             None => Err(GedcomxError::NoId("SourceDescription".to_string())),
         }
     }
@@ -146,7 +157,7 @@ mod test {
         let source_reference: SourceReference = serde_json::from_str(json).unwrap();
         assert_eq!(
             source_reference,
-            SourceReference::builder(Uri::from("SD-1")).build()
+            SourceReference::builder_with_raw(Uri::from("SD-1")).build()
         )
     }
 
@@ -165,7 +176,7 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let source_reference = SourceReference::builder(Uri::from("SD-1")).build();
+        let source_reference = SourceReference::builder_with_raw(Uri::from("SD-1")).build();
 
         let json = serde_json::to_string(&source_reference).unwrap();
         assert_eq!(json, r#"{"description":"SD-1"}"#);
