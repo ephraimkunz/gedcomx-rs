@@ -9,6 +9,9 @@
 #![allow(clippy::clippy::must_use_candidate)]
 #![allow(clippy::missing_const_for_fn)]
 
+#[macro_use]
+mod macros;
+
 mod components;
 pub use components::*;
 

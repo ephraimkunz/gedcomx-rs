@@ -1,6 +1,6 @@
 use crate::{
-    subject_builder_functions, Conclusion, ConclusionData, Fact, GedcomxError, Gender, Name,
-    Result, SourceReference, Subject, SubjectData,
+    Conclusion, ConclusionData, Fact, GedcomxError, Gender, Name, Result, SourceReference, Subject,
+    SubjectData,
 };
 use serde::{Deserialize, Serialize};
 use std::convert::TryInto;

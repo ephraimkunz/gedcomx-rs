@@ -1,4 +1,4 @@
-use crate::{components::EnumAsString, subject_builder_functions, Result};
+use crate::{components::EnumAsString, Result};
 use crate::{
     Conclusion, ConclusionData, Fact, GedcomxError, Person, ResourceReference, SourceReference,
     Subject, SubjectData, Uri,

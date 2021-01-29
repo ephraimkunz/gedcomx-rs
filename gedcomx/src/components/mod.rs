@@ -1,3 +1,6 @@
+mod conclusiondata;
+pub use conclusiondata::{ConclusionData, ConfidenceLevel};
+
 mod attribution;
 pub use attribution::Attribution;
 
@@ -21,9 +24,6 @@ pub use onlineaccount::OnlineAccount;
 
 mod address;
 pub use address::Address;
-
-mod conclusiondata;
-pub use conclusiondata::{ConclusionData, ConfidenceLevel};
 
 mod subjectdata;
 pub use subjectdata::SubjectData;

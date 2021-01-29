@@ -1,6 +1,5 @@
 use crate::{
-    subject_builder_functions, Conclusion, ConclusionData, Date, ResourceReference, Subject,
-    SubjectData, TextValue, Uri,
+    Conclusion, ConclusionData, Date, ResourceReference, Subject, SubjectData, TextValue, Uri,
 };
 use serde::{Deserialize, Serialize};
 

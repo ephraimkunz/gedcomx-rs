@@ -43,37 +43,6 @@ impl ConclusionData {
     }
 }
 
-#[macro_export]
-macro_rules! conclusion_builder_functions {
-    () => {
-        pub fn id<I: Into<crate::Id>>(&mut self, id: I) -> &mut Self {
-            self.0.conclusion.id = Some(id.into());
-            self
-        }
-
-        pub fn lang<I: Into<crate::Lang>>(&mut self, lang: I) -> &mut Self {
-            self.0.conclusion.lang = Some(lang.into());
-            self
-        }
-
-        pub fn analysis(&mut self, document: &crate::Document) -> crate::Result<&mut Self> {
-            use std::convert::TryInto;
-            self.0.conclusion.analysis = Some(document.try_into()?);
-            Ok(self)
-        }
-
-        pub fn source<
-            I: std::convert::TryInto<crate::SourceReference, Error = crate::GedcomxError>,
-        >(
-            &mut self,
-            source: I,
-        ) -> crate::Result<&mut Self> {
-            self.0.conclusion.sources.push(source.try_into()?);
-            Ok(self)
-        }
-    };
-}
-
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]

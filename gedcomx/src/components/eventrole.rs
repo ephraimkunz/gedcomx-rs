@@ -1,8 +1,5 @@
 use super::EnumAsString;
-use crate::{
-    components::ResourceReference, conclusion_builder_functions, ConclusionData, Person, Result,
-    Uri,
-};
+use crate::{components::ResourceReference, ConclusionData, Person, Result, Uri};
 use serde::{Deserialize, Serialize};
 use std::{convert::TryInto, fmt};
 
