@@ -31,6 +31,14 @@ impl Conclusion for Fact {
     fn conclusion(&self) -> &ConclusionData {
         &self.conclusion
     }
+
+    fn conclusion_mut(&mut self) -> &mut ConclusionData {
+        &mut self.conclusion
+    }
+
+    fn type_name(&self) -> std::string::String {
+        String::from("Fact")
+    }
 }
 
 impl Fact {
@@ -67,7 +75,7 @@ impl FactBuilder {
         })
     }
 
-    conclusion_builder_functions!();
+    conclusion_builder_functions!(Fact);
 
     pub fn date(&mut self, date: Date) -> &mut Self {
         self.0.date = Some(date);

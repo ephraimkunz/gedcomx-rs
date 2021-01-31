@@ -174,10 +174,13 @@ pub type Id = String;
 
 pub trait Conclusion {
     fn conclusion(&self) -> &ConclusionData;
+    fn conclusion_mut(&mut self) -> &mut ConclusionData;
+    fn type_name(&self) -> String;
 }
 
 pub trait Subject: Conclusion {
     fn subject(&self) -> &SubjectData;
+    fn subject_mut(&mut self) -> &mut SubjectData;
 }
 
 pub type Lang = String;

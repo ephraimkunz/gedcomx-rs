@@ -52,6 +52,20 @@ impl Name {
     }
 }
 
+impl Conclusion for Name {
+    fn conclusion(&self) -> &ConclusionData {
+        &self.conclusion
+    }
+
+    fn conclusion_mut(&mut self) -> &mut ConclusionData {
+        &mut self.conclusion
+    }
+
+    fn type_name(&self) -> std::string::String {
+        String::from("Name")
+    }
+}
+
 pub struct NameBuilder(Name);
 
 impl NameBuilder {
@@ -59,7 +73,7 @@ impl NameBuilder {
         Self(Name::default())
     }
 
-    conclusion_builder_functions!();
+    conclusion_builder_functions!(Name);
 
     pub fn name_type(&mut self, name_type: NameType) -> &mut Self {
         self.0.name_type = Some(name_type);
@@ -95,12 +109,6 @@ impl From<&str> for Name {
             }],
             ..Self::default()
         }
-    }
-}
-
-impl Conclusion for Name {
-    fn conclusion(&self) -> &ConclusionData {
-        &self.conclusion
     }
 }
 

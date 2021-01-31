@@ -27,11 +27,13 @@ pub enum GedcomxError {
     #[error("Can't get a non-None id for `{0}`")]
     NoId(String),
 
-    /// An object with a certain type enum variant was needed for an operation, but
-    /// the object had a different type. First value is the expected type, second is
-    /// the actual type.
-    #[error("Wrong type. Expected: {0}, Actual: {1}")]
-    WrongType(String, String),
+    /// An object with a certain DocumentType variant was needed for an operation, but
+    /// the object had a different type.
+    #[error("Wrong DocumentType. Expected: {expected}, Actual: {actual}")]
+    WrongDocumentType {
+        expected: DocumentType,
+        actual: DocumentType,
+    },
 }
 
 pub type Result<T> = std::result::Result<T, GedcomxError>;

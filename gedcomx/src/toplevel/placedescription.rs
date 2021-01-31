@@ -72,7 +72,7 @@ impl PlaceDescriptionBuilder {
         Self(PlaceDescription::default())
     }
 
-    subject_builder_functions!();
+    subject_builder_functions!(PlaceDescription);
 
     pub fn latitude(&mut self, latitude: f64) -> &mut Self {
         self.0.latitude = Some(latitude);
@@ -108,10 +108,22 @@ impl Conclusion for PlaceDescription {
     fn conclusion(&self) -> &ConclusionData {
         &self.subject().conclusion
     }
+
+    fn conclusion_mut(&mut self) -> &mut ConclusionData {
+        &mut self.subject_mut().conclusion
+    }
+
+    fn type_name(&self) -> std::string::String {
+        String::from("PlaceDescription")
+    }
 }
 
 impl Subject for PlaceDescription {
     fn subject(&self) -> &SubjectData {
         &self.subject
+    }
+
+    fn subject_mut(&mut self) -> &mut SubjectData {
+        &mut self.subject
     }
 }

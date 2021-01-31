@@ -28,11 +28,23 @@ impl Conclusion for Person {
     fn conclusion(&self) -> &ConclusionData {
         &self.subject().conclusion
     }
+
+    fn conclusion_mut(&mut self) -> &mut ConclusionData {
+        &mut self.subject_mut().conclusion
+    }
+
+    fn type_name(&self) -> std::string::String {
+        String::from("Person")
+    }
 }
 
 impl Subject for Person {
     fn subject(&self) -> &SubjectData {
         &self.subject
+    }
+
+    fn subject_mut(&mut self) -> &mut SubjectData {
+        &mut self.subject
     }
 }
 
@@ -77,7 +89,7 @@ impl PersonBuilder {
         Self(Person::default())
     }
 
-    subject_builder_functions!();
+    subject_builder_functions!(Person);
 
     pub fn name<I: Into<Name>>(&mut self, name: I) -> &mut Self {
         self.0.names.push(name.into());

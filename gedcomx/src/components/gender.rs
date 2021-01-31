@@ -76,6 +76,14 @@ impl Conclusion for Gender {
     fn conclusion(&self) -> &ConclusionData {
         &self.conclusion
     }
+
+    fn conclusion_mut(&mut self) -> &mut ConclusionData {
+        &mut self.conclusion
+    }
+
+    fn type_name(&self) -> std::string::String {
+        String::from("Gender")
+    }
 }
 
 #[cfg(test)]

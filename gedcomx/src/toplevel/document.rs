@@ -59,7 +59,7 @@ impl DocumentBuilder {
         })
     }
 
-    conclusion_builder_functions!();
+    conclusion_builder_functions!(Document);
 
     pub fn document_type(&mut self, document_type: DocumentType) -> &mut Self {
         self.0.document_type = Some(document_type);
@@ -116,5 +116,13 @@ impl fmt::Display for DocumentType {
 impl Conclusion for Document {
     fn conclusion(&self) -> &ConclusionData {
         &self.conclusion
+    }
+
+    fn conclusion_mut(&mut self) -> &mut ConclusionData {
+        &mut self.conclusion
+    }
+
+    fn type_name(&self) -> std::string::String {
+        String::from("Document")
     }
 }

@@ -1,4 +1,4 @@
-use crate::{Attribution, GedcomxError, Person, Uri};
+use crate::{Attribution, Event, GedcomxError, Person, PlaceDescription, Relationship, Uri};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 
@@ -39,15 +39,13 @@ impl EvidenceReferenceBuilder {
     }
 }
 
-impl TryFrom<&Person> for EvidenceReference {
-    type Error = GedcomxError;
-    fn try_from(person: &Person) -> Result<Self, Self::Error> {
-        match &person.subject.conclusion.id {
-            Some(id) => Ok(Self::builder(format!("#{}", id).into()).build()),
-            None => Err(GedcomxError::NoId("Person".to_string())),
-        }
-    }
-}
+// Ideally we'd implement all the TryFroms with a blanket imple like impl <T: Subject> TryFrom<&T> for EvidenceReference.
+// But that doesn't work due to https://github.com/rust-lang/rust/issues/50133. So insead we'll implement them with this macro.
+
+try_from_evidencereference!(Person);
+try_from_evidencereference!(Event);
+try_from_evidencereference!(PlaceDescription);
+try_from_evidencereference!(Relationship);
 
 #[cfg(test)]
 mod test {

@@ -72,7 +72,7 @@ impl RelationshipBuilder {
         }))
     }
 
-    subject_builder_functions!();
+    subject_builder_functions!(Relationship);
 
     pub fn relationship_type(&mut self, relationship_type: RelationshipType) -> &mut Self {
         self.0.relationship_type = Some(relationship_type);
@@ -142,10 +142,22 @@ impl Conclusion for Relationship {
     fn conclusion(&self) -> &ConclusionData {
         &self.subject().conclusion
     }
+
+    fn conclusion_mut(&mut self) -> &mut ConclusionData {
+        &mut self.subject_mut().conclusion
+    }
+
+    fn type_name(&self) -> std::string::String {
+        String::from("Relationship")
+    }
 }
 
 impl Subject for Relationship {
     fn subject(&self) -> &SubjectData {
         &self.subject
+    }
+
+    fn subject_mut(&mut self) -> &mut SubjectData {
+        &mut self.subject
     }
 }

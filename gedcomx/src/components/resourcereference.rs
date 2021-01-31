@@ -57,10 +57,10 @@ impl TryFrom<&Document> for ResourceReference {
                 resource: Uri::from(format!("{}{}", "#", id)),
             }),
             (None, _) => Err(GedcomxError::NoId("Document".to_string())),
-            (_, false) => Err(GedcomxError::WrongType(
-                DocumentType::Analysis.to_string(),
-                format!("{:?}", document.document_type),
-            )),
+            (_, false) => Err(GedcomxError::WrongDocumentType {
+                expected: DocumentType::Analysis,
+                actual: document.document_type.as_ref().unwrap().clone(), // Should never be None here based on above match statement.
+            }),
         }
     }
 }

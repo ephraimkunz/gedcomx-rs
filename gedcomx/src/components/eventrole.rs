@@ -1,5 +1,5 @@
 use super::EnumAsString;
-use crate::{components::ResourceReference, ConclusionData, Person, Result, Uri};
+use crate::{components::ResourceReference, Conclusion, ConclusionData, Person, Result, Uri};
 use serde::{Deserialize, Serialize};
 use std::{convert::TryInto, fmt};
 
@@ -42,6 +42,20 @@ impl EventRole {
     }
 }
 
+impl Conclusion for EventRole {
+    fn conclusion(&self) -> &ConclusionData {
+        &self.conclusion
+    }
+
+    fn conclusion_mut(&mut self) -> &mut ConclusionData {
+        &mut self.conclusion
+    }
+
+    fn type_name(&self) -> std::string::String {
+        String::from("EventRole")
+    }
+}
+
 pub struct EventRoleBuilder(EventRole);
 
 impl EventRoleBuilder {
@@ -52,7 +66,7 @@ impl EventRoleBuilder {
         }))
     }
 
-    conclusion_builder_functions!();
+    conclusion_builder_functions!(EventRole);
 
     pub fn event_role_type(&mut self, event_role_type: EventRoleType) -> &mut Self {
         self.0.event_role_type = Some(event_role_type);
