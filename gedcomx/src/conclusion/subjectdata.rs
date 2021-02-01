@@ -1,4 +1,4 @@
-use crate::components::{ConclusionData, EvidenceReference, Identifier, SourceReference};
+use crate::{ConclusionData, EvidenceReference, Identifier, SourceReference};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
@@ -35,7 +35,7 @@ impl SubjectData {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::components::TestData;
+    use crate::TestData;
 
     #[test]
     fn json_deserialize() {

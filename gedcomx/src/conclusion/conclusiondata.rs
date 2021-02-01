@@ -1,8 +1,6 @@
-use crate::components::{Attribution, Id, Lang, Note, ResourceReference, SourceReference, Uri};
+use crate::{Attribution, EnumAsString, Id, Lang, Note, ResourceReference, SourceReference, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
-
-use super::EnumAsString;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
@@ -78,7 +76,7 @@ impl fmt::Display for ConfidenceLevel {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::components::TestData;
+    use crate::TestData;
 
     #[test]
     fn json_deserialize() {

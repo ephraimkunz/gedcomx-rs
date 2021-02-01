@@ -1,11 +1,15 @@
-use crate::components::ResourceReference;
+use crate::ResourceReference;
 use serde::{Deserialize, Serialize};
 
+/// Defines a description of an account for an online service provider.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct OnlineAccount {
+    /// The homepage of the service that provides this account.
     pub service_homepage: ResourceReference,
+
+    /// The name, label, or id that uniquely identifies the account maintained by the online service provider.
     pub account_name: String,
 }
 
@@ -20,7 +24,7 @@ impl OnlineAccount {
 
 #[cfg(test)]
 mod test {
-    use super::super::*;
+    use super::*;
 
     #[test]
     fn json_deserialize() {

@@ -1,7 +1,5 @@
-use super::EnumAsString;
 use crate::{
-    components::{Attribution, Id, Qualifier, Uri},
-    GedcomxError, Result, SourceDescription,
+    Attribution, EnumAsString, GedcomxError, Id, Qualifier, Result, SourceDescription, Uri,
 };
 use serde::{Deserialize, Serialize};
 use std::{
@@ -125,7 +123,7 @@ impl fmt::Display for SourceReferenceQualifier {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::components::TestData;
+    use crate::TestData;
 
     #[test]
     fn json_deserialize() {

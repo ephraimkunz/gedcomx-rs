@@ -1,8 +1,4 @@
-use crate::{
-    components::{ResourceReference, Timestamp},
-    toplevel::Agent,
-    Result,
-};
+use crate::{Agent, ResourceReference, Result, Timestamp};
 use chrono::serde::ts_milliseconds_option;
 use serde::{Deserialize, Serialize};
 use std::convert::TryInto;

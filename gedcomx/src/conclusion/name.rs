@@ -1,8 +1,4 @@
-use super::EnumAsString;
-use crate::{
-    components::{Conclusion, ConclusionData, Date, Lang, Uri},
-    Qualifier,
-};
+use crate::{Conclusion, ConclusionData, Date, EnumAsString, Lang, Qualifier, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -384,7 +380,7 @@ impl fmt::Display for NamePartQualifier {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::components::TestData;
+    use crate::TestData;
 
     #[test]
     fn json_deserialize() {

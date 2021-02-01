@@ -1,37 +1,54 @@
 use crate::{Address, Id, Identifier, OnlineAccount, ResourceReference, TextValue};
 use serde::{Deserialize, Serialize};
 
+/// Someone or something that curates genealogical data, such as a genealogical researcher, user of software,
+/// organization, or group. In genealogical research, an agent often takes the role of a contributor.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
+#[non_exhaustive]
 pub struct Agent {
+    /// An identifier for the data structure holding the agent data.
+    /// The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
+    /// As such, the constraints of the id are provided in the definition of the media type (e.g. XML, JSON) of the data structure.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<Id>,
 
+    /// A list of identifiers for the agent.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub identifiers: Vec<Identifier>,
+    pub identifiers: Vec<Identifier>, // TODO: Write custom serializer / deserializer for this. Current behavior doesn't match spec.
 
+    /// The name(s) of the person or organization. If more than one name is provided, names are assumed to be given
+    /// in order of preference, with the most preferred name in the first position in the list.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub names: Vec<TextValue>,
 
+    /// The homepage of the person or organization. Note this is different from the homepage of the service where the
+    /// person or organization has an account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub homepage: Option<ResourceReference>,
 
+    /// The [openid](https://openid.net) of the person or organization.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub openid: Option<ResourceReference>,
 
+    /// The online account(s) of the person or organization.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub accounts: Vec<OnlineAccount>,
 
+    /// The email address(es) of the person or organization. If provided, MUST resolve to a valid e-mail address (e.g. "mailto:someone@gedcomx.org").
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub emails: Vec<ResourceReference>,
+    pub emails: Vec<ResourceReference>, // TODO: Should I use a type here that would validate this is a valid email address?
 
+    /// The phone(s) (voice, fax, mobile) of the person or organization. If provided, MUST resolve to a valid phone number (e.g. "tel:+1-201-555-0123").
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub phones: Vec<ResourceReference>,
+    pub phones: Vec<ResourceReference>, // TODO: Should I use a type that would validate this is a valid phone number?
 
+    /// The address(es) of the person or organization.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub addresses: Vec<Address>,
 
+    /// A reference to the person that describes this agent. MUST resolve to an instance of [Person](crate::Person).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub person: Option<ResourceReference>,
+    pub person: Option<ResourceReference>, // TODO: Enforce constraint?
 }
 
 impl Agent {
@@ -66,7 +83,6 @@ impl Agent {
         AgentBuilder::new()
     }
 }
-
 pub struct AgentBuilder(Agent);
 
 impl AgentBuilder {

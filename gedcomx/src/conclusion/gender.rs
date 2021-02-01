@@ -1,5 +1,4 @@
-use super::EnumAsString;
-use crate::components::{Conclusion, ConclusionData, Uri};
+use crate::{Conclusion, ConclusionData, EnumAsString, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -89,7 +88,7 @@ impl Conclusion for Gender {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::components::TestData;
+    use crate::TestData;
 
     #[test]
     fn json_deserialize() {

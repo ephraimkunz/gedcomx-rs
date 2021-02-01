@@ -1,7 +1,6 @@
-use crate::{components::EnumAsString, Result};
 use crate::{
-    Agent, Attribution, Coverage, Id, Identifier, Note, ResourceReference, SourceCitation,
-    SourceReference, TextValue, Timestamp, Uri,
+    Agent, Attribution, Coverage, EnumAsString, Id, Identifier, Note, ResourceReference, Result,
+    SourceCitation, SourceReference, TextValue, Timestamp, Uri,
 };
 use chrono::serde::ts_milliseconds_option;
 use serde::{Deserialize, Serialize};

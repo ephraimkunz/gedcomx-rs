@@ -1,6 +1,6 @@
-use crate::components::EnumAsString;
 use crate::{
-    Conclusion, ConclusionData, Date, EventRole, PlaceReference, Subject, SubjectData, Uri,
+    Conclusion, ConclusionData, Date, EnumAsString, EventRole, PlaceReference, Subject,
+    SubjectData, Uri,
 };
 use serde::{Deserialize, Serialize};
 use std::fmt;

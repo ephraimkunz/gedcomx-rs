@@ -1,39 +1,51 @@
 use serde::{Deserialize, Serialize};
 
+/// Defines a street or postal address of a person or organization.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct Address {
+    /// A full representation of the complete address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
 
+    /// The city.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub city: Option<String>,
 
+    /// The country.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub country: Option<String>,
 
+    /// The postal code.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub postal_code: Option<String>,
 
+    /// The state or province.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state_or_province: Option<String>,
 
+    /// The street.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub street: Option<String>,
 
+    /// The street (second line).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub street2: Option<String>,
 
+    /// The street (third line).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub street3: Option<String>,
 
+    /// The street (fourth line).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub street4: Option<String>,
 
+    /// The street (fifth line).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub street5: Option<String>,
 
+    /// The street (sixth line).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub street6: Option<String>,
 }

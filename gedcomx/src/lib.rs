@@ -12,28 +12,113 @@
 #[macro_use]
 mod macros;
 
-mod components;
-pub use components::*;
+mod agent;
+pub use agent::*;
 
-mod toplevel;
-pub use toplevel::*;
+mod common;
+pub use common::*;
 
-use thiserror::Error;
+mod conclusion;
+pub use conclusion::*;
 
-#[derive(Error, Debug)]
-pub enum GedcomxError {
-    /// An object with an `Id` was needed for an operation, but the object had
-    /// no id. TODO: Maybe should hold the object without id rather than a string?
-    #[error("Can't get a non-None id for `{0}`")]
-    NoId(String),
+mod error;
+pub use error::GedcomxError;
 
-    /// An object with a certain DocumentType variant was needed for an operation, but
-    /// the object had a different type.
-    #[error("Wrong DocumentType. Expected: {expected}, Actual: {actual}")]
-    WrongDocumentType {
-        expected: DocumentType,
-        actual: DocumentType,
-    },
-}
+mod gedcomx;
+pub use crate::gedcomx::*;
+
+mod source;
+pub use source::*;
+
+use serde::{Deserialize, Serialize};
+use std::fmt;
 
 pub type Result<T> = std::result::Result<T, GedcomxError>;
+
+// TODO: Implement custom serializer / deserializer?
+pub type Id = String;
+
+pub type Lang = String;
+
+pub type Timestamp = chrono::DateTime<chrono::Utc>;
+
+// I can't figure out how to get Serde to properly serialize enums with a bunch of normal variants and then
+// one catch-all variant that includes the string from the json, just using attributes. So, rather than write a
+// Deserializer / Serializer implementation we'll just serialize to this newtype and then Serde will automatically
+//  convert it to the required type.
+#[derive(Serialize, Deserialize)]
+pub struct EnumAsString(pub String);
+
+impl<T: fmt::Display> From<T> for EnumAsString {
+    fn from(t: T) -> Self {
+        Self(t.to_string())
+    }
+}
+
+#[allow(dead_code)]
+struct TestData {
+    attribution: Attribution,
+    source_reference: SourceReference,
+    note: Note,
+    conclusion_data: ConclusionData,
+    evidence_reference: EvidenceReference,
+    subject_data: SubjectData,
+}
+
+impl TestData {
+    #[allow(dead_code)]
+    fn new() -> Self {
+        let attribution = Attribution {
+            contributor: Some(ResourceReference::from("A-1")),
+            modified: Some(chrono::DateTime::from_utc(
+                chrono::NaiveDateTime::from_timestamp(1_394_175_600, 0),
+                chrono::Utc,
+            )),
+            ..Attribution::default()
+        };
+
+        let qualifier = Qualifier {
+            name: SourceReferenceQualifier::RectangleRegion.into(),
+            value: Some("rectangle region value".to_string()),
+        };
+        let mut source_reference = SourceReference::builder_with_raw(Uri::from("SD-1")).build();
+        source_reference.description_id = Some("Description id of the target source".to_string());
+        source_reference.attribution = Some(attribution.clone());
+        source_reference.qualifiers = vec![qualifier];
+
+        let mut note = Note::new("This is a note".to_string());
+        note.attribution = Some(attribution.clone());
+        note.lang = Some("en".to_string());
+        note.subject = Some("subject".to_string());
+
+        let mut conclusion_data = ConclusionData::new();
+        conclusion_data.id = Some("local_id".to_string());
+        conclusion_data.lang = Some("en".to_string());
+        conclusion_data.sources = vec![source_reference.clone()];
+        conclusion_data.analysis = Some(ResourceReference::from(
+            "http://identifier/for/analysis/document",
+        ));
+        conclusion_data.notes = vec![note.clone()];
+        conclusion_data.confidence = Some(ConfidenceLevel::High);
+        conclusion_data.attribution = Some(attribution.clone());
+
+        let mut evidence_reference = EvidenceReference::builder(Uri::from("S-1")).build();
+        evidence_reference.attribution = Some(attribution.clone());
+
+        let mut subject_data = SubjectData::new(conclusion_data.clone());
+        subject_data.extracted = Some(false);
+        subject_data.evidence = vec![evidence_reference.clone()];
+        subject_data.media = vec![source_reference.clone()];
+        subject_data.identifiers = vec![]; // TODO: Empty until I get this serializing properly.
+        subject_data.conclusion = conclusion_data.clone();
+
+        Self {
+            attribution,
+            source_reference,
+            note,
+            conclusion_data,
+            evidence_reference,
+            subject_data,
+        }
+    }
+}

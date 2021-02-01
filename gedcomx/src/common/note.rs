@@ -1,4 +1,4 @@
-use crate::components::{Attribution, Lang};
+use crate::{Attribution, Lang};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
@@ -30,7 +30,7 @@ impl Note {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::components::TestData;
+    use crate::TestData;
 
     #[test]
     fn json_deserialize() {

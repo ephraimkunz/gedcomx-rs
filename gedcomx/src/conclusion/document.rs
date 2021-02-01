@@ -1,5 +1,4 @@
-use crate::components::EnumAsString;
-use crate::{Attribution, Conclusion, ConclusionData, Uri};
+use crate::{Attribution, Conclusion, ConclusionData, EnumAsString, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

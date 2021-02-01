@@ -1,5 +1,4 @@
-use super::EnumAsString;
-use crate::{components::ResourceReference, Conclusion, ConclusionData, Person, Result, Uri};
+use crate::{Conclusion, ConclusionData, EnumAsString, Person, ResourceReference, Result, Uri};
 use serde::{Deserialize, Serialize};
 use std::{convert::TryInto, fmt};
 
@@ -121,7 +120,7 @@ impl fmt::Display for EventRoleType {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::components::TestData;
+    use crate::TestData;
 
     #[test]
     fn json_deserialize() {

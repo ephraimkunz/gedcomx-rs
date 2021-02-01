@@ -1,7 +1,6 @@
-use crate::{components::EnumAsString, Result};
 use crate::{
-    Conclusion, ConclusionData, Fact, GedcomxError, Person, ResourceReference, SourceReference,
-    Subject, SubjectData, Uri,
+    Conclusion, ConclusionData, EnumAsString, Fact, GedcomxError, Person, ResourceReference,
+    Result, SourceReference, Subject, SubjectData, Uri,
 };
 use serde::{Deserialize, Serialize};
 use std::{convert::TryInto, fmt};

@@ -1,7 +1,4 @@
-use crate::{
-    components::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Uri},
-    Qualifier,
-};
+use crate::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Qualifier, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -494,7 +491,7 @@ impl fmt::Display for FactQualifier {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::components::TestData;
+    use crate::TestData;
 
     #[test]
     fn json_serialize_custom_fact_type() {
