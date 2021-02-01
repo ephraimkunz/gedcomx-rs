@@ -5,7 +5,7 @@ macro_rules! try_from_evidencereference {
             fn try_from(f: &$from_type) -> Result<Self, Self::Error> {
                 use crate::Conclusion;
                 match &f.conclusion().id {
-                    Some(id) => Ok(Self::builder(format!("#{}", id).into()).build()),
+                    Some(id) => Ok(Self::new(id.into(), None)),
                     None => Err(GedcomxError::NoId(f.type_name())),
                 }
             }

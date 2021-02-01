@@ -1,11 +1,13 @@
 use std::convert::TryFrom;
 
-use crate::{Agent, Document, DocumentType, GedcomxError, Person, Uri};
+use crate::{Agent, Conclusion, Document, DocumentType, GedcomxError, Person, Uri};
 use serde::{Deserialize, Serialize};
 
+/// A generic reference to a resource.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct ResourceReference {
+    /// The URI to the resource being referenced.
     pub resource: Uri,
 }
 
@@ -26,7 +28,7 @@ impl TryFrom<&Agent> for ResourceReference {
     fn try_from(agent: &Agent) -> Result<Self, Self::Error> {
         match &agent.id {
             Some(id) => Ok(Self {
-                resource: Uri::from(format!("{}{}", "#", id)),
+                resource: id.into(),
             }),
             None => Err(GedcomxError::NoId("Agent".to_string())),
         }
@@ -36,11 +38,11 @@ impl TryFrom<&Agent> for ResourceReference {
 impl TryFrom<&Person> for ResourceReference {
     type Error = GedcomxError;
     fn try_from(person: &Person) -> Result<Self, Self::Error> {
-        match &person.subject.conclusion.id {
+        match &person.conclusion().id {
             Some(id) => Ok(Self {
-                resource: Uri::from(format!("{}{}", "#", id)),
+                resource: id.into(),
             }),
-            None => Err(GedcomxError::NoId("Person".to_string())),
+            None => Err(GedcomxError::NoId(person.type_name())),
         }
     }
 }
@@ -49,14 +51,14 @@ impl TryFrom<&Document> for ResourceReference {
     type Error = GedcomxError;
     fn try_from(document: &Document) -> Result<Self, Self::Error> {
         match (
-            &document.conclusion.id,
+            &document.conclusion().id,
             document.document_type == None
                 || document.document_type == Some(DocumentType::Analysis),
         ) {
             (Some(id), true) => Ok(Self {
-                resource: Uri::from(format!("{}{}", "#", id)),
+                resource: id.into(),
             }),
-            (None, _) => Err(GedcomxError::NoId("Document".to_string())),
+            (None, _) => Err(GedcomxError::NoId(document.type_name())),
             (_, false) => Err(GedcomxError::WrongDocumentType {
                 expected: DocumentType::Analysis,
                 actual: document.document_type.as_ref().unwrap().clone(), // Should never be None here based on above match statement.

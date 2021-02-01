@@ -1,36 +1,24 @@
 use crate::Lang;
 use serde::{Deserialize, Serialize};
 
+/// An element representing a text value that may be in a specific language.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct TextValue {
+    /// The locale identifier for the value of the text.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<Lang>,
+
+    /// The text value.
     pub value: String,
 }
 
 impl TextValue {
-    pub fn new(value: String, lang: Option<Lang>) -> Self {
-        Self { value, lang }
-    }
-
-    pub fn builder<I: Into<String>>(value: I) -> TextValueBuilder {
-        TextValueBuilder::new(value)
-    }
-}
-
-pub struct TextValueBuilder(TextValue);
-
-impl TextValueBuilder {
-    pub(crate) fn new<I: Into<String>>(value: I) -> Self {
-        Self(TextValue {
+    pub fn new<I: Into<String>>(value: I, lang: Option<Lang>) -> Self {
+        Self {
             value: value.into(),
-            ..TextValue::default()
-        })
-    }
-
-    pub fn build(&self) -> TextValue {
-        TextValue::new(self.0.value.clone(), self.0.lang.clone())
+            lang,
+        }
     }
 }
 
@@ -71,7 +59,7 @@ mod test {
         }"#;
 
         let text_value: TextValue = serde_json::from_str(json).unwrap();
-        assert_eq!(text_value, TextValue::builder("text of the value").build())
+        assert_eq!(text_value, TextValue::new("text of the value", None))
     }
 
     #[test]
@@ -88,7 +76,7 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let text_value = TextValue::builder("text of the value").build();
+        let text_value = TextValue::new("text of the value", None);
 
         let json = serde_json::to_string(&text_value).unwrap();
 

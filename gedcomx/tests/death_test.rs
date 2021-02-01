@@ -1,7 +1,7 @@
 use gedcomx::{
     Address, Agent, Attribution, Date, Document, Fact, FactType, Gedcomx, Gender, GenderType, Name,
     NameForm, NameType, Person, PlaceReference, Relationship, RelationshipType, ResourceType,
-    SourceCitation, SourceDescription, SourceReference, Uri,
+    SourceCitation, SourceDescription, SourceReference,
 };
 
 mod common;
@@ -71,7 +71,7 @@ fn test_example() {
     .build();
 
     //The transcription described as a source.
-    let transcription_description = SourceDescription::builder().id("S-3").about(Uri::from(format!("#{}", transcription.conclusion.id.clone().unwrap())))
+    let transcription_description = SourceDescription::builder().id("S-3").about(transcription.conclusion.id.clone().unwrap().into())
     .title("Transcription of Grave Marker of WONG Aloiau, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii")
     .citation(SourceCitation::builder("WONG Aloiau gravestone (transcription), Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii; visited May 1975 by Jane Doe.").build())
     .resource_type(ResourceType::DigitalArtifact)
@@ -85,7 +85,7 @@ fn test_example() {
 
     //The translation described as a source.
     let translation_description = SourceDescription::builder().id("S-4")
-    .about(Uri::from(format!("#{}", translation.conclusion.id.clone().unwrap())))
+    .about(translation.conclusion.id.clone().unwrap().into())
     .title("Translation of Grave Marker of WONG Aloiau, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii")
     .citation(SourceCitation::builder("WONG Aloiau gravestone, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii; visited May 1975 by Jane Doe. Translation by HANYU Pinyin 王大年.").build())
     .attribution(translation_attribution)

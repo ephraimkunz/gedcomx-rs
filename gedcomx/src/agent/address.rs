@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-/// Defines a street or postal address of a person or organization.
+/// A street or postal address of a person or organization.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]

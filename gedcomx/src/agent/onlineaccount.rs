@@ -1,7 +1,7 @@
 use crate::ResourceReference;
 use serde::{Deserialize, Serialize};
 
-/// Defines a description of an account for an online service provider.
+/// A description of an account for an online service provider.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]

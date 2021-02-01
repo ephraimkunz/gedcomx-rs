@@ -35,9 +35,8 @@ use std::fmt;
 
 pub type Result<T> = std::result::Result<T, GedcomxError>;
 
-// TODO: Implement custom serializer / deserializer?
-pub type Id = String;
-
+/// Defined by [IETF BCP 47](https://tools.ietf.org/html/bcp47).
+// TODO: Newtype for this?
 pub type Lang = String;
 
 pub type Timestamp = chrono::DateTime<chrono::Utc>;
@@ -82,7 +81,7 @@ impl TestData {
             value: Some("rectangle region value".to_string()),
         };
         let mut source_reference = SourceReference::builder_with_raw(Uri::from("SD-1")).build();
-        source_reference.description_id = Some("Description id of the target source".to_string());
+        source_reference.description_id = Some("Description id of the target source".into());
         source_reference.attribution = Some(attribution.clone());
         source_reference.qualifiers = vec![qualifier];
 
@@ -92,7 +91,7 @@ impl TestData {
         note.subject = Some("subject".to_string());
 
         let mut conclusion_data = ConclusionData::new();
-        conclusion_data.id = Some("local_id".to_string());
+        conclusion_data.id = Some("local_id".into());
         conclusion_data.lang = Some("en".to_string());
         conclusion_data.sources = vec![source_reference.clone()];
         conclusion_data.analysis = Some(ResourceReference::from(
@@ -102,7 +101,7 @@ impl TestData {
         conclusion_data.confidence = Some(ConfidenceLevel::High);
         conclusion_data.attribution = Some(attribution.clone());
 
-        let mut evidence_reference = EvidenceReference::builder(Uri::from("S-1")).build();
+        let mut evidence_reference = EvidenceReference::new(Uri::from("S-1"), None);
         evidence_reference.attribution = Some(attribution.clone());
 
         let mut subject_data = SubjectData::new(conclusion_data.clone());

@@ -2,11 +2,24 @@ use crate::{Attribution, Event, GedcomxError, Person, PlaceDescription, Relation
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 
+/// A reference to data being used to derive the given instance of Subject.
+///
+/// For example, an "evidence" Subject (i.e., the object holding the `EvidenceReference` instance) can refer to content
+/// extracted from a source (i.e., an "extracted" Subject) as information being used to derive the evidence expressed in this Subject.
+///
+/// # Examples
+/// An application allows a researcher to extract information from a single census record about a person, representing the information as a persona
+/// with an identifier "abcde". The researcher extracts additional information about the person from a birth certificate and the application assigns
+/// the resulting persona an identifier "fghij". As the researcher gathers and analyzes the information, he will create a (working) `Person` conclusion.
+/// When the researcher concludes that the person represented in "abcde" and in "fghij" are the same person, he will add two `EvidenceReference` instances
+/// to the working `Person`: one for "abcde" and one for "fghij".
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct EvidenceReference {
+    /// Reference to the supporting data.
     pub resource: Uri,
 
+    /// The attribution of this evidence reference. If not provided, the attribution of the containing resource of the source reference is assumed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution: Option<Attribution>,
 }
@@ -17,25 +30,6 @@ impl EvidenceReference {
             resource,
             attribution,
         }
-    }
-
-    pub fn builder(resource: Uri) -> EvidenceReferenceBuilder {
-        EvidenceReferenceBuilder::new(resource)
-    }
-}
-
-pub struct EvidenceReferenceBuilder(EvidenceReference);
-
-impl EvidenceReferenceBuilder {
-    pub(crate) fn new(resource: Uri) -> Self {
-        Self(EvidenceReference {
-            resource,
-            ..EvidenceReference::default()
-        })
-    }
-
-    pub fn build(&self) -> EvidenceReference {
-        EvidenceReference::new(self.0.resource.clone(), self.0.attribution.clone())
     }
 }
 
@@ -79,7 +73,7 @@ mod test {
         let evidence_reference: EvidenceReference = serde_json::from_str(json).unwrap();
         assert_eq!(
             evidence_reference,
-            EvidenceReference::builder(Uri::from("S-1")).build()
+            EvidenceReference::new(Uri::from("S-1"), None)
         )
     }
 
@@ -99,7 +93,7 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let evidence_reference = EvidenceReference::builder(Uri::from("S-1")).build();
+        let evidence_reference = EvidenceReference::new(Uri::from("S-1"), None);
 
         let json = serde_json::to_string(&evidence_reference).unwrap();
 

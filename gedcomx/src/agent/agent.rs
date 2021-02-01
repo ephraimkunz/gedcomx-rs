@@ -2,7 +2,9 @@ use crate::{Address, Id, Identifier, OnlineAccount, ResourceReference, TextValue
 use serde::{Deserialize, Serialize};
 
 /// Someone or something that curates genealogical data, such as a genealogical researcher, user of software,
-/// organization, or group. In genealogical research, an agent often takes the role of a contributor.
+/// organization, or group.
+///
+/// In genealogical research, an agent often takes the role of a contributor.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct Agent {

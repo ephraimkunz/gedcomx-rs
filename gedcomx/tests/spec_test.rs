@@ -35,7 +35,10 @@ fn create_popes_creek() -> PlaceDescription {
         .id("888")
         .latitude(38.192353)
         .longitude(-76.904069)
-        .name(TextValue::builder("Pope's Creek, Westmoreland, Virginia, United States").build())
+        .name(TextValue::new(
+            "Pope's Creek, Westmoreland, Virginia, United States",
+            None,
+        ))
         .build()
 }
 
@@ -44,7 +47,10 @@ fn create_mount_vernon() -> PlaceDescription {
         .id("999")
         .latitude(38.721144)
         .longitude(-77.109461)
-        .name(TextValue::builder("Mount Vernon, Fairfax County, Virginia, United States").build())
+        .name(TextValue::new(
+            "Mount Vernon, Fairfax County, Virginia, United States",
+            None,
+        ))
         .build()
 }
 
@@ -53,14 +59,17 @@ fn create_chestnut_grove() -> PlaceDescription {
         .id("KKK")
         .latitude(37.518304)
         .longitude(-76.984148)
-        .name(TextValue::builder("Chestnut Grove, New Kent, Virginia, United States").build())
+        .name(TextValue::new(
+            "Chestnut Grove, New Kent, Virginia, United States",
+            None,
+        ))
         .build()
 }
 
 fn create_contributor() -> Agent {
     Agent::builder()
         .id("GGG-GGGG")
-        .name(TextValue::builder("Ryan Heaton").build())
+        .name(TextValue::new("Ryan Heaton", None))
         .build()
 }
 

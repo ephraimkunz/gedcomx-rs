@@ -1,8 +1,11 @@
 mod attribution;
-pub use attribution::Attribution;
+pub use attribution::{Attribution, AttributionBuilder};
 
 mod evidencereference;
 pub use evidencereference::EvidenceReference;
+
+mod id;
+pub use id::Id;
 
 mod note;
 pub use note::Note;

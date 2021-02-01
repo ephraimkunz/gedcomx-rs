@@ -1,7 +1,7 @@
 use gedcomx::{
     Address, Agent, Attribution, Date, Document, DocumentType, Event, EventRole, EventRoleType,
     EventType, Fact, FactType, Gedcomx, GenderType, Person, PlaceReference, Relationship,
-    RelationshipType, ResourceType, SourceCitation, SourceDescription, SourceReference, Uri,
+    RelationshipType, ResourceType, SourceCitation, SourceDescription, SourceReference,
 };
 
 mod common;
@@ -50,7 +50,7 @@ fn test_example() {
 
     //The transcription described as a source.
     let transcription_description = SourceDescription::builder().id("S-2")
-    .about(Uri::from(format!("#{}", transcription.conclusion.id.clone().unwrap())))
+    .about(transcription.conclusion.id.clone().unwrap().into())
     .title("Transcription of marriage entry for Samuel Ham and Elizabeth Spiller, Parish Register, Wilton, Somerset, England")
     .description("Transcription of marriage entry for Samuel Ham and Elizabeth in a copy of the registers of the baptisms, marriages, and burials at the church of St. George in the parish of Wilton : adjoining Taunton, in the county of Somerset from A.D. 1558 to A.D. 1837.")
     .citation( SourceCitation::builder("Joseph Houghton Spencer, transcriber, Church of England, Parish Church of Wilton (Somerset). <cite>A copy of the registers of the baptisms, marriages, and burials at the church of St. George in the parish of Wilton : adjoining Taunton, in the county of Somerset from A.D. 1558 to A.D. 1837</cite>; Marriage entry for Samuel Ham and Elizabeth Spiller (3 November 1828), (Taunton: Barnicott, 1890), p. 224, No. 86.").build())

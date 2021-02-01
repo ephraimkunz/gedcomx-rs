@@ -63,7 +63,7 @@ impl SourceReferenceBuilder {
         })
     }
 
-    pub fn description_id<I: Into<String>>(&mut self, id: I) -> &mut Self {
+    pub fn description_id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
         self.0.description_id = Some(id.into());
         self
     }
@@ -82,7 +82,7 @@ impl TryFrom<&SourceDescription> for SourceReference {
     type Error = GedcomxError;
     fn try_from(s: &SourceDescription) -> std::result::Result<Self, Self::Error> {
         match &s.id {
-            Some(id) => Ok(Self::builder_with_raw(format!("#{}", id).into()).build()),
+            Some(id) => Ok(Self::builder_with_raw(id.into()).build()),
             None => Err(GedcomxError::NoId("SourceDescription".to_string())),
         }
     }

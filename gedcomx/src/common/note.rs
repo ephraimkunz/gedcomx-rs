@@ -1,17 +1,24 @@
 use crate::{Attribution, Lang};
 use serde::{Deserialize, Serialize};
 
+/// A note that was contributed from genealogical research.
+///
+/// Notes are not intended to contain genealogical conclusions. Notes are only associated with a single genealogical resource.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Note {
+    /// The locale identifier for the note.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<Lang>,
 
+    /// A subject or title for the note.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub subject: Option<String>,
 
+    /// The text of the note.
     pub text: String,
 
+    /// The attribution of this note. If not provided, the attribution of the containing resource of the note is assumed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution: Option<Attribution>,
 }
@@ -26,6 +33,8 @@ impl Note {
         }
     }
 }
+
+// TODO: Builder for this?
 
 #[cfg(test)]
 mod test {

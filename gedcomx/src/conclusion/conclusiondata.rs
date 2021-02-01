@@ -2,27 +2,45 @@ use crate::{Attribution, EnumAsString, Id, Lang, Note, ResourceReference, Source
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+/// The abstract concept for a basic genealogical data item.
+///
+/// In formal discussions of the genealogical research process, the term "conclusion" usually has a more specific meaning and is used
+/// to refer to an "accepted" hypothesis in accordance with the Genealogical Proof Standard. The name of the `ConclusionData` type is
+/// not meant to be associated with the definition of the term "conclusion" as it is described in the genealogical research process.
+/// Rather, the name refers to the notion that any information that is interpreted from an "original" is in some way a "conclusion"—even
+/// if the interpreter was diligent in representing the information verbatim as it was found in the original.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct ConclusionData {
+    /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<Id>,
 
+    /// The locale identifier for the conclusion.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<Lang>,
 
+    /// The list of references to the sources of related to this conclusion. Note that the sources referenced from conclusions are also considered
+    /// to be sources of the entities that contain them. For example, a source associated with the `Name` of a `Person` is also source for the `Person`.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub sources: Vec<SourceReference>,
 
+    /// A reference to the analysis document explaining the analysis that went into this conclusion. If provided, MUST resolve to an instance of
+    /// [Document](crate::Document) of type [Analysis](crate::DocumentType::Analysis).
+    // TODO: Validate this at compile time somehow?
     #[serde(skip_serializing_if = "Option::is_none")]
     pub analysis: Option<ResourceReference>,
 
+    /// A list of notes about this conclusion.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub notes: Vec<Note>,
 
+    /// The level of confidence the contributor has about the data.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub confidence: Option<ConfidenceLevel>,
 
+    /// The attribution of this conclusion.
+    /// If not provided, the attribution of the containing data set (e.g. file) of the conclusion is assumed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution: Option<Attribution>,
 }
@@ -45,8 +63,11 @@ impl ConclusionData {
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum ConfidenceLevel {
+    /// The contributor has a high degree of confidence that the assertion is true.
     High,
+    /// The contributor has a medium degree of confidence that the assertion is true.
     Medium,
+    /// The contributor has a low degree of confidence that the assertion is true.
     Low,
     Custom(Uri),
 }
