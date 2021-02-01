@@ -94,12 +94,10 @@ fn test_example() {
 
     //the birth.
     let birth = Fact::builder(FactType::Birth)
-        .date(
-            Date::builder()
-                .original("former Qing 1848 year 11th month 22nd day 23-1 hour")
-                .formal("+1848-11-22")
-                .build(),
-        )
+        .date(Date::new(
+            Some("former Qing 1848 year 11th month 22nd day 23-1 hour"),
+            Some("+1848-11-22"),
+        ))
         .place(
             PlaceReference::builder()
                 .original("Pun Sha Village, See Dai Doo, Chung Shan, Guangdong, China")
@@ -109,12 +107,10 @@ fn test_example() {
 
     //the death.
     let death = Fact::builder(FactType::Death)
-        .date(
-            Date::builder()
-                .original("Republic of China year 1920 year 7th mo. 12th day 11-13 hour")
-                .formal("+1920-08-03")
-                .build(),
-        )
+        .date(Date::new(
+            Some("Republic of China year 1920 year 7th mo. 12th day 11-13 hour"),
+            Some("+1920-08-03"),
+        ))
         .build();
 
     //the burial.

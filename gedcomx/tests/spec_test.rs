@@ -77,10 +77,7 @@ fn create_george(birth_place: &PlaceDescription, death_place: &PlaceDescription)
     let mut person = Person::builder();
     person.gender(GenderType::Male);
 
-    let date = Date::builder()
-        .original("February 22, 1732")
-        .formal("+1732-02-22")
-        .build();
+    let date = Date::new(Some("February 22, 1732"), Some("+1732-02-22"));
     let place = PlaceReference::builder()
         .original(birth_place.names[0].value.to_lowercase())
         .description_ref(birth_place)
@@ -94,10 +91,7 @@ fn create_george(birth_place: &PlaceDescription, death_place: &PlaceDescription)
 
     person.fact(fact);
 
-    let date = Date::builder()
-        .original("December 14, 1799")
-        .formal("+1799-12-14T22:00:00")
-        .build();
+    let date = Date::new(Some("December 14, 1799"), Some("+1799-12-14T22:00:00"));
     let place = PlaceReference::builder()
         .original(death_place.names[0].value.to_lowercase())
         .description_ref(death_place)
@@ -140,10 +134,7 @@ fn create_martha(birth_place: &PlaceDescription, death_place: &PlaceDescription)
     let mut person = Person::builder();
     person.gender(GenderType::Male);
 
-    let date = Date::builder()
-        .original("June 2, 1731")
-        .formal("+1731-06-02")
-        .build();
+    let date = Date::new(Some("June 2, 1731"), Some("+1731-06-02"));
     let place = PlaceReference::builder()
         .original(birth_place.names[0].value.to_lowercase())
         .description_ref(birth_place)
@@ -157,10 +148,7 @@ fn create_martha(birth_place: &PlaceDescription, death_place: &PlaceDescription)
 
     person.fact(fact);
 
-    let date = Date::builder()
-        .original("May 22, 1802")
-        .formal("+1802-05-22")
-        .build();
+    let date = Date::new(Some("May 22, 1802"), Some("+1802-05-22"));
     let place = PlaceReference::builder()
         .original(death_place.names[0].value.to_lowercase())
         .description_ref(death_place)
@@ -202,10 +190,7 @@ fn create_marriage(george: &Person, martha: &Person) -> Relationship {
     let mut relationship = Relationship::builder(george, martha).unwrap();
     relationship.id("DDD-DDDD");
 
-    let date = Date::builder()
-        .original("January 6, 1759")
-        .formal("+1759-01-06")
-        .build();
+    let date = Date::new(Some("January 6, 1759"), Some("+1759-01-06"));
     let place = PlaceReference::builder()
         .original("White House Plantation")
         .build();

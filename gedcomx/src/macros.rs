@@ -26,6 +26,10 @@ macro_rules! conclusion_builder_functions {
             self
         }
 
+        /// # Errors
+        ///
+        /// Will return `GedcomxError` if a conversion into `SourceReference` fails.
+        /// This happens if the `source` has no Id set.
         pub fn source<
             I: std::convert::TryInto<crate::SourceReference, Error = crate::GedcomxError>,
         >(
@@ -36,6 +40,10 @@ macro_rules! conclusion_builder_functions {
             Ok(self)
         }
 
+        /// # Errors
+        ///
+        /// Will return `GedcomxError` if a conversion into [`Document`](crate::Document) fails.
+        /// This happens if the `document` has no [`Id`](crate::Id) set or has the wrong [`DocumentType`](crate::DocumentType).
         pub fn analysis(&mut self, document: &crate::Document) -> crate::Result<&mut Self> {
             use std::convert::TryInto;
             self.0.conclusion_mut().analysis = Some(document.try_into()?);

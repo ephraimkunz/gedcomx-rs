@@ -33,7 +33,7 @@ fn test_struct() -> Gedcomx {
           .repository(&repository).unwrap().build();
 
     let birth = Fact::builder(FactType::Birth)
-          .date(Date::builder().original("23 June 1843").build())
+          .date(Date::new(Some("23 June 1843"), None))
           .place(PlaceReference::builder().original("Broadfield Bar, Abbeydale Road, Ecclesall-Bierlow, York, England, United Kingdom").build()).build();
 
     let emma = Person::builder()

@@ -1,44 +1,25 @@
 use serde::{Deserialize, Serialize};
 
+/// A concluded genealogical date.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Date {
+    /// The original value of the date as supplied by the contributor.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub original: Option<String>,
 
+    /// The standardized formal value of the date, formatted according to the GEDCOM X Date Format specification.
+    // TODO: I think I should be using a different type for this one.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub formal: Option<String>,
 }
 
 impl Date {
-    pub fn new(original: Option<String>, formal: Option<String>) -> Self {
-        Self { original, formal }
-    }
-
-    pub fn builder() -> DateBuilder {
-        DateBuilder::new()
-    }
-}
-
-pub struct DateBuilder(Date);
-
-impl DateBuilder {
-    pub(crate) fn new() -> Self {
-        Self(Date::default())
-    }
-
-    pub fn original<I: Into<String>>(&mut self, original: I) -> &mut Self {
-        self.0.original = Some(original.into());
-        self
-    }
-
-    pub fn formal<I: Into<String>>(&mut self, formal: I) -> &mut Self {
-        self.0.formal = Some(formal.into());
-        self
-    }
-
-    pub fn build(&self) -> Date {
-        Date::new(self.0.original.clone(), self.0.formal.clone())
+    pub fn new<I: Into<String>>(original: Option<I>, formal: Option<I>) -> Self {
+        Self {
+            original: original.map(std::convert::Into::into),
+            formal: formal.map(std::convert::Into::into),
+        }
     }
 }
 

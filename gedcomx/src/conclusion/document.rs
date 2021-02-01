@@ -2,6 +2,7 @@ use crate::{Attribution, Conclusion, ConclusionData, EnumAsString, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+/// The base conceptual model for genealogical data that are managed as textual documents.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
@@ -9,17 +10,28 @@ pub struct Document {
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
+    /// Enumerated value identifying the type of the document.
     #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
     pub document_type: Option<DocumentType>,
 
+    /// Whether this document is to be constrained as an *xtracted conclusion, meaning it captures information extracted from a single source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extracted: Option<bool>,
 
+    /// The type of text in the `text` property.
+    ///
+    /// If provided, the value MUST be a [valid text type](https://github.com/FamilySearch/gedcomx/blob/master/specifications/conceptual-model-specification.md#text-types). If no value is provided, "plain" is assumed
+    // TODO: Newtype for this?
     #[serde(skip_serializing_if = "Option::is_none")]
     pub text_type: Option<String>,
 
+    /// The text of the document.
     pub text: String,
 
+    /// The attribution of the document.
+    ///
+    /// If not provided, the attribution of the containing data set (e.g. file) of the document is assumed.
+    // TODO: Should this property even exist? It's also defined on the conclusion data.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution: Option<Attribution>,
 }
@@ -65,6 +77,16 @@ impl DocumentBuilder {
         self
     }
 
+    pub fn extracted(&mut self, extracted: bool) -> &mut Self {
+        self.0.extracted = Some(extracted);
+        self
+    }
+
+    pub fn text_type<I: Into<String>>(&mut self, text_type: I) -> &mut Self {
+        self.0.text_type = Some(text_type.into());
+        self
+    }
+
     pub fn build(&self) -> Document {
         Document::new(
             self.0.conclusion.clone(),
@@ -81,9 +103,16 @@ impl DocumentBuilder {
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum DocumentType {
+    /// The document is an analysis done by a researcher; a genealogical proof statement is an example of one kind of analysis document.
     Analysis,
+
+    /// The document is an abstract of a record or document.
     Abstract,
+
+    /// The document is a transcription of a record or document.
     Transcription,
+
+    /// The document is a translation of a record or document.
     Translation,
     Custom(Uri),
 }
