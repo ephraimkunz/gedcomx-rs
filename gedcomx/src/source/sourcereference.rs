@@ -46,8 +46,8 @@ impl SourceReference {
 
     /// # Errors
     ///
-    /// Will return `GedcomxError` if a conversion into `SourceReference` fails.
-    /// This happens if the argument we are converting has no Id set.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+    /// This happens if `description` has no `id` set.
     pub fn builder(description: &SourceDescription) -> Result<SourceReferenceBuilder> {
         Ok(SourceReferenceBuilder::new(description.try_into()?))
     }

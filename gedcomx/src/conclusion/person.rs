@@ -67,8 +67,8 @@ impl Person {
 
     /// # Errors
     ///
-    /// Will return `GedcomxError` if a conversion into `SourceReference` fails.
-    /// This happens if the argument we are converting has no Id set.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+    /// This happens if `source` has no `id` set.
     pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
         &mut self,
         source: I,

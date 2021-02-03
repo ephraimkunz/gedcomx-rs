@@ -41,8 +41,8 @@ impl Relationship {
 
     /// # Errors
     ///
-    /// Will return `GedcomxError` if a conversion into `SourceReference` fails.
-    /// This happens if the argument we are converting has no Id set.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+    /// This happens if `source` has no `id` set.
     pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
         &mut self,
         source: I,
@@ -53,8 +53,8 @@ impl Relationship {
 
     /// # Errors
     ///
-    /// Will return `GedcomxError::NoId` if either of the two people in the relationship does not have an id, which
-    /// is required for them to be part of a `Relationship`.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if either `person1` or `person2` has no `id` set.
     pub fn builder(person1: &Person, person2: &Person) -> Result<RelationshipBuilder> {
         RelationshipBuilder::new(person1, person2)
     }

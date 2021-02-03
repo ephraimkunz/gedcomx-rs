@@ -11,7 +11,7 @@ mod eventrole;
 pub use eventrole::{EventRole, EventRoleType};
 
 mod event;
-pub use event::{Event, EventType};
+pub use event::{Event, EventBuilder, EventType};
 
 mod fact;
 pub use fact::{Fact, FactQualifier, FactType};

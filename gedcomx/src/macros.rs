@@ -28,8 +28,8 @@ macro_rules! conclusion_builder_functions {
 
         /// # Errors
         ///
-        /// Will return `GedcomxError` if a conversion into `SourceReference` fails.
-        /// This happens if the `source` has no Id set.
+        /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+        /// This happens if `source` has no `id` set.
         pub fn source<
             I: std::convert::TryInto<crate::SourceReference, Error = crate::GedcomxError>,
         >(
@@ -42,8 +42,8 @@ macro_rules! conclusion_builder_functions {
 
         /// # Errors
         ///
-        /// Will return `GedcomxError` if a conversion into [`Document`](crate::Document) fails.
-        /// This happens if the `document` has no [`Id`](crate::Id) set or has the wrong [`DocumentType`](crate::DocumentType).
+        /// Will return [`GedcomxError`](crate::GedcomxError) if a conversion into [`Document`](crate::Document) fails.
+        /// This happens if `document` has no `id` set or has the wrong `document_type`.
         pub fn analysis(&mut self, document: &crate::Document) -> crate::Result<&mut Self> {
             use std::convert::TryInto;
             self.0.conclusion_mut().analysis = Some(document.try_into()?);
@@ -76,12 +76,20 @@ macro_rules! subject_builder_functions {
             self
         }
 
+        /// # Errors
+        ///
+        /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`EvidenceReference`](crate::EvidenceReference) fails.
+        /// This happens if the passed argument has no `id` set.
         pub fn evidence(&mut self, e: &$final_type) -> crate::Result<&mut Self> {
             use std::convert::TryInto;
             self.0.subject.evidence.push(e.try_into()?);
             Ok(self)
         }
 
+        /// # Errors
+        ///
+        /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+        /// This happens if `media` has no `id` set.
         pub fn media(&mut self, media: &crate::SourceDescription) -> crate::Result<&mut Self> {
             use std::convert::TryInto;
             self.0.subject.media.push(media.try_into()?);

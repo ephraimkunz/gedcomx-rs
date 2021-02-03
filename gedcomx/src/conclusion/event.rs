@@ -5,21 +5,26 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+/// A description of a historical event.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Event {
     #[serde(flatten)]
     pub subject: SubjectData,
 
+    /// The type of the event.
     #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
     pub event_type: Option<EventType>,
 
+    /// The date of the event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<Date>,
 
+    /// A reference to the place applicable to this event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub place: Option<PlaceReference>,
 
+    /// Information about how persons participated in the event.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub roles: Vec<EventRole>,
 }
@@ -86,30 +91,47 @@ impl EventBuilder {
     }
 }
 
+/// Standard event types.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum EventType {
     Adoption,
     AdultChristening,
+
+    /// An annulment event of a marriage.
     Annulment,
     Baptism,
     BarMitzvah,
     BatMitzvah,
     Birth,
+
+    /// A an official blessing event, such as at the hands of a clergy member or at another religious rite.
     Blessing,
     Burial,
     Census,
+
+    /// A christening event *at birth*. Note: use [`AdultChristening`](crate::EventType::AdultChristening) for a christening event as an adult.
     Christening,
     Circumcision,
+
+    /// A confirmation event (or other rite of initiation) in a church or religion.
     Confirmation,
+
+    /// A cremation event after death.
     Cremation,
     Death,
     Divorce,
     DivorceFiling,
+
+    /// A education or an educational achievement event (e.g. diploma, graduation, scholarship, etc.).
     Education,
+
+    /// An engagement to be married event.
     Engagement,
     Emigration,
+
+    /// An excommunication event from a church.
     Excommunication,
     FirstCommunion,
     Funeral,
@@ -119,8 +141,14 @@ pub enum EventType {
     MilitaryAward,
     MilitaryDischarge,
     Mission,
+
+    /// An event of a move (i.e. change of residence) from a location.
     MoveFrom,
+
+    /// An event of a move (i.e. change of residence) to a location.
     MoveTo,
+
+    /// A naturalization event (i.e. acquisition of citizenship and nationality).
     Naturalization,
     Ordination,
     Retirement,

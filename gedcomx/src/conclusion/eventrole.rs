@@ -34,8 +34,8 @@ impl EventRole {
 
     /// # Errors
     ///
-    /// Will return `GedcomxError` if a conversion into `ResourceReference` fails.
-    /// This happens if the argument we are converting has no Id set.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if `person` has no `id` set.
     pub fn builder(person: &Person) -> Result<EventRoleBuilder> {
         EventRoleBuilder::new(person)
     }

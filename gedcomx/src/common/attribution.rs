@@ -69,14 +69,18 @@ impl AttributionBuilder {
     }
 
     /// # Errors
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if the agent has no id set.
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if `agent` has no `id` set.
     pub fn contributor(&mut self, agent: &Agent) -> Result<&mut Self> {
         self.0.contributor = Some(agent.try_into()?);
         Ok(self)
     }
 
     /// # Errors
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if the agent has no id set.
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if `agent` has no `id` set.
     pub fn creator(&mut self, agent: &Agent) -> Result<&mut Self> {
         self.0.creator = Some(agent.try_into()?);
         Ok(self)
