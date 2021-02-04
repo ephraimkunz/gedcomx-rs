@@ -8,6 +8,7 @@ keywords = ["genealogy", "gedcomx", "family-trees"]
 categories = ["encoding", "parsing"]
 license = "MIT"
 repository = "https://github.com/ephraimkunz/gedcomx-rs"
+readme = "README.md"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

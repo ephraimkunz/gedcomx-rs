@@ -2,24 +2,33 @@ use crate::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Qual
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+/// A data item that is presumed to be true about a specific subject, such as a person or relationship.
+///
+/// To distinguish the concept of "fact" from "event", refer to [Events Versus Facts](https://github.com/FamilySearch/gedcomx/blob/master/specifications/conceptual-model-specification.md#events-vs-facts).
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct Fact {
-    #[serde(rename = "type")]
-    pub fact_type: FactType,
-
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
+    /// The type of the fact.
+    #[serde(rename = "type")]
+    pub fact_type: FactType,
+
+    /// The date of applicability of the fact.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<Date>,
 
+    /// A reference to the place applicable to this fact.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub place: Option<PlaceReference>,
 
+    /// The value of the fact.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
 
+    /// Qualifiers to add additional details about the fact.
+    // TODO: Should we enforce these as FactQualifiers?
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
 }
@@ -106,78 +115,178 @@ impl FactBuilder {
     }
 }
 
+/// Standard fact types.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum FactType {
     // Person fact types.
+    /// In the context of a parent-child relationship, it describes a fact of the adoption of a child by a parent.
     Adoption,
+
+    /// A fact of a person's christening or baptism as an adult.
     AdultChristening,
     Amnesty,
+
+    /// A fact of a person's ancestral hall.
+    ///
+    /// An ancestral hall refers to a location where the early ancestors of the person originated. It may also refer to the name of an early ancestor.
+    /// Family clans are often distinguished one from another by the ancestral hall. Clans that cannot prove direct relationships to other clans with
+    /// the same surname can assume a direct relationship if they share the same ancestral hall.
     AncestralHall,
+
+    /// A fact of a person's ancestral poem.
+    ///
+    /// An ancestral poem (or generation poem) is composed of the "generation characters" that are to be used when choosing names for the members of different
+    ///  generations of an extended family. Ancestral poems are prominent in Asian countries, particularly China.
     AncestralPoem,
     Apprenticeship,
     Arrest,
+
+    /// A fact of a person's award (medal, honor).
     Award,
     Baptism,
     BarMitzvah,
     BatMitzvah,
     Birth,
+
+    /// A fact of a person's birth notice, such as posted in a newspaper or other publishing medium.
     BirthNotice,
+
+    /// A fact of an official blessing received by a person, such as at the hands of a clergy member or at another religious rite.
     Blessing,
+
+    /// A fact of a person's branch within an extended clan.
     Branch,
+
+    /// A fact of the burial of person's body after death.
     Burial,
     Caste,
+
+    /// A fact of a person's participation in a census.
     Census,
+
+    /// A fact of a person's christening *at birth*.
+    ///
+    /// Note: use [`AdultChristening`](crate::FactType::AdultChristening) for the christening as an adult.
     Christening,
     Circumcision,
     Clan,
+
+    /// A fact of a person's confirmation (or other rite of initiation) in a church or religion.
     Confirmation,
+
+    /// A fact of the appearance of a person in a court proceeding.
     Court,
+
+    /// A fact of the cremation of person's body after death.       
     Cremation,
     Death,
+
+    /// A fact of an education or an educational achievement (e.g., diploma, graduation, scholarship, etc.) of a person.
     Education,
+
+    /// A fact of a person's enrollment in an educational program or institution.
     EducationEnrollment,
     Emigration,
     Enslavement,
     Ethnicity,
+
+    /// A fact of a person's excommunication from a church.
     Excommunication,
+
+    /// A fact of a person's first communion in a church.
     FirstCommunion,
     Funeral,
     GenderChange,
+
+    /// A fact of a person's generation number, indicating the number of generations the person is removed from a known "first" ancestor.
     GenerationNumber,
+
+    /// A fact of a person's graduation from a scholastic institution.
     Graduation,
+
+    /// A fact of a person's heimat.
+    ///
+    /// "Heimat" refers to a person's affiliation by birth to a specific geographic place. Distinct heimaten are often useful as
+    /// indicators that two persons of the same name are not likely to be closely related genealogically. In English, "heimat"
+    /// may be described using terms like "ancestral home", "homeland", or "place of origin".
     Heimat,
     Immigration,
     Imprisonment,
+
+    /// A legal inquest.
+    ///
+    /// Inquests usually only occur when there’s something suspicious about the death. Inquests might in some instances lead to a
+    /// murder investigation. Most people that die have a death certificate wherein a doctor indicates the cause of death and often
+    /// indicates when the decedent was last seen by that physician; these require no inquest.
     Inquest,
+
+    /// A fact of a land transaction enacted by a person.
     LandTransaction,
+
+    /// A fact of a language spoken by a person.
     Language,
+
+    /// A fact of a record of a person's living for a specific period.
+    ///
+    /// This is designed to include "flourish", defined to mean the time period in an adult's life where he was most productive, perhaps
+    /// as a writer or member of the state assembly. It does not reflect the person's birth and death dates.
     Living,
     MaritalStatus,
+
+    /// A fact of a person's medical record, such as for an illness or hospital stay.
     Medical,
     MilitaryAward,
     MilitaryDischarge,
     MilitaryDraftRegistration,
     MilitaryInduction,
     MilitaryService,
+
+    /// A fact of a person's church mission.
     Mission,
+
+    /// A fact of a person's move (i.e. change of residence) from a location.
     MoveFrom,
+
+    /// A fact of a person's move (i.e. change of residence) to a new location.
     MoveTo,
+
+    /// A fact that a person was born as part of a multiple birth (e.g. twin, triplet, etc.)
     MultipleBirth,
+
+    /// A fact of a person's national id (e.g. social security number).
     NationalId,
     Nationality,
+
+    /// A fact of a person's naturalization (i.e. acquisition of citizenship and nationality).
     Naturalization,
+
+    /// A fact of the number of children of a person or relationship.
     NumberOfChildren, // Also a couple fact type.
     NumberOfMarriages,
     Obituary,
+
+    /// A fact of a person's official (government) position.
     OfficialPosition,
+
+    /// A fact of a person's occupation or employment.
     Occupation,
+
+    /// A fact of a person's ordination to a stewardship in a church.
     Ordination,
+
+    /// A fact of a person's legal pardon.
     Pardon,
     PhysicalDescription,
+
+    /// A fact of a receipt of probate of a person's property.
     Probate,
+
+    /// A fact of a person's property or possessions.
     Property,
+
+    /// A fact of the declaration of a person's race, presumably in a historical document.
     Race,
     Religion,
     Residence,
@@ -186,16 +295,25 @@ pub enum FactType {
     TaxAssessment,
     Tribe,
     Will,
+
+    /// A fact of a person's visit to a place different from the person's residence.
     Visit,
+
+    /// A fact of a person's *yahrzeit* date.
+    ///
+    /// A person's yahzeit is the anniversary of their death as measured by the Hebrew calendar.  
     Yahrzeit,
 
     // Couple fact types.
+    /// The fact of an annulment of a marriage.
     Annulment,
     CommonLawMarriage,
     CivilUnion,
     Divorce,
     DivorceFiling,
     DomesticPartnership,
+
+    /// The fact of an engagement to be married.
     Engagement,
     Marriage,
     MarriageBanns,
@@ -205,15 +323,38 @@ pub enum FactType {
     Separation,
 
     // Parent-child fact types.
+    /// A fact about an adoptive relationship between a parent an a child.
     AdoptiveParent,
+
+    /// A fact the biological relationship between a parent and a child.
     BiologicalParent,
+
+    /// A fact about the child order between a parent and a child.
     ChildOrder,
+
+    /// A fact about an entering heir relationship between a parent and a child.
+    ///
+    /// An entering heir is received from another parent as an "exiting heir" for designation of inheritance.
     EnteringHeir,
+
+    /// A fact about an exiting heir relationship between a parent and a child.
+    ///
+    /// An exiting heir is given as an "entering heir" to another parent for designation of inheritance.
     ExitingHeir,
+
+    /// A fact about a foster relationship between a foster parent and a child.
     FosterParent,
+
+    /// A fact about a legal guardianship between a parent and a child.
     GuardianParent,
+
+    /// A fact about a legal guardianship between a parent and a child.
     StepParent,
+
+    /// A fact about a sociological relationship between a parent and a child, but not definable in typical legal or biological terms.
     SociologicalParent,
+
+    /// A fact about a pregnancy surrogate relationship between a parent and a child.
     SurrogateParent,
 
     // Catch all
@@ -454,10 +595,19 @@ impl Default for FactType {
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum FactQualifier {
+    /// The age of a person at the event described by the fact.
     Age,
+
+    /// The cause of the fact, such as the cause of death.
     Cause,
+
+    /// The religion associated with a religious event such as a baptism or excommunication.
     Religion,
+
+    /// The name of the transport associated with an event that indicates a move.
     Transport,
+
+    /// An indicator that the event occurred non-consensually, e.g. under enslavement.
     NonConsensual,
     Custom(Uri),
 }

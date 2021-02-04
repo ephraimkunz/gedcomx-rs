@@ -2,17 +2,24 @@ use crate::{Conclusion, ConclusionData, EnumAsString, Person, ResourceReference,
 use serde::{Deserialize, Serialize};
 use std::{convert::TryInto, fmt};
 
+/// A role played in an event by a person.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct EventRole {
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
+    /// Reference to the event participant.
+    ///
+    /// MUST resolve to an instance of [`Person`](crate::Person).
+    // TODO: Enforce this with type system?
     pub person: ResourceReference,
 
+    /// The participant's role.
     #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
     pub event_role_type: Option<EventRoleType>,
 
+    /// Details about the role of participant in the event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub details: Option<String>,
 }
@@ -58,6 +65,10 @@ impl Conclusion for EventRole {
 pub struct EventRoleBuilder(EventRole);
 
 impl EventRoleBuilder {
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::SourceReference) fails.
+    /// This happens if `person` has no `id` set.
     pub(crate) fn new(person: &Person) -> Result<Self> {
         Ok(Self(EventRole {
             person: person.try_into()?,
@@ -72,6 +83,11 @@ impl EventRoleBuilder {
         self
     }
 
+    pub fn details<I: Into<String>>(&mut self, details: I) -> &mut Self {
+        self.0.details = Some(details.into());
+        self
+    }
+
     pub fn build(&self) -> EventRole {
         EventRole::new(
             self.0.conclusion.clone(),
@@ -82,13 +98,23 @@ impl EventRoleBuilder {
     }
 }
 
+/// Standard event roles.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum EventRoleType {
+    /// The person is the principal person of the event.
+    ///
+    /// For example, the principal of a birth event is the person that was born.
     Principal,
+
+    /// A participant in the event.
     Participant,
+
+    /// A person officiating the event.
     Official,
+
+    /// A witness of the event.
     Witness,
     Custom(Uri),
 }

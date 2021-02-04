@@ -8,13 +8,13 @@ mod document;
 pub use document::{Document, DocumentBuilder, DocumentType};
 
 mod eventrole;
-pub use eventrole::{EventRole, EventRoleType};
+pub use eventrole::{EventRole, EventRoleBuilder, EventRoleType};
 
 mod event;
 pub use event::{Event, EventBuilder, EventType};
 
 mod fact;
-pub use fact::{Fact, FactQualifier, FactType};
+pub use fact::{Fact, FactBuilder, FactQualifier, FactType};
 
 mod gender;
 pub use gender::{Gender, GenderType};
