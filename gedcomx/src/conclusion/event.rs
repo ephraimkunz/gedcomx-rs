@@ -3,9 +3,11 @@ use crate::{
     SubjectData, Uri,
 };
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use std::fmt;
 
 /// A description of a historical event.
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Event {
@@ -13,15 +15,13 @@ pub struct Event {
     pub subject: SubjectData,
 
     /// The type of the event.
-    #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
+    #[serde(rename = "type")]
     pub event_type: Option<EventType>,
 
     /// The date of the event.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<Date>,
 
     /// A reference to the place applicable to this event.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub place: Option<PlaceReference>,
 
     /// Information about how persons participated in the event.

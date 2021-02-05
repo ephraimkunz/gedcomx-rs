@@ -1,14 +1,15 @@
 use crate::{PlaceDescription, Result, Uri};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use std::convert::TryInto;
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct PlaceReference {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub original: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none", rename = "description")]
+    #[serde(rename = "description")]
     pub description_ref: Option<Uri>,
 }
 

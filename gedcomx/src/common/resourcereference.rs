@@ -2,12 +2,14 @@ use std::convert::TryFrom;
 
 use crate::{Agent, Conclusion, Document, DocumentType, GedcomxError, Person, Uri};
 use serde::{Deserialize, Serialize};
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 /// A generic reference to a resource.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct ResourceReference {
     /// The URI to the resource being referenced.
+    #[yaserde(attribute)]
     pub resource: Uri,
 }
 

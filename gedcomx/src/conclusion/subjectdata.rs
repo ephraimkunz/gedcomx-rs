@@ -1,13 +1,14 @@
 use crate::{ConclusionData, EvidenceReference, Identifier, SourceReference};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct SubjectData {
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub extracted: Option<bool>,
 
     #[serde(skip_serializing_if = "Vec::is_empty", default)]

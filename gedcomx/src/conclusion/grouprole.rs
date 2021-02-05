@@ -1,6 +1,8 @@
 use crate::{ConclusionData, Date, ResourceReference, Uri};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct GroupRole {
@@ -9,13 +11,11 @@ pub struct GroupRole {
 
     pub person: ResourceReference,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<Date>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub details: Option<String>,
 
-    #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "type")]
     pub group_role_type: Option<GroupRoleType>,
 }
 

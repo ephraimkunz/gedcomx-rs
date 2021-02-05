@@ -1,12 +1,12 @@
 use crate::{Date, PlaceReference};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Coverage {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub spatial: Option<PlaceReference>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub temporal: Option<Date>,
 }

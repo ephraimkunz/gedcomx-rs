@@ -1,7 +1,9 @@
 use crate::{Conclusion, ConclusionData, Date, EnumAsString, Lang, Qualifier, Uri};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use std::fmt;
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
@@ -9,12 +11,11 @@ pub struct Name {
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
-    #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
+    #[serde(rename = "type")]
     pub name_type: Option<NameType>,
 
     pub name_forms: Vec<NameForm>, // Must be non-empty.
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<Date>,
 }
 
@@ -152,14 +153,13 @@ impl fmt::Display for NameType {
     }
 }
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NameForm {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<Lang>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub full_text: Option<String>,
 
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
@@ -216,10 +216,11 @@ impl NameFormBuilder {
     }
 }
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct NamePart {
-    #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
+    #[serde(rename = "type")]
     pub part_type: Option<NamePartType>,
 
     pub value: String,
@@ -443,7 +444,7 @@ mod test {
                 name_type: Some(NameType::BirthName),
                 date: None, // TODO: Add in once we get the date type working
                 name_forms: vec![NameForm {
-                    lang: Some("en".to_string()),
+                    lang: Some("en".into()),
                     full_text: Some("full text of the name form".to_string()),
                     parts: vec![NamePart {
                         part_type: Some(NamePartType::Surname),
@@ -534,7 +535,7 @@ mod test {
             name_type: Some(NameType::BirthName),
             date: None, // TODO: Add in once we get the date type working
             name_forms: vec![NameForm {
-                lang: Some("en".to_string()),
+                lang: Some("en".into()),
                 full_text: Some("full text of the name form".to_string()),
                 parts: vec![NamePart {
                     part_type: Some(NamePartType::Surname),

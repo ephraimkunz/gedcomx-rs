@@ -3,15 +3,17 @@ use crate::{
     Result, SourceReference, Subject, SubjectData, Uri,
 };
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use std::{convert::TryInto, fmt};
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct Relationship {
     #[serde(flatten)]
     pub subject: SubjectData,
 
-    #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
+    #[serde(rename = "type")]
     pub relationship_type: Option<RelationshipType>,
 
     pub person1: ResourceReference,

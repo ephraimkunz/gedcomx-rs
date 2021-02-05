@@ -2,7 +2,9 @@ use crate::{
     Conclusion, ConclusionData, Date, GroupRole, PlaceReference, Subject, SubjectData, TextValue,
 };
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Group {
@@ -11,10 +13,8 @@ pub struct Group {
 
     pub names: Vec<TextValue>, // Must contain at least 1 name
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<Date>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub place: Option<PlaceReference>,
 
     #[serde(skip_serializing_if = "Vec::is_empty", default)]

@@ -35,10 +35,6 @@ use std::fmt;
 
 pub type Result<T> = std::result::Result<T, GedcomxError>;
 
-/// Defined by [IETF BCP 47](https://tools.ietf.org/html/bcp47).
-// TODO: Newtype for this?
-pub type Lang = String;
-
 pub type Timestamp = chrono::DateTime<chrono::Utc>;
 
 // I can't figure out how to get Serde to properly serialize enums with a bunch of normal variants and then
@@ -87,12 +83,12 @@ impl TestData {
 
         let mut note = Note::new("This is a note".to_string());
         note.attribution = Some(attribution.clone());
-        note.lang = Some("en".to_string());
+        note.lang = Some("en".into());
         note.subject = Some("subject".to_string());
 
         let mut conclusion_data = ConclusionData::new();
         conclusion_data.id = Some("local_id".into());
-        conclusion_data.lang = Some("en".to_string());
+        conclusion_data.lang = Some("en".into());
         conclusion_data.sources = vec![source_reference.clone()];
         conclusion_data.analysis = Some(ResourceReference::from(
             "http://identifier/for/analysis/document",

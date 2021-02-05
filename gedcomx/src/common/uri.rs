@@ -15,6 +15,8 @@ use std::{convert::TryFrom, fmt};
 #[non_exhaustive]
 pub struct Uri(String);
 
+impl_characters_yaserialize_yadeserialize!(Uri, "Uri");
+
 impl From<&str> for Uri {
     fn from(s: &str) -> Self {
         Self(s.to_owned())

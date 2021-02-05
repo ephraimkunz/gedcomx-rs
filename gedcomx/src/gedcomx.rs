@@ -3,20 +3,17 @@ use crate::{
     SourceDescription, Uri,
 };
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
 // This struct holds the "real copies" of all the structs that will be serialized to a given format.
 // Other structs may hold refs to, for example, SourceDescription, keyed off the ids.
+#[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Gedcomx {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<Id>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<Lang>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution: Option<Attribution>,
 
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
@@ -43,7 +40,6 @@ pub struct Gedcomx {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub groups: Vec<Group>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<Uri>,
 }
 

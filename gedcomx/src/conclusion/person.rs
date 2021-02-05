@@ -3,18 +3,18 @@ use crate::{
     SubjectData,
 };
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use std::convert::TryInto;
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct Person {
     #[serde(flatten)]
     pub subject: SubjectData,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub private: Option<bool>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub gender: Option<Gender>,
 
     #[serde(skip_serializing_if = "Vec::is_empty", default)]

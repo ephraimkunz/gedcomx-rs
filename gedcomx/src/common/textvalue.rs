@@ -1,12 +1,14 @@
 use crate::Lang;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 /// An element representing a text value that may be in a specific language.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct TextValue {
     /// The locale identifier for the value of the text.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<Lang>,
 
     /// The text value.
@@ -46,7 +48,7 @@ mod test {
         assert_eq!(
             text_value,
             TextValue {
-                lang: Some("en".to_string()),
+                lang: Some("en".into()),
                 value: "text of the value".to_string(),
             }
         )
@@ -65,7 +67,7 @@ mod test {
     #[test]
     fn json_serialize() {
         let text_value = TextValue {
-            lang: Some("en".to_string()),
+            lang: Some("en".into()),
             value: "text of the value".to_string(),
         };
 

@@ -1,25 +1,25 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-/// A local, context-specific id for the data.
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Id(pub(crate) String);
+/// Defined by [IETF BCP 47](https://tools.ietf.org/html/bcp47).
+pub struct Lang(String);
 
-impl_characters_yaserialize_yadeserialize!(Id, "Id");
+impl_characters_yaserialize_yadeserialize!(Lang, "Lang");
 
-impl fmt::Display for Id {
+impl fmt::Display for Lang {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         self.0.fmt(f)
     }
 }
 
-impl From<&str> for Id {
+impl From<&str> for Lang {
     fn from(s: &str) -> Self {
         Self(s.into())
     }
 }
 
-impl From<String> for Id {
+impl From<String> for Lang {
     fn from(s: String) -> Self {
         Self(s)
     }

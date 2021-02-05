@@ -2,21 +2,21 @@ use crate::{
     Attribution, EnumAsString, GedcomxError, Id, Qualifier, Result, SourceDescription, Uri,
 };
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use std::{
     convert::{TryFrom, TryInto},
     fmt,
 };
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct SourceReference {
     pub description: Uri,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub description_id: Option<Id>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution: Option<Attribution>,
 
     #[serde(skip_serializing_if = "Vec::is_empty", default)]

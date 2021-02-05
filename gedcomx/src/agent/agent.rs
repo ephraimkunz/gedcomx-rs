@@ -1,17 +1,20 @@
 use crate::{Address, Id, Identifier, OnlineAccount, ResourceReference, TextValue};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 /// Someone or something that curates genealogical data, such as a genealogical researcher, user of software,
 /// organization, or group.
 ///
 /// In genealogical research, an agent often takes the role of a contributor.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
+#[yaserde(rename = "agent")]
 #[non_exhaustive]
 pub struct Agent {
     /// An identifier for the data structure holding the agent data.
     /// The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
     /// As such, the constraints of the id are provided in the definition of the media type (e.g. XML, JSON) of the data structure.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<Id>,
 
     /// A list of identifiers for the agent.
@@ -25,11 +28,9 @@ pub struct Agent {
 
     /// The homepage of the person or organization. Note this is different from the homepage of the service where the
     /// person or organization has an account.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub homepage: Option<ResourceReference>,
 
     /// The [openid](https://openid.net) of the person or organization.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub openid: Option<ResourceReference>,
 
     /// The online account(s) of the person or organization.
@@ -49,7 +50,6 @@ pub struct Agent {
     pub addresses: Vec<Address>,
 
     /// A reference to the person that describes this agent. MUST resolve to an instance of [Person](crate::Person).
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub person: Option<ResourceReference>, // TODO: Enforce constraint?
 }
 

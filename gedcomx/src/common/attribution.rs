@@ -1,41 +1,32 @@
 use crate::{Agent, ResourceReference, Result, Timestamp};
 use chrono::serde::ts_milliseconds_option;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use std::convert::TryInto;
 
 /// The data structure used to attribute who, when, and why to genealogical data.
 ///
 /// Data is attributed to the agent who made the latest significant change to the nature of the data being attributed.
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Attribution {
     /// Reference to the agent to whom the attributed data is attributed. If provided, MUST resolve to an instance of [`Agent`](crate::Agent).
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub contributor: Option<ResourceReference>, // TODO: Enforce this constraint?
 
     /// Timestamp of when the attributed data was modified.
-    #[serde(
-        default,
-        with = "ts_milliseconds_option",
-        skip_serializing_if = "Option::is_none"
-    )]
+    #[serde(default, with = "ts_milliseconds_option")]
     pub modified: Option<Timestamp>,
 
     /// A statement of why the attributed data is being provided by the contributor.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub change_message: Option<String>,
 
     /// Reference to the agent that created the attributed data. The creator MAY be different from the contributor
     /// if changes were made to the attributed data. If provided, MUST resolve to an instance of [`Agent`](crate::Agent).
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub creator: Option<ResourceReference>,
 
     /// Timestamp of when the attributed data was contributed.
-    #[serde(
-        default,
-        with = "ts_milliseconds_option",
-        skip_serializing_if = "Option::is_none"
-    )]
+    #[serde(default, with = "ts_milliseconds_option")]
     pub created: Option<Timestamp>,
 }
 

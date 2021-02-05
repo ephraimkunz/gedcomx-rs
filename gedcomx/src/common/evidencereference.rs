@@ -1,5 +1,6 @@
 use crate::{Attribution, Event, GedcomxError, Person, PlaceDescription, Relationship, Uri};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use std::convert::TryFrom;
 
 /// A reference to data being used to derive the given instance of Subject.
@@ -13,6 +14,7 @@ use std::convert::TryFrom;
 /// the resulting persona an identifier "fghij". As the researcher gathers and analyzes the information, he will create a (working) `Person` conclusion.
 /// When the researcher concludes that the person represented in "abcde" and in "fghij" are the same person, he will add two `EvidenceReference` instances
 /// to the working `Person`: one for "abcde" and one for "fghij".
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct EvidenceReference {
@@ -20,7 +22,6 @@ pub struct EvidenceReference {
     pub resource: Uri,
 
     /// The attribution of this evidence reference. If not provided, the attribution of the containing resource of the source reference is assumed.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution: Option<Attribution>,
 }
 

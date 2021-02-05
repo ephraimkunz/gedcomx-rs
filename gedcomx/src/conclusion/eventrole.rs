@@ -1,8 +1,10 @@
 use crate::{Conclusion, ConclusionData, EnumAsString, Person, ResourceReference, Result, Uri};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use std::{convert::TryInto, fmt};
 
 /// A role played in an event by a person.
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct EventRole {
@@ -16,11 +18,10 @@ pub struct EventRole {
     pub person: ResourceReference,
 
     /// The participant's role.
-    #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
+    #[serde(rename = "type")]
     pub event_role_type: Option<EventRoleType>,
 
     /// Details about the role of participant in the event.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub details: Option<String>,
 }
 

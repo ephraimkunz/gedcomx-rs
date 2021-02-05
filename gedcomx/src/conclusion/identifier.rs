@@ -1,15 +1,16 @@
 use crate::{EnumAsString, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 // I think this will need custom JSON serialization / deserialization. Needs to be a map of typee -> [uri].
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 pub struct Identifier {
     pub uri: Uri,
     pub typee: Option<IdentifierType>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum IdentifierType {
@@ -17,6 +18,12 @@ pub enum IdentifierType {
     Authority,
     Deprecated,
     Custom(Uri),
+}
+
+impl Default for IdentifierType {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
+    }
 }
 
 impl From<EnumAsString> for IdentifierType {

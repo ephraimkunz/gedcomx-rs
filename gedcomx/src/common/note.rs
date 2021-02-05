@@ -1,25 +1,24 @@
 use crate::{Attribution, Lang};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
 /// A note that was contributed from genealogical research.
 ///
 /// Notes are not intended to contain genealogical conclusions. Notes are only associated with a single genealogical resource.
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Note {
     /// The locale identifier for the note.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<Lang>,
 
     /// A subject or title for the note.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub subject: Option<String>,
 
     /// The text of the note.
     pub text: String,
 
     /// The attribution of this note. If not provided, the attribution of the containing resource of the note is assumed.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution: Option<Attribution>,
 }
 
@@ -61,7 +60,7 @@ mod test {
         assert_eq!(
             note,
             Note {
-                lang: Some("en".to_string()),
+                lang: Some("en".into()),
                 subject: Some("TestSubject".to_string()),
                 text: "This is a note".to_string(),
                 attribution: Some(data.attribution),
@@ -84,7 +83,7 @@ mod test {
         let data = TestData::new();
 
         let note = Note {
-            lang: Some("en".to_string()),
+            lang: Some("en".into()),
             subject: Some("TestSubject".to_string()),
             text: "This is a note".to_string(),
             attribution: Some(data.attribution),

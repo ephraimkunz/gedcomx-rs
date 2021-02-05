@@ -7,6 +7,9 @@ pub use evidencereference::EvidenceReference;
 mod id;
 pub use id::Id;
 
+mod lang;
+pub use lang::Lang;
+
 mod note;
 pub use note::Note;
 

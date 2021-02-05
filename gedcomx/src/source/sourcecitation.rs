@@ -1,10 +1,11 @@
 use crate::Lang;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct SourceCitation {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<Lang>,
     pub value: String,
 }
@@ -49,7 +50,7 @@ mod test {
         assert_eq!(
             source_citation,
             SourceCitation {
-                lang: Some("en".to_string()),
+                lang: Some("en".into()),
                 value: "a rendering of the full citation as a string".to_string(),
             }
         )
@@ -74,7 +75,7 @@ mod test {
     #[test]
     fn json_serialize() {
         let source_citation = SourceCitation {
-            lang: Some("en".to_string()),
+            lang: Some("en".into()),
             value: "a rendering of the full citation as a string".to_string(),
         };
 

@@ -1,16 +1,16 @@
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
 /// A concluded genealogical date.
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Date {
     /// The original value of the date as supplied by the contributor.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub original: Option<String>,
 
     /// The standardized formal value of the date, formatted according to the GEDCOM X Date Format specification.
     // TODO: I think I should be using a different type for this one.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub formal: Option<String>,
 }
 
