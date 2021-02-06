@@ -26,7 +26,7 @@ mod grouprole;
 pub use grouprole::{GroupRole, GroupRoleType};
 
 mod identifier;
-pub use identifier::Identifier;
+pub use identifier::{Identifier, IdentifierType};
 
 mod name;
 pub use name::{Name, NameForm, NamePart, NamePartQualifier, NamePartType, NameType};

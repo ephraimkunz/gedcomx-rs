@@ -12,7 +12,7 @@ fn test_example() {
     let jane_doe = Agent::builder()
         .id("A-1")
         .name("Jane Doe")
-        .email("example@example.org")
+        .email("mailto:example@example.org")
         .build();
 
     //Lin Yee Chung Cemetery

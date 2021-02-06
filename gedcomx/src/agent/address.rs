@@ -238,4 +238,43 @@ mod test {
 
         assert_eq!(json, r#"{}"#)
     }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r#"<address>
+            <city>East Palo Alto</city>
+            <country>United States</country>
+            <postalCode>94303</postalCode>
+            <stateOrProvince>California</stateOrProvince>
+            <street>2299 Poplar Ave</street>
+        </address>"#;
+
+        let expected_address = Address::builder()
+            .city("East Palo Alto")
+            .country("United States")
+            .postal_code("94303")
+            .state_or_province("California")
+            .street("2299 Poplar Ave")
+            .build();
+        let address: Address = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(address, expected_address)
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let address = Address::builder()
+            .city("East Palo Alto")
+            .country("United States")
+            .postal_code("94303")
+            .state_or_province("California")
+            .street("2299 Poplar Ave")
+            .build();
+        let xml = yaserde::ser::to_string_content(&address).unwrap();
+
+        assert_eq!(
+            xml,
+            r#"<city>East Palo Alto</city><country>United States</country><postalCode>94303</postalCode><stateOrProvince>California</stateOrProvince><street>2299 Poplar Ave</street>"#
+        )
+    }
 }

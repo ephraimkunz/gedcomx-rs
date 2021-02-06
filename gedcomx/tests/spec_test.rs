@@ -1,7 +1,7 @@
 use gedcomx::{
     Agent, Attribution, Date, Fact, FactType, Gedcomx, GenderType, Name, NameForm, NamePart,
     NamePartType, Person, PlaceDescription, PlaceReference, Relationship, SourceCitation,
-    SourceDescription, TextValue, Uri,
+    SourceDescription, Uri,
 };
 
 mod common;
@@ -35,10 +35,7 @@ fn create_popes_creek() -> PlaceDescription {
         .id("888")
         .latitude(38.192353)
         .longitude(-76.904069)
-        .name(TextValue::new(
-            "Pope's Creek, Westmoreland, Virginia, United States",
-            None,
-        ))
+        .name("Pope's Creek, Westmoreland, Virginia, United States")
         .build()
 }
 
@@ -47,10 +44,7 @@ fn create_mount_vernon() -> PlaceDescription {
         .id("999")
         .latitude(38.721144)
         .longitude(-77.109461)
-        .name(TextValue::new(
-            "Mount Vernon, Fairfax County, Virginia, United States",
-            None,
-        ))
+        .name("Mount Vernon, Fairfax County, Virginia, United States")
         .build()
 }
 
@@ -59,18 +53,12 @@ fn create_chestnut_grove() -> PlaceDescription {
         .id("KKK")
         .latitude(37.518304)
         .longitude(-76.984148)
-        .name(TextValue::new(
-            "Chestnut Grove, New Kent, Virginia, United States",
-            None,
-        ))
+        .name("Chestnut Grove, New Kent, Virginia, United States")
         .build()
 }
 
 fn create_contributor() -> Agent {
-    Agent::builder()
-        .id("GGG-GGGG")
-        .name(TextValue::new("Ryan Heaton", None))
-        .build()
+    Agent::builder().id("GGG-GGGG").name("Ryan Heaton").build()
 }
 
 fn create_george(birth_place: &PlaceDescription, death_place: &PlaceDescription) -> Person {

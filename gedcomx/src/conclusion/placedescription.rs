@@ -80,8 +80,8 @@ impl PlaceDescriptionBuilder {
         self
     }
 
-    pub fn name(&mut self, name: TextValue) -> &mut Self {
-        self.0.names.push(name);
+    pub fn name<I: Into<TextValue>>(&mut self, name: I) -> &mut Self {
+        self.0.names.push(name.into());
         self
     }
 

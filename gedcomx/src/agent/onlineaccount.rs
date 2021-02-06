@@ -18,10 +18,14 @@ pub struct OnlineAccount {
 }
 
 impl OnlineAccount {
-    pub fn new(service_homepage: ResourceReference, account_name: String) -> Self {
+    pub fn new<I, J>(service_homepage: I, account_name: J) -> Self
+    where
+        I: Into<ResourceReference>,
+        J: Into<String>,
+    {
         Self {
-            service_homepage,
-            account_name,
+            service_homepage: service_homepage.into(),
+            account_name: account_name.into(),
         }
     }
 }

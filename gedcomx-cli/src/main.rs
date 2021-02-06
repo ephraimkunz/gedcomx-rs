@@ -18,24 +18,26 @@ fn main() {
     //     .unwrap()
     // );
 
-    let test = RR {
-        reference: "hi".to_string(), //("test".to_string()),
+    let test = A {
+        b: B {
+            c: "Hi".to_string(),
+        },
     };
 
     println!("{}", yaserde::ser::to_string(&test).unwrap());
 }
 
-// use yaserde_derive::{YaDeserialize, YaSerialize};
-// use serde::{Deserialize, Serialize};
-// use std::io::Write;
-// use yaserde::YaSerialize;
+use serde::{Deserialize, Serialize};
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
-#[derive(yaserde_derive::YaSerialize, yaserde_derive::YaDeserialize)]
-pub struct RR {
-    reference: String,
+#[derive(YaSerialize, YaDeserialize, Serialize, Deserialize)]
+pub struct A {
+    b: B,
 }
-// #[derive(Serialize, Deserialize)]
-// #[non_exhaustive]
+#[derive(Serialize, Deserialize, YaSerialize, YaDeserialize, Default)]
+pub struct B {
+    c: String,
+}
 // pub struct Uri(String);
 
 // impl YaSerialize for Uri {

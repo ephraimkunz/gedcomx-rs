@@ -10,7 +10,7 @@ fn test_struct() -> Gedcomx {
     let contributor = Agent::builder()
         .id("A-1")
         .name("Jane Doe")
-        .email("example@example.org")
+        .email("mailto:example@example.org")
         .build();
 
     let repository = Agent::builder()

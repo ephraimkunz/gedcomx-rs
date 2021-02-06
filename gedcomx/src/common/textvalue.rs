@@ -9,17 +9,23 @@ use yaserde_derive::{YaDeserialize, YaSerialize};
 #[non_exhaustive]
 pub struct TextValue {
     /// The locale identifier for the value of the text.
+    #[yaserde(attribute)]
     pub lang: Option<Lang>,
 
     /// The text value.
+    #[yaserde(text)]
     pub value: String,
 }
 
 impl TextValue {
-    pub fn new<I: Into<String>>(value: I, lang: Option<Lang>) -> Self {
+    pub fn new<I, J>(value: I, lang: Option<J>) -> Self
+    where
+        I: Into<String>,
+        J: Into<Lang>,
+    {
         Self {
             value: value.into(),
-            lang,
+            lang: lang.map(std::convert::Into::into),
         }
     }
 }
@@ -61,7 +67,7 @@ mod test {
         }"#;
 
         let text_value: TextValue = serde_json::from_str(json).unwrap();
-        assert_eq!(text_value, TextValue::new("text of the value", None))
+        assert_eq!(text_value, TextValue::from("text of the value"))
     }
 
     #[test]
@@ -78,7 +84,7 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let text_value = TextValue::new("text of the value", None);
+        let text_value = TextValue::from("text of the value");
 
         let json = serde_json::to_string(&text_value).unwrap();
 

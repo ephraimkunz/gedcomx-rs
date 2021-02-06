@@ -12,7 +12,7 @@ fn test_example() {
     let jane_doe = Agent::builder()
         .id("A-1")
         .name("Jane Doe")
-        .email("example@example.org")
+        .email("mailto:example@example.org")
         .build();
 
     //Lin Yee Chung Cemetery
@@ -31,7 +31,7 @@ fn test_example() {
     let hanyu_pinyin = Agent::builder()
         .id("A-3")
         .name("HANYU Pinyin 王大年")
-        .email("example@example.org")
+        .email("mailto:example@example.org")
         .build();
 
     //The attribution for this research.
