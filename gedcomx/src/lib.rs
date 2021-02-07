@@ -35,8 +35,6 @@ use std::fmt;
 
 pub type Result<T> = std::result::Result<T, GedcomxError>;
 
-pub type Timestamp = chrono::DateTime<chrono::Utc>;
-
 // I can't figure out how to get Serde to properly serialize enums with a bunch of normal variants and then
 // one catch-all variant that includes the string from the json, just using attributes. So, rather than write a
 // Deserializer / Serializer implementation we'll just serialize to this newtype and then Serde will automatically
@@ -65,10 +63,13 @@ impl TestData {
     fn new() -> Self {
         let attribution = Attribution {
             contributor: Some(ResourceReference::from("A-1")),
-            modified: Some(chrono::DateTime::from_utc(
-                chrono::NaiveDateTime::from_timestamp(1_394_175_600, 0),
-                chrono::Utc,
-            )),
+            modified: Some(
+                chrono::DateTime::from_utc(
+                    chrono::NaiveDateTime::from_timestamp(1_394_175_600, 0),
+                    chrono::Utc,
+                )
+                .into(),
+            ),
             ..Attribution::default()
         };
 

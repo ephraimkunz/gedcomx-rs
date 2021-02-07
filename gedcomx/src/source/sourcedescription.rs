@@ -2,7 +2,6 @@ use crate::{
     Agent, Attribution, Coverage, EnumAsString, Id, Identifier, Note, ResourceReference, Result,
     SourceCitation, SourceReference, TextValue, Timestamp, Uri,
 };
-use chrono::serde::ts_milliseconds_option;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::{convert::TryInto, fmt};
@@ -52,13 +51,10 @@ pub struct SourceDescription {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub identifiers: Vec<Identifier>,
 
-    #[serde(with = "ts_milliseconds_option", default)]
     pub created: Option<Timestamp>,
 
-    #[serde(with = "ts_milliseconds_option", default)]
     pub modified: Option<Timestamp>,
 
-    #[serde(with = "ts_milliseconds_option", default)]
     pub published: Option<Timestamp>,
 
     pub repository: Option<ResourceReference>,
@@ -198,9 +194,9 @@ impl SourceDescriptionBuilder {
             self.0.coverage.clone(),
             self.0.descriptions.clone(),
             self.0.identifiers.clone(),
-            self.0.created,
-            self.0.modified,
-            self.0.published,
+            self.0.created.clone(),
+            self.0.modified.clone(),
+            self.0.published.clone(),
             self.0.repository.clone(),
         )
     }

@@ -22,5 +22,8 @@ pub use resourcereference::ResourceReference;
 mod textvalue;
 pub use textvalue::TextValue;
 
+mod timestamp;
+pub use timestamp::Timestamp;
+
 mod uri;
 pub use uri::Uri;

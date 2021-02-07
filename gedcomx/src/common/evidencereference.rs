@@ -2,6 +2,7 @@ use crate::{Attribution, Event, GedcomxError, Person, PlaceDescription, Relation
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::convert::TryFrom;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 /// A reference to data being used to derive the given instance of Subject.
 ///
@@ -15,10 +16,12 @@ use std::convert::TryFrom;
 /// When the researcher concludes that the person represented in "abcde" and in "fghij" are the same person, he will add two `EvidenceReference` instances
 /// to the working `Person`: one for "abcde" and one for "fghij".
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[yaserde(rename = "evidence")]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct EvidenceReference {
     /// Reference to the supporting data.
+    #[yaserde(attribute)]
     pub resource: Uri,
 
     /// The attribution of this evidence reference. If not provided, the attribution of the containing resource of the source reference is assumed.
@@ -46,6 +49,7 @@ try_from_evidencereference!(Relationship);
 mod test {
     use super::*;
     use crate::TestData;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn json_deserialize() {
@@ -99,5 +103,67 @@ mod test {
         let json = serde_json::to_string(&evidence_reference).unwrap();
 
         assert_eq!(json, r#"{"resource":"S-1"}"#);
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r#"
+        <evidence resource="http://identifier/for/data/being/referenced">
+            <attribution>
+            </attribution>
+        </evidence>"#;
+
+        let evidence_reference: EvidenceReference = yaserde::de::from_str(xml).unwrap();
+
+        let expected_evidence_reference = EvidenceReference {
+            resource: "http://identifier/for/data/being/referenced".into(),
+            attribution: Some(Attribution::default()),
+        };
+
+        assert_eq!(evidence_reference, expected_evidence_reference)
+    }
+
+    #[test]
+    fn xml_deserialize_optional_fields() {
+        let xml = r#"
+        <evidence resource="http://identifier/for/data/being/referenced">
+        </evidence>"#;
+
+        let evidence_reference: EvidenceReference = yaserde::de::from_str(xml).unwrap();
+
+        let expected_evidence_reference = EvidenceReference {
+            resource: "http://identifier/for/data/being/referenced".into(),
+            attribution: None,
+        };
+
+        assert_eq!(evidence_reference, expected_evidence_reference)
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let evidence_reference = EvidenceReference {
+            resource: "http://identifier/for/data/being/referenced".into(),
+            attribution: Some(Attribution::default()),
+        };
+
+        let xml = yaserde::ser::to_string_content(&evidence_reference).unwrap();
+
+        let expected_xml = r#"<attribution />"#;
+
+        assert_eq!(xml, expected_xml)
+    }
+
+    #[test]
+    fn xml_serialize_optional_fields() {
+        let evidence_reference = EvidenceReference {
+            resource: "http://identifier/for/data/being/referenced".into(),
+            attribution: None,
+        };
+
+        let xml = yaserde::ser::to_string_content(&evidence_reference).unwrap();
+
+        let expected_xml = "";
+
+        assert_eq!(xml, expected_xml)
     }
 }

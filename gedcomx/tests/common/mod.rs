@@ -1,4 +1,3 @@
-use chrono::{DateTime, NaiveDateTime, ParseResult, Utc};
 use gedcomx::Gedcomx;
 
 #[cfg(test)]
@@ -26,9 +25,3 @@ pub fn assert_matching_json(gx: Gedcomx, filename: &str) {
 //     let object_ser = yaserde::ser::to_string(&gx).unwrap();
 //     assert_eq!(object_ser, file_string);
 // }
-
-#[allow(dead_code)]
-pub fn parse(s: &str) -> ParseResult<DateTime<Utc>> {
-    let date_time = NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S")?;
-    Ok(DateTime::from_utc(date_time, Utc))
-}

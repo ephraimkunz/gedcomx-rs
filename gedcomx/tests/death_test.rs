@@ -1,7 +1,7 @@
 use gedcomx::{
     Address, Agent, Attribution, Date, Document, Fact, FactType, Gedcomx, Gender, GenderType, Name,
     NameForm, NameType, Person, PlaceReference, Relationship, RelationshipType, ResourceType,
-    SourceCitation, SourceDescription, SourceReference,
+    SourceCitation, SourceDescription, SourceReference, Timestamp,
 };
 
 mod common;
@@ -38,14 +38,14 @@ fn test_example() {
     let research_attribution = Attribution::builder()
         .contributor(&jane_doe)
         .unwrap()
-        .modified(common::parse("2014-03-27 06:00:00").unwrap())
+        .modified("2014-03-27T06:00:00".parse::<Timestamp>().unwrap())
         .build();
 
     //The attribution for the translation.
     let translation_attribution = Attribution::builder()
         .contributor(&hanyu_pinyin)
         .unwrap()
-        .modified(common::parse("2014-03-27 06:00:00").unwrap())
+        .modified("2014-03-27T06:00:00".parse::<Timestamp>().unwrap())
         .build();
 
     //The grave stone.

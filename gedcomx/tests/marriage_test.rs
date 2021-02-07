@@ -1,7 +1,7 @@
 use gedcomx::{
     Address, Agent, Attribution, Date, Document, DocumentType, Event, EventRole, EventRoleType,
     EventType, Fact, FactType, Gedcomx, GenderType, Person, PlaceReference, Relationship,
-    RelationshipType, ResourceType, SourceCitation, SourceDescription, SourceReference,
+    RelationshipType, ResourceType, SourceCitation, SourceDescription, SourceReference, Timestamp,
 };
 
 mod common;
@@ -31,7 +31,7 @@ fn test_example() {
     let research_attribution = Attribution::builder()
         .contributor(&jane_doe)
         .unwrap()
-        .modified(common::parse("2014-04-25 06:00:00").unwrap())
+        .modified("2014-04-25T06:00:00".parse::<Timestamp>().unwrap())
         .build();
 
     //The parish register.
