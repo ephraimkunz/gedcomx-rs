@@ -153,7 +153,7 @@ impl fmt::Display for Timestamp {
         } else {
             full.as_str()
         };
-        
+
         write!(f, "{}", partial)
     }
 }

@@ -40,7 +40,7 @@ pub type Result<T> = std::result::Result<T, GedcomxError>;
 // Deserializer / Serializer implementation we'll just serialize to this newtype and then Serde will automatically
 //  convert it to the required type.
 #[derive(Serialize, Deserialize)]
-pub struct EnumAsString(pub String);
+struct EnumAsString(String);
 
 impl<T: fmt::Display> From<T> for EnumAsString {
     fn from(t: T) -> Self {
