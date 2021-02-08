@@ -2,6 +2,7 @@ use crate::{ConclusionData, Date, ResourceReference, Uri};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+/// A role of a person in a group.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
@@ -9,12 +10,17 @@ pub struct GroupRole {
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
+    /// Reference to the group participant.	MUST resolve to an instance of [`Person`](crate::Person).
+    // TODO: Enforce in type system?
     pub person: ResourceReference,
 
+    /// The date of applicability of the role.
     pub date: Option<Date>,
 
+    /// Details about the role of the participant in the group.
     pub details: Option<String>,
 
+    /// The participant's role.
     #[serde(rename = "type")]
     pub group_role_type: Option<GroupRoleType>,
 }
@@ -31,6 +37,7 @@ impl GroupRole {
     }
 }
 
+/// Group role types.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(untagged)]

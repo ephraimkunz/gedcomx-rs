@@ -98,6 +98,7 @@ impl DocumentBuilder {
     }
 }
 
+/// Document types
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]

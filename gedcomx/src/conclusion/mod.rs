@@ -17,7 +17,7 @@ mod fact;
 pub use fact::{Fact, FactBuilder, FactQualifier, FactType};
 
 mod gender;
-pub use gender::{Gender, GenderType};
+pub use gender::{Gender, GenderBuilder, GenderType};
 
 mod group;
 pub use group::Group;

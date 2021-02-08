@@ -4,6 +4,10 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+/// A group of of persons.
+///
+/// The concept of a "group" captures institutional associations between persons that may or may not have direct familial relations between
+/// each other. Examples of a group could include plantations, orphanages, or military units.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
@@ -11,12 +15,17 @@ pub struct Group {
     #[serde(flatten)]
     pub subject: SubjectData,
 
-    pub names: Vec<TextValue>, // Must contain at least 1 name
+    /// A list of names of the group. The list must contain at least 1 name.
+    // TODO: Enforce in type system?
+    pub names: Vec<TextValue>,
 
+    /// The date of applicability of the group.
     pub date: Option<Date>,
 
+    /// A reference to the place applicable to this group.
     pub place: Option<PlaceReference>,
 
+    /// Information about how persons were associated with the group.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub roles: Vec<GroupRole>,
 }

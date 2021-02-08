@@ -2,9 +2,11 @@ use crate::{Conclusion, ConclusionData, EnumAsString, Uri};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+/// A gender of a person.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Gender {
+    /// The type of the gender.
     #[serde(rename = "type")]
     pub gender_type: GenderType,
 
@@ -19,6 +21,31 @@ impl Gender {
             gender_type,
         }
     }
+
+    pub fn builder(gender_type: GenderType) -> GenderBuilder {
+        GenderBuilder::new(gender_type)
+    }
+}
+
+pub struct GenderBuilder(Gender);
+
+impl GenderBuilder {
+    pub(crate) fn new(gender_type: GenderType) -> Self {
+        Self(Gender {
+            gender_type,
+            ..Gender::default()
+        })
+    }
+
+    conclusion_builder_functions!(Gender);
+
+    #[allow(dead_code)] // Nothing in the crate currently uses it, but clients of the crate may want it.
+    fn build(&self) -> Gender {
+        Gender {
+            gender_type: self.0.gender_type.clone(),
+            conclusion: self.0.conclusion.clone(),
+        }
+    }
 }
 
 impl From<GenderType> for Gender {
@@ -30,14 +57,37 @@ impl From<GenderType> for Gender {
     }
 }
 
+impl Conclusion for Gender {
+    fn conclusion(&self) -> &ConclusionData {
+        &self.conclusion
+    }
+
+    fn conclusion_mut(&mut self) -> &mut ConclusionData {
+        &mut self.conclusion
+    }
+
+    fn type_name(&self) -> std::string::String {
+        String::from("Gender")
+    }
+}
+
+/// Type of gender.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum GenderType {
+    /// Male gender.
     Male,
+
+    /// Female gender.
     Female,
+
+    /// Unknown gender.
     Unknown,
+
+    /// Intersex (assignment at birth).
     Intersex,
+
     Custom(Uri),
 }
 
@@ -68,20 +118,6 @@ impl fmt::Display for GenderType {
             Self::Intersex => write!(f, "http://gedcomx.org/Intersex"),
             Self::Custom(c) => write!(f, "{}", c),
         }
-    }
-}
-
-impl Conclusion for Gender {
-    fn conclusion(&self) -> &ConclusionData {
-        &self.conclusion
-    }
-
-    fn conclusion_mut(&mut self) -> &mut ConclusionData {
-        &mut self.conclusion
-    }
-
-    fn type_name(&self) -> std::string::String {
-        String::from("Gender")
     }
 }
 

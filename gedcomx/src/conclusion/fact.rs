@@ -590,6 +590,7 @@ impl Default for FactType {
     }
 }
 
+/// Fact qualifiers.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]

@@ -3,19 +3,34 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-// I think this will need custom JSON serialization / deserialization. Needs to be a map of typee -> [uri].
+/// An identifier of a genealogical resource.
+// I think this will need custom JSON serialization / deserialization. Needs to be a map of identifier_type -> [uri].
+///
+/// # Examples
+/// An instance of Person with an identifier of type [`Primary`](crate::IdentifierType::Primary) and value "12345" is merged into an instance of
+/// `Person` with an identifier of type [`Primary`](crate::IdentifierType::Primary) and value "67890". `Person` "67890" assumes an identifier of
+/// type [`Deprecated`](crate::IdentifierType::Deprecated) and value "12345". The identifier type [`Deprecated`](crate::IdentifierType::Deprecated)
+///  is used because the merged person "12345" now has identifier of type [`Primary`](crate::IdentifierType::Primary)with value "67890".
+///
+/// A description of Salt Lake City, Utah, United States is provided using an instance of [`PlaceDescription`](crate::PlaceDescription). Salt Lake City
+/// is maintained in the Geographic Names Information System (GNIS), an external place authority. The description of Salt Lake City might identify the
+/// associated GNIS resource using an identifier of type [`Authority`](crate::IdentifierType::Authority) with value "<http://geonames.usgs.gov/pls/gnispublic/f?p=gnispq:3:::NO::P3_FID:2411771>".
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Identifier {
-    pub uri: Uri,
+    /// The value of the identifier.
+    pub value: Uri,
 
+    /// Identifies how the identifier is to be used and the nature of the resource to which the identifier resolves.
+    ///
+    /// If no type is provided, the usage and nature of the identifier is application-specific.
     #[serde(rename = "type")]
     pub identifier_type: Option<IdentifierType>,
 }
 
 impl Identifier {
-    pub fn new<I: Into<Uri>>(uri: I, identifier_type: Option<IdentifierType>) -> Self {
+    pub fn new<I: Into<Uri>>(value: I, identifier_type: Option<IdentifierType>) -> Self {
         Self {
-            uri: uri.into(),
+            value: value.into(),
             identifier_type,
         }
     }
@@ -36,7 +51,7 @@ impl yaserde::YaSerialize for Identifier {
 
         writer.write(start_builder).map_err(|e| e.to_string())?;
         writer
-            .write(xml::writer::XmlEvent::characters(&self.uri.to_string()))
+            .write(xml::writer::XmlEvent::characters(&self.value.to_string()))
             .map_err(|e| e.to_string())?;
         writer
             .write(xml::writer::XmlEvent::end_element())
@@ -103,7 +118,7 @@ impl yaserde::YaDeserialize for Identifier {
 
         if let xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
             Ok(Self {
-                uri: text.into(),
+                value: text.into(),
                 identifier_type,
             })
         } else {
@@ -112,13 +127,27 @@ impl yaserde::YaDeserialize for Identifier {
     }
 }
 
+/// Standard identifier types.
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum IdentifierType {
+    /// The primary identifier for the resource.
+    ///
+    /// The value of the identifier MUST resolve to the instance of Subject to which the identifier applies.
     Primary,
+
+    /// An identifier for the resource in an external authority or other expert system.
+    ///
+    /// The value of the identifier MUST resolve to a public, authoritative, source for information about the Subject to which the identifier applies.
     Authority,
+
+    /// An identifier that has been relegated, deprecated, or otherwise downgraded.
+    ///
+    /// This identifier is commonly used as the result of a merge when what was once a primary identifier for a resource is no longer the primary identifier.
+    /// The value of the identifier MUST resolve to the instance of Subject to which the identifier applies.
     Deprecated,
+
     Custom(Uri),
 }
 
