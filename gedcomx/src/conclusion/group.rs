@@ -1,13 +1,16 @@
-use crate::{
-    Conclusion, ConclusionData, Date, GroupRole, PlaceReference, Subject, SubjectData, TextValue,
-};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+use crate::{
+    Conclusion, ConclusionData, Date, GroupRole, PlaceReference, Subject, SubjectData, TextValue,
+};
+
 /// A group of of persons.
 ///
-/// The concept of a "group" captures institutional associations between persons that may or may not have direct familial relations between
-/// each other. Examples of a group could include plantations, orphanages, or military units.
+/// The concept of a "group" captures institutional associations between persons
+/// that may or may not have direct familial relations between each other.
+/// Examples of a group could include plantations, orphanages, or military
+/// units.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]

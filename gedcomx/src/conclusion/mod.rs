@@ -29,7 +29,10 @@ mod identifier;
 pub use identifier::{Identifier, IdentifierType};
 
 mod name;
-pub use name::{Name, NameForm, NamePart, NamePartQualifier, NamePartType, NameType};
+pub use name::{
+    Name, NameBuilder, NameForm, NameFormBuilder, NamePart, NamePartBuilder, NamePartQualifier,
+    NamePartType, NameType,
+};
 
 mod person;
 pub use person::Person;

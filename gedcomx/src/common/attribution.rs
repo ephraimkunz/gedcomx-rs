@@ -1,29 +1,37 @@
-use crate::{Agent, ResourceReference, Result, Timestamp};
+use std::convert::TryInto;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use std::convert::TryInto;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-/// The data structure used to attribute who, when, and why to genealogical data.
+use crate::{Agent, ResourceReference, Result, Timestamp};
+
+/// The data structure used to attribute who, when, and why to genealogical
+/// data.
 ///
-/// Data is attributed to the agent who made the latest significant change to the nature of the data being attributed.
+/// Data is attributed to the agent who made the latest significant change to
+/// the nature of the data being attributed.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[yaserde(rename = "attribution")]
 #[serde(rename_all = "camelCase")]
 pub struct Attribution {
-    /// Reference to the agent to whom the attributed data is attributed. If provided, MUST resolve to an instance of [`Agent`](crate::Agent).
+    /// Reference to the agent to whom the attributed data is attributed. If
+    /// provided, MUST resolve to an instance of [`Agent`](crate::Agent).
     pub contributor: Option<ResourceReference>, // TODO: Enforce this constraint?
 
     /// Timestamp of when the attributed data was modified.
     pub modified: Option<Timestamp>,
 
-    /// A statement of why the attributed data is being provided by the contributor.
+    /// A statement of why the attributed data is being provided by the
+    /// contributor.
     #[yaserde(rename = "changeMessage")]
     pub change_message: Option<String>,
 
-    /// Reference to the agent that created the attributed data. The creator MAY be different from the contributor
-    /// if changes were made to the attributed data. If provided, MUST resolve to an instance of [`Agent`](crate::Agent).
+    /// Reference to the agent that created the attributed data. The creator MAY
+    /// be different from the contributor if changes were made to the
+    /// attributed data. If provided, MUST resolve to an instance of
+    /// [`Agent`](crate::Agent).
     pub creator: Option<ResourceReference>,
 
     /// Timestamp of when the attributed data was contributed.
@@ -61,7 +69,8 @@ impl AttributionBuilder {
 
     /// # Errors
     ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
     /// This happens if `agent` has no `id` set.
     pub fn contributor(&mut self, agent: &Agent) -> Result<&mut Self> {
         self.0.contributor = Some(agent.try_into()?);
@@ -70,7 +79,8 @@ impl AttributionBuilder {
 
     /// # Errors
     ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
     /// This happens if `agent` has no `id` set.
     pub fn creator(&mut self, agent: &Agent) -> Result<&mut Self> {
         self.0.creator = Some(agent.try_into()?);
@@ -105,8 +115,9 @@ impl AttributionBuilder {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use pretty_assertions::assert_eq;
+
+    use super::*;
 
     #[test]
     fn json_deserialize() {

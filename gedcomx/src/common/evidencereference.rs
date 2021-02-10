@@ -1,19 +1,27 @@
-use crate::{Attribution, Event, GedcomxError, Person, PlaceDescription, Relationship, Uri};
+use std::convert::TryFrom;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use std::convert::TryFrom;
 use yaserde_derive::{YaDeserialize, YaSerialize};
+
+use crate::{Attribution, Event, GedcomxError, Person, PlaceDescription, Relationship, Uri};
 
 /// A reference to data being used to derive the given instance of Subject.
 ///
-/// For example, an "evidence" Subject (i.e., the object holding the `EvidenceReference` instance) can refer to content
-/// extracted from a source (i.e., an "extracted" Subject) as information being used to derive the evidence expressed in this Subject.
+/// For example, an "evidence" Subject (i.e., the object holding the
+/// `EvidenceReference` instance) can refer to content extracted from a source
+/// (i.e., an "extracted" Subject) as information being used to derive the
+/// evidence expressed in this Subject.
 ///
 /// # Examples
-/// An application allows a researcher to extract information from a single census record about a person, representing the information as a persona
-/// with an identifier "abcde". The researcher extracts additional information about the person from a birth certificate and the application assigns
-/// the resulting persona an identifier "fghij". As the researcher gathers and analyzes the information, he will create a (working) `Person` conclusion.
-/// When the researcher concludes that the person represented in "abcde" and in "fghij" are the same person, he will add two `EvidenceReference` instances
+/// An application allows a researcher to extract information from a single
+/// census record about a person, representing the information as a persona with
+/// an identifier "abcde". The researcher extracts additional information about
+/// the person from a birth certificate and the application assigns
+/// the resulting persona an identifier "fghij". As the researcher gathers and
+/// analyzes the information, he will create a (working) `Person` conclusion.
+/// When the researcher concludes that the person represented in "abcde" and in
+/// "fghij" are the same person, he will add two `EvidenceReference` instances
 /// to the working `Person`: one for "abcde" and one for "fghij".
 #[skip_serializing_none]
 #[yaserde(rename = "evidence")]
@@ -24,7 +32,9 @@ pub struct EvidenceReference {
     #[yaserde(attribute)]
     pub resource: Uri,
 
-    /// The attribution of this evidence reference. If not provided, the attribution of the containing resource of the source reference is assumed.
+    /// The attribution of this evidence reference. If not provided, the
+    /// attribution of the containing resource of the source reference is
+    /// assumed.
     pub attribution: Option<Attribution>,
 }
 
@@ -37,8 +47,8 @@ impl EvidenceReference {
     }
 }
 
-// Ideally we'd implement all the TryFroms with a blanket imple like impl <T: Subject> TryFrom<&T> for EvidenceReference.
-// But that doesn't work due to https://github.com/rust-lang/rust/issues/50133. So insead we'll implement them with this macro.
+// Ideally we'd implement all the TryFroms with a blanket imple like impl <T:
+// Subject> TryFrom<&T> for EvidenceReference. But that doesn't work due to https://github.com/rust-lang/rust/issues/50133. So insead we'll implement them with this macro.
 
 try_from_evidencereference!(Person);
 try_from_evidencereference!(Event);
@@ -47,9 +57,10 @@ try_from_evidencereference!(Relationship);
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::TestData;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn json_deserialize() {

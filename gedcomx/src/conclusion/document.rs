@@ -1,9 +1,12 @@
-use crate::{Attribution, Conclusion, ConclusionData, EnumAsString, Uri};
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
 use std::fmt;
 
-/// The base conceptual model for genealogical data that are managed as textual documents.
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
+use crate::{Attribution, Conclusion, ConclusionData, EnumAsString, Uri};
+
+/// The base conceptual model for genealogical data that are managed as textual
+/// documents.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
@@ -16,7 +19,8 @@ pub struct Document {
     #[serde(rename = "type")]
     pub document_type: Option<DocumentType>,
 
-    /// Whether this document is to be constrained as an *xtracted conclusion, meaning it captures information extracted from a single source.
+    /// Whether this document is to be constrained as an *xtracted conclusion,
+    /// meaning it captures information extracted from a single source.
     pub extracted: Option<bool>,
 
     /// The type of text in the `text` property.
@@ -30,7 +34,8 @@ pub struct Document {
 
     /// The attribution of the document.
     ///
-    /// If not provided, the attribution of the containing data set (e.g. file) of the document is assumed.
+    /// If not provided, the attribution of the containing data set (e.g. file)
+    /// of the document is assumed.
     // TODO: Should this property even exist? It's also defined on the conclusion data.
     pub attribution: Option<Attribution>,
 }
@@ -62,14 +67,14 @@ impl Document {
 pub struct DocumentBuilder(Document);
 
 impl DocumentBuilder {
+    conclusion_builder_functions!(Document);
+
     pub(crate) fn new<I: Into<String>>(text: I) -> Self {
         Self(Document {
             text: text.into(),
             ..Document::default()
         })
     }
-
-    conclusion_builder_functions!(Document);
 
     pub fn document_type(&mut self, document_type: DocumentType) -> &mut Self {
         self.0.document_type = Some(document_type);
@@ -103,7 +108,8 @@ impl DocumentBuilder {
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum DocumentType {
-    /// The document is an analysis done by a researcher; a genealogical proof statement is an example of one kind of analysis document.
+    /// The document is an analysis done by a researcher; a genealogical proof
+    /// statement is an example of one kind of analysis document.
     Analysis,
 
     /// The document is an abstract of a record or document.

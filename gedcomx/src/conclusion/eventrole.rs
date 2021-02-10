@@ -1,7 +1,9 @@
-use crate::{Conclusion, ConclusionData, EnumAsString, Person, ResourceReference, Result, Uri};
+use std::{convert::TryInto, fmt};
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use std::{convert::TryInto, fmt};
+
+use crate::{Conclusion, ConclusionData, EnumAsString, Person, ResourceReference, Result, Uri};
 
 /// A role played in an event by a person.
 #[skip_serializing_none]
@@ -42,7 +44,8 @@ impl EventRole {
 
     /// # Errors
     ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
     /// This happens if `person` has no `id` set.
     pub fn builder(person: &Person) -> Result<EventRoleBuilder> {
         EventRoleBuilder::new(person)
@@ -66,9 +69,12 @@ impl Conclusion for EventRole {
 pub struct EventRoleBuilder(EventRole);
 
 impl EventRoleBuilder {
+    conclusion_builder_functions!(EventRole);
+
     /// # Errors
     ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::SourceReference) fails.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::SourceReference) fails.
     /// This happens if `person` has no `id` set.
     pub(crate) fn new(person: &Person) -> Result<Self> {
         Ok(Self(EventRole {
@@ -76,8 +82,6 @@ impl EventRoleBuilder {
             ..EventRole::default()
         }))
     }
-
-    conclusion_builder_functions!(EventRole);
 
     pub fn event_role_type(&mut self, event_role_type: EventRoleType) -> &mut Self {
         self.0.event_role_type = Some(event_role_type);

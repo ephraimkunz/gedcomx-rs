@@ -1,9 +1,12 @@
-use crate::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Qualifier, Uri};
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
 use std::fmt;
 
-/// A data item that is presumed to be true about a specific subject, such as a person or relationship.
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
+use crate::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Qualifier, Uri};
+
+/// A data item that is presumed to be true about a specific subject, such as a
+/// person or relationship.
 ///
 /// To distinguish the concept of "fact" from "event", refer to [Events Versus Facts](https://github.com/FamilySearch/gedcomx/blob/master/specifications/conceptual-model-specification.md#events-vs-facts).
 #[skip_serializing_none]
@@ -73,14 +76,14 @@ impl Fact {
 pub struct FactBuilder(Fact);
 
 impl FactBuilder {
+    conclusion_builder_functions!(Fact);
+
     pub(crate) fn new(fact_type: FactType) -> Self {
         Self(Fact {
             fact_type,
             ..Fact::default()
         })
     }
-
-    conclusion_builder_functions!(Fact);
 
     pub fn date(&mut self, date: Date) -> &mut Self {
         self.0.date = Some(date);
@@ -120,7 +123,8 @@ impl FactBuilder {
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum FactType {
     // Person fact types.
-    /// In the context of a parent-child relationship, it describes a fact of the adoption of a child by a parent.
+    /// In the context of a parent-child relationship, it describes a fact of
+    /// the adoption of a child by a parent.
     Adoption,
 
     /// A fact of a person's christening or baptism as an adult.
@@ -129,15 +133,19 @@ pub enum FactType {
 
     /// A fact of a person's ancestral hall.
     ///
-    /// An ancestral hall refers to a location where the early ancestors of the person originated. It may also refer to the name of an early ancestor.
-    /// Family clans are often distinguished one from another by the ancestral hall. Clans that cannot prove direct relationships to other clans with
-    /// the same surname can assume a direct relationship if they share the same ancestral hall.
+    /// An ancestral hall refers to a location where the early ancestors of the
+    /// person originated. It may also refer to the name of an early ancestor.
+    /// Family clans are often distinguished one from another by the ancestral
+    /// hall. Clans that cannot prove direct relationships to other clans with
+    /// the same surname can assume a direct relationship if they share the same
+    /// ancestral hall.
     AncestralHall,
 
     /// A fact of a person's ancestral poem.
     ///
     /// An ancestral poem (or generation poem) is composed of the "generation characters" that are to be used when choosing names for the members of different
-    ///  generations of an extended family. Ancestral poems are prominent in Asian countries, particularly China.
+    ///  generations of an extended family. Ancestral poems are prominent in
+    /// Asian countries, particularly China.
     AncestralPoem,
     Apprenticeship,
     Arrest,
@@ -149,10 +157,12 @@ pub enum FactType {
     BatMitzvah,
     Birth,
 
-    /// A fact of a person's birth notice, such as posted in a newspaper or other publishing medium.
+    /// A fact of a person's birth notice, such as posted in a newspaper or
+    /// other publishing medium.
     BirthNotice,
 
-    /// A fact of an official blessing received by a person, such as at the hands of a clergy member or at another religious rite.
+    /// A fact of an official blessing received by a person, such as at the
+    /// hands of a clergy member or at another religious rite.
     Blessing,
 
     /// A fact of a person's branch within an extended clan.
@@ -167,12 +177,14 @@ pub enum FactType {
 
     /// A fact of a person's christening *at birth*.
     ///
-    /// Note: use [`AdultChristening`](crate::FactType::AdultChristening) for the christening as an adult.
+    /// Note: use [`AdultChristening`](crate::FactType::AdultChristening) for
+    /// the christening as an adult.
     Christening,
     Circumcision,
     Clan,
 
-    /// A fact of a person's confirmation (or other rite of initiation) in a church or religion.
+    /// A fact of a person's confirmation (or other rite of initiation) in a
+    /// church or religion.
     Confirmation,
 
     /// A fact of the appearance of a person in a court proceeding.
@@ -182,10 +194,12 @@ pub enum FactType {
     Cremation,
     Death,
 
-    /// A fact of an education or an educational achievement (e.g., diploma, graduation, scholarship, etc.) of a person.
+    /// A fact of an education or an educational achievement (e.g., diploma,
+    /// graduation, scholarship, etc.) of a person.
     Education,
 
-    /// A fact of a person's enrollment in an educational program or institution.
+    /// A fact of a person's enrollment in an educational program or
+    /// institution.
     EducationEnrollment,
     Emigration,
     Enslavement,
@@ -199,7 +213,8 @@ pub enum FactType {
     Funeral,
     GenderChange,
 
-    /// A fact of a person's generation number, indicating the number of generations the person is removed from a known "first" ancestor.
+    /// A fact of a person's generation number, indicating the number of
+    /// generations the person is removed from a known "first" ancestor.
     GenerationNumber,
 
     /// A fact of a person's graduation from a scholastic institution.
@@ -207,18 +222,23 @@ pub enum FactType {
 
     /// A fact of a person's heimat.
     ///
-    /// "Heimat" refers to a person's affiliation by birth to a specific geographic place. Distinct heimaten are often useful as
-    /// indicators that two persons of the same name are not likely to be closely related genealogically. In English, "heimat"
-    /// may be described using terms like "ancestral home", "homeland", or "place of origin".
+    /// "Heimat" refers to a person's affiliation by birth to a specific
+    /// geographic place. Distinct heimaten are often useful as indicators
+    /// that two persons of the same name are not likely to be closely related
+    /// genealogically. In English, "heimat" may be described using terms
+    /// like "ancestral home", "homeland", or "place of origin".
     Heimat,
     Immigration,
     Imprisonment,
 
     /// A legal inquest.
     ///
-    /// Inquests usually only occur when there’s something suspicious about the death. Inquests might in some instances lead to a
-    /// murder investigation. Most people that die have a death certificate wherein a doctor indicates the cause of death and often
-    /// indicates when the decedent was last seen by that physician; these require no inquest.
+    /// Inquests usually only occur when there’s something suspicious about the
+    /// death. Inquests might in some instances lead to a
+    /// murder investigation. Most people that die have a death certificate
+    /// wherein a doctor indicates the cause of death and often
+    /// indicates when the decedent was last seen by that physician; these
+    /// require no inquest.
     Inquest,
 
     /// A fact of a land transaction enacted by a person.
@@ -229,12 +249,15 @@ pub enum FactType {
 
     /// A fact of a record of a person's living for a specific period.
     ///
-    /// This is designed to include "flourish", defined to mean the time period in an adult's life where he was most productive, perhaps
-    /// as a writer or member of the state assembly. It does not reflect the person's birth and death dates.
+    /// This is designed to include "flourish", defined to mean the time period
+    /// in an adult's life where he was most productive, perhaps as a writer
+    /// or member of the state assembly. It does not reflect the person's birth
+    /// and death dates.
     Living,
     MaritalStatus,
 
-    /// A fact of a person's medical record, such as for an illness or hospital stay.
+    /// A fact of a person's medical record, such as for an illness or hospital
+    /// stay.
     Medical,
     MilitaryAward,
     MilitaryDischarge,
@@ -251,14 +274,16 @@ pub enum FactType {
     /// A fact of a person's move (i.e. change of residence) to a new location.
     MoveTo,
 
-    /// A fact that a person was born as part of a multiple birth (e.g. twin, triplet, etc.)
+    /// A fact that a person was born as part of a multiple birth (e.g. twin,
+    /// triplet, etc.)
     MultipleBirth,
 
     /// A fact of a person's national id (e.g. social security number).
     NationalId,
     Nationality,
 
-    /// A fact of a person's naturalization (i.e. acquisition of citizenship and nationality).
+    /// A fact of a person's naturalization (i.e. acquisition of citizenship and
+    /// nationality).
     Naturalization,
 
     /// A fact of the number of children of a person or relationship.
@@ -285,7 +310,8 @@ pub enum FactType {
     /// A fact of a person's property or possessions.
     Property,
 
-    /// A fact of the declaration of a person's race, presumably in a historical document.
+    /// A fact of the declaration of a person's race, presumably in a historical
+    /// document.
     Race,
     Religion,
     Residence,
@@ -295,12 +321,14 @@ pub enum FactType {
     Tribe,
     Will,
 
-    /// A fact of a person's visit to a place different from the person's residence.
+    /// A fact of a person's visit to a place different from the person's
+    /// residence.
     Visit,
 
     /// A fact of a person's *yahrzeit* date.
     ///
-    /// A person's yahzeit is the anniversary of their death as measured by the Hebrew calendar.  
+    /// A person's yahzeit is the anniversary of their death as measured by the
+    /// Hebrew calendar.
     Yahrzeit,
 
     // Couple fact types.
@@ -333,12 +361,14 @@ pub enum FactType {
 
     /// A fact about an entering heir relationship between a parent and a child.
     ///
-    /// An entering heir is received from another parent as an "exiting heir" for designation of inheritance.
+    /// An entering heir is received from another parent as an "exiting heir"
+    /// for designation of inheritance.
     EnteringHeir,
 
     /// A fact about an exiting heir relationship between a parent and a child.
     ///
-    /// An exiting heir is given as an "entering heir" to another parent for designation of inheritance.
+    /// An exiting heir is given as an "entering heir" to another parent for
+    /// designation of inheritance.
     ExitingHeir,
 
     /// A fact about a foster relationship between a foster parent and a child.
@@ -350,10 +380,12 @@ pub enum FactType {
     /// A fact about a legal guardianship between a parent and a child.
     StepParent,
 
-    /// A fact about a sociological relationship between a parent and a child, but not definable in typical legal or biological terms.
+    /// A fact about a sociological relationship between a parent and a child,
+    /// but not definable in typical legal or biological terms.
     SociologicalParent,
 
-    /// A fact about a pregnancy surrogate relationship between a parent and a child.
+    /// A fact about a pregnancy surrogate relationship between a parent and a
+    /// child.
     SurrogateParent,
 
     // Catch all
@@ -474,8 +506,8 @@ impl fmt::Display for FactType {
 impl From<EnumAsString> for FactType {
     #[allow(clippy::too_many_lines)]
     fn from(f: EnumAsString) -> Self {
-        // If you need to generate this mapping in the future, the easiest way is to copy and paste the tables in
-        // https://github.com/FamilySearch/gedcomx/blob/master/specifications/fact-types-specification.md.
+        // If you need to generate this mapping in the future, the easiest way is to
+        // copy and paste the tables in https://github.com/FamilySearch/gedcomx/blob/master/specifications/fact-types-specification.md.
         // Then use VSCode's find and replace with regex feature with a find regex: (http://gedcomx.org/([a-zA-Z]+)).*
         // and a replace regex: "$1" => Self::$2,
         match f.0.as_ref() {
@@ -601,13 +633,16 @@ pub enum FactQualifier {
     /// The cause of the fact, such as the cause of death.
     Cause,
 
-    /// The religion associated with a religious event such as a baptism or excommunication.
+    /// The religion associated with a religious event such as a baptism or
+    /// excommunication.
     Religion,
 
-    /// The name of the transport associated with an event that indicates a move.
+    /// The name of the transport associated with an event that indicates a
+    /// move.
     Transport,
 
-    /// An indicator that the event occurred non-consensually, e.g. under enslavement.
+    /// An indicator that the event occurred non-consensually, e.g. under
+    /// enslavement.
     NonConsensual,
     Custom(Uri),
 }
@@ -640,9 +675,10 @@ impl fmt::Display for FactQualifier {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::TestData;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn json_serialize_custom_fact_type() {

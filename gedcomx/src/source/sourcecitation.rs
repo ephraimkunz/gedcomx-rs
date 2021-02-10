@@ -1,6 +1,7 @@
-use crate::Lang;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+
+use crate::Lang;
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]

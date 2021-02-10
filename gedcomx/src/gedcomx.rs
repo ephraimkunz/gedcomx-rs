@@ -1,12 +1,14 @@
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
 use crate::{
     Agent, Attribution, Document, Event, Group, Id, Lang, Person, PlaceDescription, Relationship,
     SourceDescription, Uri,
 };
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
 
-// This struct holds the "real copies" of all the structs that will be serialized to a given format.
-// Other structs may hold refs to, for example, SourceDescription, keyed off the ids.
+// This struct holds the "real copies" of all the structs that will be
+// serialized to a given format. Other structs may hold refs to, for example,
+// SourceDescription, keyed off the ids.
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]

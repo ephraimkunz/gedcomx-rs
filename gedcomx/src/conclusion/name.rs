@@ -1,8 +1,57 @@
-use crate::{Conclusion, ConclusionData, Date, EnumAsString, Lang, Qualifier, Uri};
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
 use std::fmt;
 
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
+use crate::{Conclusion, ConclusionData, Date, EnumAsString, Lang, Qualifier, Uri};
+
+/// A name of a person.
+///
+/// A Name is intended to represent a single variant of a person's name. This
+/// means that nicknames, spelling variations, or other names
+/// (often distinguishable by a name type) should be modeled with separate
+/// instances of Name.
+///
+/// The name forms of a name contain alternate representations of the name. A
+/// Name MUST contain at least one name form, presumably a representation of the
+/// name that is considered proper and well formed in the person's native,
+/// historical cultural context. Other name forms MAY be included, which can be
+/// used to represent this name in contexts where the native name form is not
+/// easily recognized and interpreted. Alternate forms are more likely in
+/// situations where conclusions are being analyzed across cultural context
+/// boundaries that have both language and writing script differences.
+///
+/// For example, a Korean name has a native Korean form, but can also have a
+/// Chinese form and a Roman/Latin form—three different name forms,
+/// but each representing the same name.
+///
+/// If more than one name form is provided, included name forms are presumed to
+/// be given in order of preference, with the most preferred name form in the
+/// first position in the list.
+///
+/// # Examples
+/// Consider the following: a Russian person with the birth name "Александр"
+/// (rendered as "Alexander" in English and in a Latin script) that also went by
+/// this name's common nickname, "Саша" (rendered as "Sasha" in English).
+///
+/// It is tempting to think that this situation should be modeled with one Name
+/// instance that has several alternate NameForms. The model is not designed to
+/// be used in this way. Instead, this person's names ought to be modeled such
+/// that the birth name and the nickname are modeled as two separate Name
+/// instances: one instance for the birth name, and one for the nickname. The
+/// type property MAY be provided to distinguish the birth name from the
+/// nickname. Each Name instance MAY have two NameForm instances: one with the
+/// native form of the name and another with the
+// alternate form. Using an informal pseudo code, it might look something like the following:
+/// ```text
+/// Name1.type=http://gedcomx.org/BirthName
+/// Name1.nameForms[0].fullText=Александр
+/// Name1.nameForms[1].fullText=Alexander
+///
+/// Name2.type=http://gedcomx.org/Nickname
+/// Name2.nameForms[0].fullText=Саша
+/// Name2.nameForms[1].fullText=Sasha
+/// ```
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
@@ -11,11 +60,21 @@ pub struct Name {
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
+    /// The name type.
     #[serde(rename = "type")]
     pub name_type: Option<NameType>,
 
-    pub name_forms: Vec<NameForm>, // Must be non-empty.
+    /// The name form(s) that best express this name, usually representations
+    /// considered proper and well formed in the person's native, historical
+    /// cultural context.
+    ///
+    /// At least one name form MUST be provided. All included name forms SHOULD
+    /// be representations of the same name, and NOT variants of
+    /// the name (i.e., not nicknames or spelling variations).
+    // TODO: Must be non-empty. Enforce with type system? Vec1<>? Or just error from build method?
+    pub name_forms: Vec<NameForm>,
 
+    /// The date of applicability of the name.
     pub date: Option<Date>,
 }
 
@@ -66,11 +125,11 @@ impl Conclusion for Name {
 pub struct NameBuilder(Name);
 
 impl NameBuilder {
+    conclusion_builder_functions!(Name);
+
     pub(crate) fn new() -> Self {
         Self(Name::default())
     }
-
-    conclusion_builder_functions!(Name);
 
     pub fn name_type(&mut self, name_type: NameType) -> &mut Self {
         self.0.name_type = Some(name_type);
@@ -109,16 +168,31 @@ impl From<&str> for Name {
     }
 }
 
+/// Standard name types.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NameType {
+    /// Name given at birth.
     BirthName,
+
+    /// Name accepted at marriage.
     MarriedName,
+
+    /// "Also known as" name.
     AlsoKnownAs,
+
+    /// Nickname.
     Nickname,
+
+    /// Name given at adoption.
     AdoptiveName,
+
+    /// A formal name, usually given to distinguish it from a name more commonly
+    /// used.
     FormalName,
+
+    /// A name given at a religious rite or ceremony.
     ReligiousName,
     Custom(Uri),
 }
@@ -153,15 +227,78 @@ impl fmt::Display for NameType {
     }
 }
 
+/// A representation of a name (a "name form") within a given cultural context,
+/// such as a given language and script.
+///
+/// As names are captured (both in records or in applications), the terms in the
+/// name are sometimes classified by type. For example, a certificate of death
+/// might prompt for "given name(s)" and "surname". The parts list can be used
+/// to represent the terms in the name that have been classified.
+///
+/// If both a full rendering of the name and a list of parts are provided, it
+/// NOT REQUIRED that every term in the fully rendered name appear in the list
+/// of parts.
+///
+/// Name parts in the parts list SHOULD be ordered in the natural order they
+/// would be used in the applicable cultural context.
+///
+/// If a full rendering of the name is not provided (i.e., the name has only
+/// been expressed in parts), a full rendering of the name MAY be derived (sans
+/// punctuation) by concatenating, in order, each name part value in the list of
+/// parts, separating each part with the name part separator appropriate for the
+/// applicable cultural context.
+///
+/// # Examples
+/// Consider the following: the Russian name "Пётр Ильи́ч Чайко́вский" in the
+/// Cyrillic script, its Latin-script equivalent "Pyotr Ilyich Tchaikovsky", and
+/// its anglicised equivalent "Peter Ilyich Tchaikovsky". Using an informal
+/// pseudo code, these name forms might be modeled as follows:
+/// ```text
+/// NameForm1.locale=ru-Cyrl
+/// NameForm1.fullText=Пётр Ильи́ч Чайко́вский
+/// NameForm1.parts[0].type=http://gedcomx.org/Given
+/// NameForm1.parts[0].value=Пётр
+/// NameForm1.parts[0].qualifiers[0]=http://gedcomx.org/First
+/// NameForm1.parts[1].type=http://gedcomx.org/Middle
+/// NameForm1.parts[1].value=Ильи́ч
+/// NameForm1.parts[1].qualifiers[0]=http://gedcomx.org/Middle
+/// NameForm1.parts[2].type=http://gedcomx.org/Surname
+/// NameForm1.parts[2].value=Чайко́вский
+///
+/// NameForm2.locale=ru-Latn
+/// NameForm2.fullText=Pyotr Ilyich Tchaikovsky
+/// NameForm2.parts[0].type=http://gedcomx.org/Given
+/// NameForm2.parts[0].value=Pyotr
+/// NameForm2.parts[0].qualifiers[0]=http://gedcomx.org/First
+/// NameForm2.parts[1].type=http://gedcomx.org/Given
+/// NameForm2.parts[1].value=Ilyich
+/// NameForm2.parts[1].qualifiers[0]=http://gedcomx.org/Middle
+/// NameForm2.parts[2].type=http://gedcomx.org/Surname
+/// NameForm2.parts[2].value=Tchaikovsky
+///
+/// NameForm3.locale=en-Latn
+/// NameForm3.fullText=Peter Ilyich Tchaikovsky
+/// NameForm3.parts[0].type=http://gedcomx.org/Given
+/// NameForm3.parts[0].value=Peter
+/// NameForm3.parts[0].qualifiers[0]=http://gedcomx.org/First
+/// NameForm3.parts[1].type=http://gedcomx.org/Given
+/// NameForm3.parts[1].value=Ilyich
+/// NameForm3.parts[1].qualifiers[0]=http://gedcomx.org/Middle
+/// NameForm3.parts[2].type=http://gedcomx.org/Surname
+/// NameForm3.parts[2].value=Tchaikovsky
+/// ```
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NameForm {
+    /// The locale identifier for the name form.
     pub lang: Option<Lang>,
 
+    /// A full rendering of the name (or as much of the name as is known).
     pub full_text: Option<String>,
 
+    /// Any identified name parts from the name.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub parts: Vec<NamePart>,
 }
@@ -216,15 +353,28 @@ impl NameFormBuilder {
     }
 }
 
+/// A portion of a full name, including the terms that make up that portion.
+///
+/// Some name parts may have qualifiers to provide additional semantic meaning
+/// to the name part (e.g., "given name" or "surname").
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct NamePart {
+    /// The type of the name part.
     #[serde(rename = "type")]
     pub part_type: Option<NamePartType>,
 
+    /// The term(s) from the name that make up this name part.
+    ///
+    /// A name part value MAY contain more than one term from the full name,
+    /// such as in the name part "John Fitzgerald" from the full name "John
+    /// Fitzgerald Kennedy". If multiple terms are detailed in a single
+    /// NamePart, these terms SHOULD be separated using the name separator
+    /// appropriate to the locale applicable to the containing name form.
     pub value: String,
 
+    /// Qualifiers to add additional semantic meaning to the name part.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
 }
@@ -272,13 +422,21 @@ impl NamePartBuilder {
     }
 }
 
+/// Standard name part types.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NamePartType {
+    /// A name prefix.
     Prefix,
+
+    /// A name suffix.
     Suffix,
+
+    /// A given name.
     Given,
+
+    /// A surname.
     Surname,
     Custom(Uri),
 }
@@ -307,6 +465,11 @@ impl fmt::Display for NamePartType {
     }
 }
 
+/// Name part qualifiers.
+///
+/// Identify how the name part was used by the person to which the name applies.
+/// For example, a name part qualifier may specify that a given name part was
+/// used by the person as a Title.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]

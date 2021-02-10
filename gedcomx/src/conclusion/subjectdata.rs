@@ -1,6 +1,7 @@
-use crate::{ConclusionData, EvidenceReference, Identifier, SourceReference};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+
+use crate::{ConclusionData, EvidenceReference, Identifier, SourceReference};
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]

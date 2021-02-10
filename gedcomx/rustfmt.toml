@@ -1,0 +1,7 @@
+unstable_features = true
+wrap_comments = true
+group_imports = "StdExternalCrate"
+imports_granularity = "Crate"
+reorder_impl_items = true
+format_strings = true
+format_code_in_doc_comments = true

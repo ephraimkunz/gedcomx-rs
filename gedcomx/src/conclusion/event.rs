@@ -1,10 +1,12 @@
+use std::fmt;
+
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
 use crate::{
     Conclusion, ConclusionData, Date, EnumAsString, EventRole, PlaceReference, Subject,
     SubjectData, Uri,
 };
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
-use std::fmt;
 
 /// A description of a historical event.
 #[skip_serializing_none]
@@ -54,11 +56,11 @@ impl Event {
 pub struct EventBuilder(Event);
 
 impl EventBuilder {
+    subject_builder_functions!(Event);
+
     pub(crate) fn new() -> Self {
         Self(Event::default())
     }
-
-    subject_builder_functions!(Event);
 
     pub fn event_type(&mut self, event_type: EventType) -> &mut Self {
         self.0.event_type = Some(event_type);
@@ -106,16 +108,20 @@ pub enum EventType {
     BatMitzvah,
     Birth,
 
-    /// A an official blessing event, such as at the hands of a clergy member or at another religious rite.
+    /// A an official blessing event, such as at the hands of a clergy member or
+    /// at another religious rite.
     Blessing,
     Burial,
     Census,
 
-    /// A christening event *at birth*. Note: use [`AdultChristening`](crate::EventType::AdultChristening) for a christening event as an adult.
+    /// A christening event *at birth*. Note: use
+    /// [`AdultChristening`](crate::EventType::AdultChristening) for a
+    /// christening event as an adult.
     Christening,
     Circumcision,
 
-    /// A confirmation event (or other rite of initiation) in a church or religion.
+    /// A confirmation event (or other rite of initiation) in a church or
+    /// religion.
     Confirmation,
 
     /// A cremation event after death.
@@ -124,7 +130,8 @@ pub enum EventType {
     Divorce,
     DivorceFiling,
 
-    /// A education or an educational achievement event (e.g. diploma, graduation, scholarship, etc.).
+    /// A education or an educational achievement event (e.g. diploma,
+    /// graduation, scholarship, etc.).
     Education,
 
     /// An engagement to be married event.
@@ -148,7 +155,8 @@ pub enum EventType {
     /// An event of a move (i.e. change of residence) to a location.
     MoveTo,
 
-    /// A naturalization event (i.e. acquisition of citizenship and nationality).
+    /// A naturalization event (i.e. acquisition of citizenship and
+    /// nationality).
     Naturalization,
     Ordination,
     Retirement,

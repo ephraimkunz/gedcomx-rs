@@ -9,7 +9,8 @@ pub struct Date {
     /// The original value of the date as supplied by the contributor.
     pub original: Option<String>,
 
-    /// The standardized formal value of the date, formatted according to the GEDCOM X Date Format specification.
+    /// The standardized formal value of the date, formatted according to the
+    /// GEDCOM X Date Format specification.
     // TODO: I think I should be using a different type for this one.
     pub formal: Option<String>,
 }

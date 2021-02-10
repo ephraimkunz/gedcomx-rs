@@ -2,6 +2,7 @@ macro_rules! try_from_evidencereference {
     ($from_type: ty) => {
         impl TryFrom<&$from_type> for crate::EvidenceReference {
             type Error = GedcomxError;
+
             fn try_from(f: &$from_type) -> Result<Self, Self::Error> {
                 use crate::Conclusion;
                 match &f.conclusion().id {
@@ -82,7 +83,8 @@ macro_rules! conclusion_builder_functions {
 
         /// # Errors
         ///
-        /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+        /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+        /// conversion into [`SourceReference`](crate::SourceReference) fails.
         /// This happens if `source` has no `id` set.
         pub fn source<
             I: std::convert::TryInto<crate::SourceReference, Error = crate::GedcomxError>,
@@ -96,8 +98,9 @@ macro_rules! conclusion_builder_functions {
 
         /// # Errors
         ///
-        /// Will return [`GedcomxError`](crate::GedcomxError) if a conversion into [`Document`](crate::Document) fails.
-        /// This happens if `document` has no `id` set or has the wrong `document_type`.
+        /// Will return [`GedcomxError`](crate::GedcomxError) if a conversion into
+        /// [`Document`](crate::Document) fails. This happens if `document` has no `id`
+        /// set or has the wrong `document_type`.
         pub fn analysis(&mut self, document: &crate::Document) -> crate::Result<&mut Self> {
             use std::convert::TryInto;
             self.0.conclusion_mut().analysis = Some(document.try_into()?);
@@ -132,7 +135,8 @@ macro_rules! subject_builder_functions {
 
         /// # Errors
         ///
-        /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`EvidenceReference`](crate::EvidenceReference) fails.
+        /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+        /// conversion into [`EvidenceReference`](crate::EvidenceReference) fails.
         /// This happens if the passed argument has no `id` set.
         pub fn evidence(&mut self, e: &$final_type) -> crate::Result<&mut Self> {
             use std::convert::TryInto;
@@ -142,7 +146,8 @@ macro_rules! subject_builder_functions {
 
         /// # Errors
         ///
-        /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+        /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+        /// conversion into [`SourceReference`](crate::SourceReference) fails.
         /// This happens if `media` has no `id` set.
         pub fn media(&mut self, media: &crate::SourceDescription) -> crate::Result<&mut Self> {
             use std::convert::TryInto;

@@ -1,10 +1,12 @@
+use std::{convert::TryInto, fmt};
+
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
 use crate::{
     Conclusion, ConclusionData, EnumAsString, Fact, GedcomxError, Person, ResourceReference,
     Result, SourceReference, Subject, SubjectData, Uri,
 };
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
-use std::{convert::TryInto, fmt};
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
@@ -43,7 +45,8 @@ impl Relationship {
 
     /// # Errors
     ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`SourceReference`](crate::SourceReference) fails.
     /// This happens if `source` has no `id` set.
     pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
         &mut self,
@@ -55,7 +58,8 @@ impl Relationship {
 
     /// # Errors
     ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
     /// This happens if either `person1` or `person2` has no `id` set.
     pub fn builder(person1: &Person, person2: &Person) -> Result<RelationshipBuilder> {
         RelationshipBuilder::new(person1, person2)
@@ -65,6 +69,8 @@ impl Relationship {
 pub struct RelationshipBuilder(Relationship);
 
 impl RelationshipBuilder {
+    subject_builder_functions!(Relationship);
+
     pub(crate) fn new(person1: &Person, person2: &Person) -> Result<Self> {
         Ok(Self(Relationship {
             person1: person1.try_into()?,
@@ -72,8 +78,6 @@ impl RelationshipBuilder {
             ..Relationship::default()
         }))
     }
-
-    subject_builder_functions!(Relationship);
 
     pub fn relationship_type(&mut self, relationship_type: RelationshipType) -> &mut Self {
         self.0.relationship_type = Some(relationship_type);

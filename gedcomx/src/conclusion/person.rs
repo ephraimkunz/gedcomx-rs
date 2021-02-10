@@ -1,10 +1,12 @@
+use std::convert::TryInto;
+
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
 use crate::{
     Conclusion, ConclusionData, Fact, GedcomxError, Gender, Name, Result, SourceReference, Subject,
     SubjectData,
 };
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
-use std::convert::TryInto;
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
@@ -67,7 +69,8 @@ impl Person {
 
     /// # Errors
     ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`SourceReference`](crate::SourceReference) fails.
     /// This happens if `source` has no `id` set.
     pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
         &mut self,
@@ -85,11 +88,11 @@ impl Person {
 pub struct PersonBuilder(Person);
 
 impl PersonBuilder {
+    subject_builder_functions!(Person);
+
     pub(crate) fn new() -> Self {
         Self(Person::default())
     }
-
-    subject_builder_functions!(Person);
 
     pub fn name<I: Into<Name>>(&mut self, name: I) -> &mut Self {
         self.0.names.push(name.into());

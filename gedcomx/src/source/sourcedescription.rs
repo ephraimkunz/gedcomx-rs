@@ -1,10 +1,12 @@
+use std::{convert::TryInto, fmt};
+
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
 use crate::{
     Agent, Attribution, Coverage, EnumAsString, Id, Identifier, Note, ResourceReference, Result,
     SourceCitation, SourceReference, TextValue, Timestamp, Uri,
 };
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
-use std::{convert::TryInto, fmt};
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]

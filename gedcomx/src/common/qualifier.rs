@@ -1,16 +1,21 @@
-use crate::Uri;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-/// Used to supply additional details, annotations, tags, or other qualifying data to a specific data element.
+use crate::Uri;
+
+/// Used to supply additional details, annotations, tags, or other qualifying
+/// data to a specific data element.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Qualifier {
-    /// The name of the qualifier. The name should be an element of a constrained vocabulary and is used to determine meaning of the qualifier.
+    /// The name of the qualifier. The name should be an element of a
+    /// constrained vocabulary and is used to determine meaning of the
+    /// qualifier.
     pub name: Uri,
 
-    /// The value of the qualifier. Some qualifiers may not have values, indicating that the qualifier is to be treated more like a "tag".
+    /// The value of the qualifier. Some qualifiers may not have values,
+    /// indicating that the qualifier is to be treated more like a "tag".
     pub value: Option<String>,
 }
 

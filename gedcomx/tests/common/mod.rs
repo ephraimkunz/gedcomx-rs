@@ -1,11 +1,11 @@
 use gedcomx::Gedcomx;
-
 #[cfg(test)]
 use pretty_assertions::assert_eq;
 
 pub fn assert_matching_json(gx: Gedcomx, filename: &str) {
-    // Instead of comparing string, which may yield false negatives because of whitespace, etc,
-    // we'll compare serde_json::Values, which is loosly typed json.
+    // Instead of comparing string, which may yield false negatives because of
+    // whitespace, etc, we'll compare serde_json::Values, which is loosly typed
+    // json.
 
     let json_value = serde_json::to_value(&gx).unwrap();
 
@@ -17,7 +17,8 @@ pub fn assert_matching_json(gx: Gedcomx, filename: &str) {
 }
 
 // pub fn assert_matching_xml(gx: Gedcomx, filename: &str) {
-//     let file_string = std::fs::read_to_string(format!("../data/{}.xml", filename)).unwrap();
+//     let file_string = std::fs::read_to_string(format!("../data/{}.xml",
+// filename)).unwrap();
 
 //     let file_des: Gedcomx = yaserde::de::from_str(&file_string).unwrap();
 //     assert_eq!(file_des, gx);

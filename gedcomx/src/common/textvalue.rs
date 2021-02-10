@@ -1,7 +1,8 @@
-use crate::Lang;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
+
+use crate::Lang;
 
 /// An element representing a text value that may be in a specific language.
 #[skip_serializing_none]

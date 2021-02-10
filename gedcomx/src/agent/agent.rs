@@ -1,12 +1,13 @@
 use std::convert::TryInto;
 
-use crate::{Address, Id, Identifier, OnlineAccount, Person, ResourceReference, Result, TextValue};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-/// Someone or something that curates genealogical data, such as a genealogical researcher, user of software,
-/// organization, or group.
+use crate::{Address, Id, Identifier, OnlineAccount, Person, ResourceReference, Result, TextValue};
+
+/// Someone or something that curates genealogical data, such as a genealogical
+/// researcher, user of software, organization, or group.
 ///
 /// In genealogical research, an agent often takes the role of a contributor.
 #[skip_serializing_none]
@@ -16,23 +17,27 @@ use yaserde_derive::{YaDeserialize, YaSerialize};
 pub struct Agent {
     /// An identifier for the data structure holding the agent data.
     /// The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
-    /// As such, the constraints of the id are provided in the definition of the media type (e.g. XML, JSON) of the data structure.
+    /// As such, the constraints of the id are provided in the definition of the
+    /// media type (e.g. XML, JSON) of the data structure.
     #[yaserde(attribute)]
     pub id: Option<Id>,
 
     /// A list of identifiers for the agent.
     #[yaserde(rename = "identifier")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub identifiers: Vec<Identifier>, // TODO: Write custom serializer / deserializer for this. Current behavior doesn't match spec.
+    pub identifiers: Vec<Identifier>, /* TODO: Write custom serializer / deserializer for this.
+                                       * Current behavior doesn't match spec. */
 
-    /// The name(s) of the person or organization. If more than one name is provided, names are assumed to be given
-    /// in order of preference, with the most preferred name in the first position in the list.
+    /// The name(s) of the person or organization. If more than one name is
+    /// provided, names are assumed to be given in order of preference, with
+    /// the most preferred name in the first position in the list.
     #[yaserde(rename = "name")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub names: Vec<TextValue>,
 
-    /// The homepage of the person or organization. Note this is different from the homepage of the service where the
-    /// person or organization has an account.
+    /// The homepage of the person or organization. Note this is different from
+    /// the homepage of the service where the person or organization has an
+    /// account.
     pub homepage: Option<ResourceReference>,
 
     /// The [openid](https://openid.net) of the person or organization.
@@ -43,22 +48,28 @@ pub struct Agent {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub accounts: Vec<OnlineAccount>,
 
-    /// The email address(es) of the person or organization. If provided, MUST resolve to a valid e-mail address (e.g. "mailto:someone@gedcomx.org").
+    /// The email address(es) of the person or organization. If provided, MUST
+    /// resolve to a valid e-mail address (e.g. "mailto:someone@gedcomx.org").
     #[yaserde(rename = "email")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub emails: Vec<ResourceReference>, // TODO: Should I use a type here that would validate this is a valid email address?
+    pub emails: Vec<ResourceReference>, /* TODO: Should I use a type here that would validate
+                                         * this is a valid email address? */
 
-    /// The phone(s) (voice, fax, mobile) of the person or organization. If provided, MUST resolve to a valid phone number (e.g. "tel:+1-201-555-0123").
+    /// The phone(s) (voice, fax, mobile) of the person or organization. If
+    /// provided, MUST resolve to a valid phone number (e.g.
+    /// "tel:+1-201-555-0123").
     #[yaserde(rename = "phone")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub phones: Vec<ResourceReference>, // TODO: Should I use a type that would validate this is a valid phone number?
+    pub phones: Vec<ResourceReference>, /* TODO: Should I use a type that would validate this is
+                                         * a valid phone number? */
 
     /// The address(es) of the person or organization.
     #[yaserde(rename = "address")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub addresses: Vec<Address>,
 
-    /// A reference to the person that describes this agent. MUST resolve to an instance of [Person](crate::Person).
+    /// A reference to the person that describes this agent. MUST resolve to an
+    /// instance of [Person](crate::Person).
     pub person: Option<ResourceReference>, // TODO: Enforce constraint?
 }
 
@@ -148,7 +159,8 @@ impl AgentBuilder {
 
     /// # Errors
     ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
     /// This happens if `person` has no `id` set.
     pub fn person(&mut self, person: &Person) -> Result<&mut Self> {
         self.0.person = Some(person.try_into()?);
@@ -173,9 +185,10 @@ impl AgentBuilder {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::IdentifierType;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn xml_deserialize() {

@@ -25,16 +25,34 @@ fn test_struct() -> Gedcomx {
         .change_message("change message example")
         .build();
 
-    let source_description = SourceDescription::builder().id("S-1")
-          .title("Birth Certificate of Emma Bocock, 23 July 1843, General Registry Office")
-          .citation(SourceCitation::builder("England, birth certificate for Emma Bocock, born 23 July 1843; citing 1843 Birth in District and Sub-district of Ecclesall-Bierlow in the County of York, 303; General Registry Office, Southport.").build())
-          .resource_type(ResourceType::PhysicalArtifact)
-          .created("1843-07-27T07:00:00".parse().unwrap())
-          .repository(&repository).unwrap().build();
+    let source_description = SourceDescription::builder()
+        .id("S-1")
+        .title("Birth Certificate of Emma Bocock, 23 July 1843, General Registry Office")
+        .citation(
+            SourceCitation::builder(
+                "England, birth certificate for Emma Bocock, born 23 July 1843; citing 1843 Birth \
+                 in District and Sub-district of Ecclesall-Bierlow in the County of York, 303; \
+                 General Registry Office, Southport.",
+            )
+            .build(),
+        )
+        .resource_type(ResourceType::PhysicalArtifact)
+        .created("1843-07-27T07:00:00".parse().unwrap())
+        .repository(&repository)
+        .unwrap()
+        .build();
 
     let birth = Fact::builder(FactType::Birth)
-          .date(Date::new(Some("23 June 1843"), None))
-          .place(PlaceReference::builder().original("Broadfield Bar, Abbeydale Road, Ecclesall-Bierlow, York, England, United Kingdom").build()).build();
+        .date(Date::new(Some("23 June 1843"), None))
+        .place(
+            PlaceReference::builder()
+                .original(
+                    "Broadfield Bar, Abbeydale Road, Ecclesall-Bierlow, York, England, United \
+                     Kingdom",
+                )
+                .build(),
+        )
+        .build();
 
     let emma = Person::builder()
         .id("P-1")

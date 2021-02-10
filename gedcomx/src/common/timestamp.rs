@@ -1,9 +1,13 @@
+use std::{fmt, str::FromStr};
+
 use chrono::{serde::ts_milliseconds, DateTime, NaiveDateTime, ParseError, Utc};
 use serde::{Deserialize, Serialize};
-use std::{fmt, str::FromStr};
 use yaserde::{YaDeserialize, YaSerialize};
 
-/// When an event something was created or modified. Not the same as [`Date`](crate::Date) which represents things in the Gedcomx date format.
+/// When an event something was created or modified.
+///
+/// Not the same as [`Date`](crate::Date) which represents things in the Gedcomx
+/// date format.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(transparent)]
 pub struct Timestamp {
@@ -11,9 +15,10 @@ pub struct Timestamp {
     value: DateTime<Utc>,
 
     //http://books.xmlschemata.org/relaxng/ch19-77049.html. XML dateTime allows there to be no timezone on a time, which means it's "undetermined".
-    // However the JSON representation is as a timestamp that assumes UTC. So in order to correctly roundtrip this timezone when parsing XML,
-    // we'll store whether it is undetermined. However there will be no way for the user to set this and any interaction they have with this struct
-    // will be through DateTime<UTC>.
+    // However the JSON representation is as a timestamp that assumes UTC. So in order to correctly
+    // roundtrip this timezone when parsing XML, we'll store whether it is undetermined.
+    // However there will be no way for the user to set this and any interaction they have with
+    // this struct will be through DateTime<UTC>.
     #[serde(skip)]
     undetermined_tz: bool,
 }
@@ -29,7 +34,8 @@ impl YaSerialize for Timestamp {
         &self,
         writer: &mut yaserde::ser::Serializer<W>,
     ) -> Result<(), String> {
-        // I'm not sure why yaserde isn't writing the start element name for me, but luckily I have it so I'll add it.
+        // I'm not sure why yaserde isn't writing the start element name for me, but
+        // luckily I have it so I'll add it.
         if let Some(start_event_name) = writer.get_start_event_name() {
             writer
                 .write(xml::writer::XmlEvent::start_element(
@@ -145,8 +151,9 @@ impl FromStr for Timestamp {
 
 impl fmt::Display for Timestamp {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // to_rfc3339 always includes a timezone. Since XSD follows ISO 8601, timezones can be unspecified.
-        // If we know this Timestamp has an unspecified timezone, remove it from the string.
+        // to_rfc3339 always includes a timezone. Since XSD follows ISO 8601, timezones
+        // can be unspecified. If we know this Timestamp has an unspecified
+        // timezone, remove it from the string.
         let full = self.value.to_rfc3339();
         let partial = if self.undetermined_tz {
             &full[..19]

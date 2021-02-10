@@ -1,7 +1,9 @@
-use crate::{PlaceDescription, Result, Uri};
+use std::convert::TryInto;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use std::convert::TryInto;
+
+use crate::{PlaceDescription, Result, Uri};
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]

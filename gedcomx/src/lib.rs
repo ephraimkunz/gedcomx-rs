@@ -3,6 +3,7 @@
 #![deny(clippy::nursery)]
 // #![deny(clippy::cargo)]
 // #![deny(missing_docs)]
+// #![deny(missing_doc_code_examples)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::new_without_default)]
 #![allow(clippy::pub_enum_variant_names)]
@@ -28,17 +29,18 @@ mod gedcomx;
 pub use crate::gedcomx::*;
 
 mod source;
-pub use source::*;
+use std::fmt;
 
 use serde::{Deserialize, Serialize};
-use std::fmt;
+pub use source::*;
 
 pub type Result<T> = std::result::Result<T, GedcomxError>;
 
-// I can't figure out how to get Serde to properly serialize enums with a bunch of normal variants and then
-// one catch-all variant that includes the string from the json, just using attributes. So, rather than write a
-// Deserializer / Serializer implementation we'll just serialize to this newtype and then Serde will automatically
-//  convert it to the required type.
+// I can't figure out how to get Serde to properly serialize enums with a bunch
+// of normal variants and then one catch-all variant that includes the string
+// from the json, just using attributes. So, rather than write a Deserializer /
+// Serializer implementation we'll just serialize to this newtype and then Serde
+// will automatically  convert it to the required type.
 #[derive(Serialize, Deserialize)]
 struct EnumAsString(String);
 

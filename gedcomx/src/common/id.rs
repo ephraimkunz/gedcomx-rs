@@ -1,5 +1,6 @@
-use serde::{Deserialize, Serialize};
 use std::fmt;
+
+use serde::{Deserialize, Serialize};
 
 /// A local, context-specific id for the data.
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]

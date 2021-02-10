@@ -1,8 +1,9 @@
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
 use crate::{
     Conclusion, ConclusionData, Date, ResourceReference, Subject, SubjectData, TextValue, Uri,
 };
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
@@ -64,11 +65,11 @@ impl PlaceDescription {
 pub struct PlaceDescriptionBuilder(PlaceDescription);
 
 impl PlaceDescriptionBuilder {
+    subject_builder_functions!(PlaceDescription);
+
     pub(crate) fn new() -> Self {
         Self(PlaceDescription::default())
     }
-
-    subject_builder_functions!(PlaceDescription);
 
     pub fn latitude(&mut self, latitude: f64) -> &mut Self {
         self.0.latitude = Some(latitude);

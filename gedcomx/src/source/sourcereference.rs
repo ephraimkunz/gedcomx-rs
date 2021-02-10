@@ -1,11 +1,13 @@
-use crate::{
-    Attribution, EnumAsString, GedcomxError, Id, Qualifier, Result, SourceDescription, Uri,
-};
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
 use std::{
     convert::{TryFrom, TryInto},
     fmt,
+};
+
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
+use crate::{
+    Attribution, EnumAsString, GedcomxError, Id, Qualifier, Result, SourceDescription, Uri,
 };
 
 #[skip_serializing_none]
@@ -46,7 +48,8 @@ impl SourceReference {
 
     /// # Errors
     ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a conversion into [`SourceReference`](crate::SourceReference) fails.
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`SourceReference`](crate::SourceReference) fails.
     /// This happens if `description` has no `id` set.
     pub fn builder(description: &SourceDescription) -> Result<SourceReferenceBuilder> {
         Ok(SourceReferenceBuilder::new(description.try_into()?))
@@ -80,6 +83,7 @@ impl SourceReferenceBuilder {
 
 impl TryFrom<&SourceDescription> for SourceReference {
     type Error = GedcomxError;
+
     fn try_from(s: &SourceDescription) -> std::result::Result<Self, Self::Error> {
         match &s.id {
             Some(id) => Ok(Self::builder_with_raw(id.into()).build()),

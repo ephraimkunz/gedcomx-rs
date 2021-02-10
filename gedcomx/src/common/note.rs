@@ -1,10 +1,12 @@
-use crate::{Attribution, Lang};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+use crate::{Attribution, Lang};
+
 /// A note that was contributed from genealogical research.
 ///
-/// Notes are not intended to contain genealogical conclusions. Notes are only associated with a single genealogical resource.
+/// Notes are not intended to contain genealogical conclusions. Notes are only
+/// associated with a single genealogical resource.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
@@ -18,7 +20,8 @@ pub struct Note {
     /// The text of the note.
     pub text: String,
 
-    /// The attribution of this note. If not provided, the attribution of the containing resource of the note is assumed.
+    /// The attribution of this note. If not provided, the attribution of the
+    /// containing resource of the note is assumed.
     pub attribution: Option<Attribution>,
 }
 

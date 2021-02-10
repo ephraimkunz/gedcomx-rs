@@ -199,14 +199,22 @@ fn cite_george_martha_and_marriage(
     let mut george_source = SourceDescription::builder();
     george_source.id("EEE-EEEE");
     george_source.about(Uri::from("http://en.wikipedia.org/wiki/George_washington"));
-    let george_citation = SourceCitation::builder("\"George Washington.\" Wikipedia, The Free Encyclopedia. Wikimedia Foundation, Inc. 24 October 2012.").build();
+    let george_citation = SourceCitation::builder(
+        "\"George Washington.\" Wikipedia, The Free Encyclopedia. Wikimedia Foundation, Inc. 24 \
+         October 2012.",
+    )
+    .build();
     george_source.citation(george_citation);
     let george_source = george_source.build();
 
     let mut martha_source = SourceDescription::builder();
     martha_source.id("FFF-FFFF");
     martha_source.about(Uri::from("http://en.wikipedia.org/wiki/Martha_washington"));
-    let martha_citation = SourceCitation::builder("\"Martha Washington.\" Wikipedia, The Free Encyclopedia. Wikimedia Foundation, Inc. 24 October 2012.").build();
+    let martha_citation = SourceCitation::builder(
+        "\"Martha Washington.\" Wikipedia, The Free Encyclopedia. Wikimedia Foundation, Inc. 24 \
+         October 2012.",
+    )
+    .build();
     martha_source.citation(martha_citation);
     let martha_source = martha_source.build();
 

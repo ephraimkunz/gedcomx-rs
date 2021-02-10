@@ -1,6 +1,7 @@
-use crate::ResourceReference;
 use serde::{Deserialize, Serialize};
 use yaserde_derive::{YaDeserialize, YaSerialize};
+
+use crate::ResourceReference;
 
 /// A description of an account for an online service provider.
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
@@ -12,7 +13,8 @@ pub struct OnlineAccount {
     #[yaserde(rename = "serviceHomepage")]
     pub service_homepage: ResourceReference,
 
-    /// The name, label, or id that uniquely identifies the account maintained by the online service provider.
+    /// The name, label, or id that uniquely identifies the account maintained
+    /// by the online service provider.
     #[yaserde(rename = "accountName")]
     pub account_name: String,
 }

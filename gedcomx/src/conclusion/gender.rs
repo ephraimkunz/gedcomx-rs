@@ -1,6 +1,8 @@
-use crate::{Conclusion, ConclusionData, EnumAsString, Uri};
-use serde::{Deserialize, Serialize};
 use std::fmt;
+
+use serde::{Deserialize, Serialize};
+
+use crate::{Conclusion, ConclusionData, EnumAsString, Uri};
 
 /// A gender of a person.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
@@ -30,14 +32,14 @@ impl Gender {
 pub struct GenderBuilder(Gender);
 
 impl GenderBuilder {
+    conclusion_builder_functions!(Gender);
+
     pub(crate) fn new(gender_type: GenderType) -> Self {
         Self(Gender {
             gender_type,
             ..Gender::default()
         })
     }
-
-    conclusion_builder_functions!(Gender);
 
     #[allow(dead_code)] // Nothing in the crate currently uses it, but clients of the crate may want it.
     fn build(&self) -> Gender {
