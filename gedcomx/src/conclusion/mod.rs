@@ -35,10 +35,10 @@ pub use name::{
 };
 
 mod person;
-pub use person::Person;
+pub use person::{Person, PersonBuilder};
 
 mod placedescription;
-pub use placedescription::PlaceDescription;
+pub use placedescription::{PlaceDescription, PlaceDescriptionBuilder};
 
 mod placereference;
 pub use placereference::PlaceReference;

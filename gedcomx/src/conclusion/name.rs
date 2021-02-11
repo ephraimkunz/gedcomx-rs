@@ -470,25 +470,73 @@ impl fmt::Display for NamePartType {
 /// Identify how the name part was used by the person to which the name applies.
 /// For example, a name part qualifier may specify that a given name part was
 /// used by the person as a Title.
+// TODO: How to include the optional value parameter (or prevent it)? Maybe Into<Qualifier>? https://github.com/FamilySearch/gedcomx/blob/master/specifications/name-part-qualifiers-specification.md#2-name-part-qualifiers
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NamePartQualifier {
+    /// A designation for honorifics (e.g. Dr., Rev., His Majesty, Haji), ranks
+    /// (e.g. Colonel, General, Knight, Esquire), positions (e.g. Count, Chief,
+    /// Father, King) or other titles (e.g., PhD, MD).
     Title,
+
+    /// A designation for the name of most prominent in importance among the
+    /// names of that type (e.g., the primary given name).
     Primary,
+
+    /// A designation for a name that is not primary in its importance among the
+    /// names of that type (e.g., a secondary given name).
     Secondary,
+
+    /// A designation useful for cultures that designate a middle name that is
+    /// distinct from a given name and a surname.
     Middle,
+
+    /// A designation for one's familiar name.
     Familiar,
+
+    /// A designation for a name given for religious purposes.
     Religious,
+
+    /// A name that associates a person with a group, such as a clan, tribe, or
+    /// patriarchal hierarchy.
     Family,
+
+    /// A designation given by women to their original surname after they adopt
+    /// a new surname upon marriage.
     Maiden,
+
+    /// A name derived from a father or paternal ancestor.
     Patronymic,
+
+    /// A name derived from a mother or maternal ancestor.
     Matronymic,
+
+    /// A name derived from associated geography.
     Geographic,
+
+    /// A name derived from one's occupation.
     Occupational,
+
+    /// A name derived from a characteristic.
     Characteristic,
+
+    /// A name mandated by law for populations from Congo Free State / Belgian
+    /// Congo / Congo / Democratic Republic of Congo (formerly Zaire).
     Postnom,
+
+    /// A grammatical designation for articles (a, the, dem, las, el, etc.),
+    /// prepositions (of, from, aus, zu, op, etc.), initials, annotations (e.g.
+    /// twin, wife of, infant, unknown), comparators (e.g. Junior, Senior,
+    /// younger, little), ordinals (e.g. III, eighth), descendancy words (e.g.
+    /// ben, ibn, bat, bin, bint, bar), and conjunctions (e.g. and, or, nee, ou,
+    /// y, o, ne, &).
     Particle,
+
+    /// The "root" of a name part as distinguished from prefixes or suffixes.
+    /// For example, the root of the Polish name "Wilkówna" is "Wilk". A
+    /// RootName qualifier MUST provide a value property. TODO: Provide
+    /// value as associated data?
     RootName,
     Custom(Uri),
 }

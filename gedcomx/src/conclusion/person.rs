@@ -8,6 +8,7 @@ use crate::{
     SubjectData,
 };
 
+/// A description of a person.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
@@ -15,13 +16,22 @@ pub struct Person {
     #[serde(flatten)]
     pub subject: SubjectData,
 
+    /// Whether this instance of Person has been designated for limited
+    /// distribution or display.
     pub private: Option<bool>,
 
+    /// The sex of the person as assigned at birth (see [Sex Assignment](https://en.wikipedia.org/wiki/Sex_assignment)).
     pub gender: Option<Gender>,
 
+    /// The names of the person.
+    ///
+    /// If more than one name is provided, names are assumed to be given in
+    /// order of preference, with the most preferred name in the first position
+    /// in the list.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub names: Vec<Name>,
 
+    /// The facts of the person.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub facts: Vec<Fact>,
 }
@@ -72,6 +82,8 @@ impl Person {
     /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
     /// conversion into [`SourceReference`](crate::SourceReference) fails.
     /// This happens if `source` has no `id` set.
+    // TODO: Do we want methods like this on the actual structs? If so, should this
+    // be a macro we an apply to all "subclasses"?
     pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
         &mut self,
         source: I,
@@ -92,6 +104,11 @@ impl PersonBuilder {
 
     pub(crate) fn new() -> Self {
         Self(Person::default())
+    }
+
+    pub fn private(&mut self, private: bool) -> &mut Self {
+        self.0.private = Some(private);
+        self
     }
 
     pub fn name<I: Into<Name>>(&mut self, name: I) -> &mut Self {
