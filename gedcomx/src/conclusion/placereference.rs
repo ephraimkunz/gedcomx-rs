@@ -41,6 +41,11 @@ impl PlaceReferenceBuilder {
         Self(PlaceReference::default())
     }
 
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`Uri`](crate::Uri) fails.
+    /// This happens if `description` has no `id` set.
     pub fn description_ref(&mut self, description: &PlaceDescription) -> Result<&mut Self> {
         self.0.description_ref = Some(description.try_into()?);
         Ok(self)
