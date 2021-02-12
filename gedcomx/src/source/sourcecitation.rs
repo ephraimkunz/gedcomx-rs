@@ -3,11 +3,19 @@ use serde_with::skip_serializing_none;
 
 use crate::Lang;
 
+/// A container for the metadata necessary for an agent to identify a source(s).
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct SourceCitation {
+    /// The locale identifier for the bibliographic metadata.
     pub lang: Option<Lang>,
+
+    /// The bibliographic metadata rendered as a full citation.
+    ///
+    ///  This string is plain text, but MAY include an xhtml cite element. If
+    /// the value includes a cite element, the text-level semantics defined for
+    /// cite MUST apply—i.e., the element MUST represent the title of a work.
     pub value: String,
 }
 

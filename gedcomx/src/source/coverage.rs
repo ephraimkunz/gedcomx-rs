@@ -3,11 +3,14 @@ use serde_with::skip_serializing_none;
 
 use crate::{Date, PlaceReference};
 
+/// The coverage of a resource.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Coverage {
+    /// The spatial (i.e., geographic) coverage.
     pub spatial: Option<PlaceReference>,
 
+    /// The temporal coverage.
     pub temporal: Option<Date>,
 }

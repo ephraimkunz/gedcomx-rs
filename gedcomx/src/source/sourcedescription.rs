@@ -8,57 +8,118 @@ use crate::{
     SourceCitation, SourceReference, TextValue, Timestamp, Uri,
 };
 
+/// A description of a source of genealogical information.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SourceDescription {
+    /// An identifier for the data structure holding the source description
+    /// data.
     pub id: Option<Id>,
 
+    /// The type of resource being described.
     pub resource_type: Option<ResourceType>,
 
-    pub citations: Vec<SourceCitation>, // Must have at least one.
+    /// The citation(s) for this source.
+    ///
+    /// At least one citation MUST be provided. If more than one citation is
+    /// provided, citations are assumed to be given in order of preference, with
+    /// the most preferred citation in the first position in the list.
+    pub citations: Vec<SourceCitation>, // TODO: Must have at least one.
 
+    /// A hint about the media type of the resource being described.
+    ///
+    /// If provided, MUST be a valid MIME (media) type as specified by RFC 4288.
+    // TODO: Newtype?
     pub media_type: Option<String>,
 
+    /// A uniform resource identifier (URI) for the resource being described.
     pub about: Option<Uri>,
 
+    /// A reference to the entity that mediates access to the described source.
+    ///
+    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
+    // TODO: Enforce
     pub mediator: Option<ResourceReference>,
 
+    /// A reference to the entity responsible for making the described source
+    /// available.
+    ///
+    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
+    // TODO: Enforce
     pub publisher: Option<ResourceReference>,
 
+    /// A reference to the entities that authored the described source.
+    ///
+    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
+    // TODO: Enforce
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub authors: Vec<ResourceReference>,
+
+    /// A list of references to any sources from which this source is derived.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub sources: Vec<SourceReference>,
 
+    /// A reference to a document containing analysis about this source.
+    ///
+    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Document of type http://gedcomx.org/Analysis.
     pub analysis: Option<ResourceReference>,
 
+    /// A reference to the source that contains this source, i.e. its parent
+    /// context. Used when the description of a source is not complete without
+    /// the description of its parent (or containing) source.
     pub component_of: Option<SourceReference>,
 
+    /// The display name(s) for this source.
+    ///
+    /// If more than one title is provided, titles are assumed to be given in
+    /// order of preference, with the most preferred title in the first position
+    /// in the list.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub titles: Vec<TextValue>,
 
+    /// A list of notes about a source.
     pub notes: Option<Note>,
 
+    /// The attribution of this source description.
+    ///
+    /// If not provided, the attribution of the containing data set (e.g. file)
+    /// of the source description is assumed.
     pub attribution: Option<Attribution>,
 
+    /// The rights for this resource.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub rights: Vec<ResourceReference>,
 
+    /// The coverage of the resource.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub coverage: Vec<Coverage>,
 
+    /// Human-readable descriptions of this source.
+    ///
+    /// If more than one description is provided, descriptions are assumed to be
+    /// given in order of preference, with the most preferred description in the
+    /// first position in the list.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub descriptions: Vec<TextValue>,
 
+    /// A list of identifiers for the resource being described.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub identifiers: Vec<Identifier>,
 
+    /// Timestamp of when the resource being described was created.
     pub created: Option<Timestamp>,
 
+    /// Timestamp of when the resource being described was modified.
     pub modified: Option<Timestamp>,
 
+    /// Timestamp of when the resource being described was published.
     pub published: Option<Timestamp>,
 
+    /// A reference to the repository that contains the described resource.
+    ///
+    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
     pub repository: Option<ResourceReference>,
 }
 
@@ -73,6 +134,7 @@ impl SourceDescription {
         about: Option<Uri>,
         mediator: Option<ResourceReference>,
         publisher: Option<ResourceReference>,
+        authors: Vec<ResourceReference>,
         sources: Vec<SourceReference>,
         analysis: Option<ResourceReference>,
         component_of: Option<SourceReference>,
@@ -96,6 +158,7 @@ impl SourceDescription {
             about,
             mediator,
             publisher,
+            authors,
             sources,
             analysis,
             component_of,
@@ -172,8 +235,13 @@ impl SourceDescriptionBuilder {
         self
     }
 
-    pub fn repository(&mut self, agent: &Agent) -> Result<&mut Self> {
-        self.0.repository = Some(agent.try_into()?);
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if `repository` has no `id` set.
+    pub fn repository(&mut self, repository: &Agent) -> Result<&mut Self> {
+        self.0.repository = Some(repository.try_into()?);
         Ok(self)
     }
 
@@ -186,6 +254,7 @@ impl SourceDescriptionBuilder {
             self.0.about.clone(),
             self.0.mediator.clone(),
             self.0.publisher.clone(),
+            self.0.authors.clone(),
             self.0.sources.clone(),
             self.0.analysis.clone(),
             self.0.component_of.clone(),
@@ -204,14 +273,27 @@ impl SourceDescriptionBuilder {
     }
 }
 
+/// Standard resource types.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum ResourceType {
+    /// A collection of genealogical resources. A collection may contain
+    /// physical artifacts (such as a collection of books in a library), records
+    /// (such as the 1940 U.S. Census), or digital artifacts (such as an online
+    /// genealogical application).
     Collection,
+
+    /// A physical artifact, such as a book.
     PhysicalArtifact,
+
+    /// A digital artifact, such as a digital image of a birth certificate or
+    /// other record.
     DigitalArtifact,
+
+    /// A historical record, such as a census record or a vital record.
     Record,
+
     Custom(Uri),
 }
 

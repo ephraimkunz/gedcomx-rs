@@ -6,42 +6,57 @@ use crate::{
     SourceDescription, Uri,
 };
 
-// This struct holds the "real copies" of all the structs that will be
-// serialized to a given format. Other structs may hold refs to, for example,
-// SourceDescription, keyed off the ids.
+/// A container for a set of GEDCOM X data.
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Gedcomx {
+    /// An identifier for the data set.
     pub id: Option<Id>,
+
+    /// The locale identifier for the data set.
     pub lang: Option<Lang>,
+
+    /// The attribution of this data set.
     pub attribution: Option<Attribution>,
 
+    /// The list of persons contained in the data set.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub persons: Vec<Person>,
 
+    /// The list of relationships contained in the data set.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub relationships: Vec<Relationship>,
 
+    /// The list of source descriptions contained in the data set.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub source_descriptions: Vec<SourceDescription>,
 
+    /// The list of agents contained in the data set.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub agents: Vec<Agent>,
 
+    /// The list of events contained in the data set.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub events: Vec<Event>,
 
+    /// The list of documents contained in the data set.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub documents: Vec<Document>,
 
+    /// The list of places contained in the data set.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub places: Vec<PlaceDescription>,
 
+    /// The list of groups contained in the data set.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub groups: Vec<Group>,
 
+    /// Reference to the description of this data set.
+    ///
+    /// If provided, MUST resolve to an instance of SourceDescription.
+    // TODO: Enforce
     pub description: Option<Uri>,
 }
 
