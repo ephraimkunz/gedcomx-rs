@@ -8,6 +8,13 @@ use crate::{
     Result, SourceReference, Subject, SubjectData, Uri,
 };
 
+/// A relationship between two persons.
+///
+/// Note: When a relationship type implies direction, the relationship is said
+/// to be from person1 to person2. For example, in a parent-child relationship,
+/// the relationship is said to be "from a parent to a child"; therefore, the
+/// person1 property refers to the parent and the person2 property refers to the
+/// child.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
@@ -15,13 +22,22 @@ pub struct Relationship {
     #[serde(flatten)]
     pub subject: SubjectData,
 
+    /// The type of the relationship.
     #[serde(rename = "type")]
     pub relationship_type: Option<RelationshipType>,
 
+    /// Reference to the first person in the relationship.
+    ///
+    /// MUST resolve to an instance of http://gedcomx.org/v1/Person.
     pub person1: ResourceReference,
 
+    /// Reference to the second person in the relationship.
+    ///
+    /// MUST resolve to an instance of http://gedcomx.org/v1/Person.
+    // TODO: Check with type system.
     pub person2: ResourceReference,
 
+    /// The facts about the relationship.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub facts: Vec<Fact>,
 }
@@ -94,6 +110,8 @@ impl RelationshipBuilder {
         self
     }
 
+    // TODO: Other builder properties.
+
     pub fn build(&self) -> Relationship {
         Relationship::new(
             self.0.subject.clone(),
@@ -105,15 +123,27 @@ impl RelationshipBuilder {
     }
 }
 
+/// Standard relationship types.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum RelationshipType {
+    /// A relationship from an ancestor to a descendant.
     AncestorDescendant,
+
+    /// A relationship of a pair of persons.
     Couple,
+
+    /// A relationship from an enslaved person to the enslaver or slaveholder of
+    /// the person.
     EnslavedBy,
+
+    /// A relationship from a godparent to a person.
     Godparent,
+
+    /// A relationship from a parent to a child.
     ParentChild,
+
     Custom(Uri),
 }
 

@@ -41,10 +41,10 @@ mod placedescription;
 pub use placedescription::{PlaceDescription, PlaceDescriptionBuilder};
 
 mod placereference;
-pub use placereference::PlaceReference;
+pub use placereference::{PlaceReference, PlaceReferenceBuilder};
 
 mod relationship;
-pub use relationship::{Relationship, RelationshipType};
+pub use relationship::{Relationship, RelationshipBuilder, RelationshipType};
 
 mod subjectdata;
 pub use subjectdata::SubjectData;

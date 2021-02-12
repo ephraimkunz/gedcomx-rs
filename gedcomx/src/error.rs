@@ -2,6 +2,7 @@ use thiserror::Error;
 
 use crate::DocumentType;
 
+/// An error returned by the library.
 #[derive(Error, Debug)]
 pub enum GedcomxError {
     /// An object with an `Id` was needed for an operation, but the object had

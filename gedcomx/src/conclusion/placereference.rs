@@ -5,12 +5,18 @@ use serde_with::skip_serializing_none;
 
 use crate::{PlaceDescription, Result, Uri};
 
+///  A reference to a description of a place.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct PlaceReference {
+    /// The original place name text as supplied by the contributor.
     pub original: Option<String>,
 
+    /// A reference to a description of this place.
+    ///
+    /// MUST resolve to a PlaceDescription.
+    // TODO: Enforce with type system.
     #[serde(rename = "description")]
     pub description_ref: Option<Uri>,
 }
