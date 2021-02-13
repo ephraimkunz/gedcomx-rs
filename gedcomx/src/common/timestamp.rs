@@ -34,8 +34,6 @@ impl YaSerialize for Timestamp {
         &self,
         writer: &mut yaserde::ser::Serializer<W>,
     ) -> Result<(), String> {
-        // I'm not sure why yaserde isn't writing the start element name for me, but
-        // luckily I have it so I'll add it.
         if let Some(start_event_name) = writer.get_start_event_name() {
             writer
                 .write(xml::writer::XmlEvent::start_element(

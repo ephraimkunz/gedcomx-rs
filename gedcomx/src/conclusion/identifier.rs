@@ -24,7 +24,7 @@ use crate::{EnumAsString, Uri};
 /// instance of [`PlaceDescription`](crate::PlaceDescription). Salt Lake City is
 /// maintained in the Geographic Names Information System (GNIS), an external
 /// place authority. The description of Salt Lake City might identify the associated GNIS resource using an identifier of type [`Authority`](crate::IdentifierType::Authority) with value "<http://geonames.usgs.gov/pls/gnispublic/f?p=gnispq:3:::NO::P3_FID:2411771>".
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Identifier {
     /// The value of the identifier.
     pub value: Uri,
@@ -34,7 +34,6 @@ pub struct Identifier {
     ///
     /// If no type is provided, the usage and nature of the identifier is
     /// application-specific.
-    #[serde(rename = "type")]
     pub identifier_type: Option<IdentifierType>,
 }
 
@@ -52,7 +51,9 @@ impl yaserde::YaSerialize for Identifier {
         &self,
         writer: &mut yaserde::ser::Serializer<W>,
     ) -> Result<(), String> {
-        let mut start_builder = xml::writer::XmlEvent::start_element("identifier");
+        let provided_start_event_name = writer.get_start_event_name();
+        let start_name = provided_start_event_name.as_deref().unwrap_or("identifier");
+        let mut start_builder = xml::writer::XmlEvent::start_element(start_name);
 
         let identifier_type_value;
         if let Some(t) = &self.identifier_type {
@@ -194,5 +195,105 @@ impl fmt::Display for IdentifierType {
             Self::Deprecated => write!(f, "http://gedcomx.org/Deprecated"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use pretty_assertions::assert_eq;
+    use serde::{Deserialize, Serialize};
+    use yaserde::ser::Config;
+
+    use super::*;
+
+    #[derive(Serialize, Deserialize, PartialEq, Debug)]
+    struct TestIdentifierGroup {
+        #[serde(with = "crate::serde_vec_identifier_to_map", flatten)]
+        identifiers: Vec<Identifier>,
+    }
+
+    #[test]
+    fn json_deserialize() {
+        let json = r#"{
+            "$":["untyped_identifier1","untyped_identifier2"],
+            "http://custom.org/SingleValuedIdentifierType":["singlevalued1"],
+            "http://gedcomx.org/Primary":["primary1","primary2"]
+        }"#;
+
+        let identifiers: TestIdentifierGroup = serde_json::from_str(&json).unwrap();
+
+        let expected_identifiers = TestIdentifierGroup {
+            identifiers: vec![
+                Identifier::new("untyped_identifier1", None),
+                Identifier::new("untyped_identifier2", None),
+                Identifier::new(
+                    "singlevalued1",
+                    Some(IdentifierType::Custom(
+                        "http://custom.org/SingleValuedIdentifierType".into(),
+                    )),
+                ),
+                Identifier::new("primary1", Some(IdentifierType::Primary)),
+                Identifier::new("primary2", Some(IdentifierType::Primary)),
+            ],
+        };
+
+        assert_eq!(identifiers, expected_identifiers)
+    }
+
+    #[test]
+    fn json_serialize() {
+        let identifiers = TestIdentifierGroup {
+            identifiers: vec![
+                Identifier::new("untyped_identifier1", None),
+                Identifier::new("untyped_identifier2", None),
+                Identifier::new("primary1", Some(IdentifierType::Primary)),
+                Identifier::new("primary2", Some(IdentifierType::Primary)),
+                Identifier::new(
+                    "singlevalued1",
+                    Some(IdentifierType::Custom(
+                        "http://custom.org/SingleValuedIdentifierType".into(),
+                    )),
+                ),
+            ],
+        };
+
+        let json = serde_json::to_string(&identifiers).unwrap();
+        let expected_json = r#"{"$":["untyped_identifier1","untyped_identifier2"],"http://custom.org/SingleValuedIdentifierType":["singlevalued1"],"http://gedcomx.org/Primary":["primary1","primary2"]}"#;
+
+        assert_eq!(json, expected_json)
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r#"<identifier type="http://gedcomx.org/Primary">https://familysearch.org/platform/records/collections</identifier>"#;
+
+        let expected_identifier = Identifier::new(
+            "https://familysearch.org/platform/records/collections",
+            Some(IdentifierType::Primary),
+        );
+
+        assert_eq!(
+            expected_identifier,
+            yaserde::de::from_str::<Identifier>(&xml).unwrap()
+        );
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let identifier = Identifier::new(
+            "https://familysearch.org/platform/records/collections",
+            Some(IdentifierType::Primary),
+        );
+        let xml = yaserde::ser::to_string_with_config(
+            &identifier,
+            &Config {
+                write_document_declaration: false,
+                ..Config::default()
+            },
+        )
+        .unwrap();
+        let expected_xml = r#"<identifier type="http://gedcomx.org/Primary">https://familysearch.org/platform/records/collections</identifier>"#;
+
+        assert_eq!(xml, expected_xml)
     }
 }

@@ -24,9 +24,12 @@ pub struct Agent {
 
     /// A list of identifiers for the agent.
     #[yaserde(rename = "identifier")]
-    #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub identifiers: Vec<Identifier>, /* TODO: Write custom serializer / deserializer for this.
-                                       * Current behavior doesn't match spec. */
+    #[serde(
+        skip_serializing_if = "Vec::is_empty",
+        default,
+        with = "crate::serde_vec_identifier_to_map"
+    )]
+    pub identifiers: Vec<Identifier>,
 
     /// The name(s) of the person or organization. If more than one name is
     /// provided, names are assumed to be given in order of preference, with

@@ -41,12 +41,98 @@ pub type Result<T> = std::result::Result<T, GedcomxError>;
 // from the json, just using attributes. So, rather than write a Deserializer /
 // Serializer implementation we'll just serialize to this newtype and then Serde
 // will automatically  convert it to the required type.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 struct EnumAsString(String);
 
 impl<T: fmt::Display> From<T> for EnumAsString {
     fn from(t: T) -> Self {
         Self(t.to_string())
+    }
+}
+
+mod serde_vec_identifier_to_map {
+    use std::{collections::HashMap, fmt};
+
+    use serde::{
+        de::{Deserializer, MapAccess, Visitor},
+        ser::{SerializeMap, Serializer},
+    };
+
+    use crate::{EnumAsString, Identifier, Uri};
+
+    pub fn serialize<S>(identifiers: &[Identifier], serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut hashmap: HashMap<String, Vec<Uri>> = HashMap::with_capacity(identifiers.len());
+        for id in identifiers {
+            let e = hashmap
+                .entry(
+                    id.identifier_type
+                        .as_ref()
+                        .map_or(String::from("$"), std::string::ToString::to_string),
+                )
+                .or_insert_with(Vec::new);
+            e.push(id.value.clone());
+            e.sort_by_key(std::string::ToString::to_string)
+        }
+
+        let mut map = serializer.serialize_map(Some(identifiers.len()))?;
+
+        let mut keys = hashmap.keys().collect::<Vec<_>>();
+        keys.sort();
+
+        for k in keys {
+            map.serialize_entry(k, hashmap.get(k).unwrap())?;
+        }
+
+        map.end()
+    }
+
+    struct IdentifierVisitor;
+
+    impl<'de> Visitor<'de> for IdentifierVisitor {
+        // The type that our Visitor is going to produce.
+        type Value = Vec<Identifier>;
+
+        // Format a message stating what data this Visitor expects to receive.
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("A map of identifier types to lists of values")
+        }
+
+        // Deserialize Value from an abstract "map" provided by the
+        // Deserializer. The MapAccess input is a callback provided by
+        // the Deserializer to let us see each entry in the map.
+        fn visit_map<M>(self, mut access: M) -> Result<Self::Value, M::Error>
+        where
+            M: MapAccess<'de>,
+        {
+            let mut vec = Vec::with_capacity(access.size_hint().unwrap_or(0));
+
+            // While there are entries remaining in the input, add them
+            // into our vec.
+            while let Some((key, value)) = access.next_entry::<EnumAsString, Vec<Uri>>()? {
+                for v in value {
+                    let k = if key.0 == "$" {
+                        None
+                    } else {
+                        Some(key.clone().into())
+                    };
+                    vec.push(Identifier::new(v, k));
+                }
+            }
+
+            Ok(vec)
+        }
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<Identifier>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        // Instantiate our Visitor and ask the Deserializer to drive
+        // it over the input data, resulting in an instance of MyMap.
+        deserializer.deserialize_map(IdentifierVisitor {})
     }
 }
 
@@ -107,7 +193,7 @@ impl TestData {
         subject_data.extracted = Some(false);
         subject_data.evidence = vec![evidence_reference.clone()];
         subject_data.media = vec![source_reference.clone()];
-        subject_data.identifiers = vec![]; // TODO: Empty until I get this serializing properly.
+        subject_data.identifiers = vec![Identifier::new("identifier1", None)];
         subject_data.conclusion = conclusion_data.clone();
 
         Self {

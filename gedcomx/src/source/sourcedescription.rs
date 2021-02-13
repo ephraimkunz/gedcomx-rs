@@ -105,7 +105,11 @@ pub struct SourceDescription {
     pub descriptions: Vec<TextValue>,
 
     /// A list of identifiers for the resource being described.
-    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[serde(
+        skip_serializing_if = "Vec::is_empty",
+        default,
+        with = "crate::serde_vec_identifier_to_map"
+    )]
     pub identifiers: Vec<Identifier>,
 
     /// Timestamp of when the resource being described was created.

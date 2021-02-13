@@ -55,7 +55,11 @@ pub struct SubjectData {
     pub media: Vec<SourceReference>,
 
     /// A list of identifiers for the subject.
-    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[serde(
+        skip_serializing_if = "Vec::is_empty",
+        default,
+        with = "crate::serde_vec_identifier_to_map"
+    )]
     pub identifiers: Vec<Identifier>,
 }
 
@@ -75,6 +79,8 @@ impl SubjectData {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::TestData;
 
@@ -116,7 +122,7 @@ mod test {
                     },
                     "modified" : 1394175600000
                 },
-                "qualifiers" : [ { "name" : "http://gedcomx.org/RectangleRegion", "value" : "rectangle region value" } ]          
+                "qualifiers" : [ { "name" : "http://gedcomx.org/RectangleRegion", "value" : "rectangle region value" } ]      
             }],
             "analysis" : {
               "resource" : "http://identifier/for/analysis/document"
@@ -138,7 +144,10 @@ mod test {
                 "resource" : "A-1"
                 },
                 "modified" : 1394175600000
-            }  
+            },
+            "identifiers" : {
+                "$": ["identifier1"]
+            } 
         }"#;
 
         let subject_data: SubjectData = serde_json::from_str(json).unwrap();
@@ -207,7 +216,7 @@ mod test {
         let subject_data = data.subject_data;
         let json = serde_json::to_string(&subject_data).unwrap();
 
-        assert_eq!(json, "{\"id\":\"local_id\",\"lang\":\"en\",\"sources\":[{\"description\":\"SD-1\",\"descriptionId\":\"Description id of the target source\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000},\"qualifiers\":[{\"name\":\"http://gedcomx.org/RectangleRegion\",\"value\":\"rectangle region value\"}]}],\"analysis\":{\"resource\":\"http://identifier/for/analysis/document\"},\"notes\":[{\"lang\":\"en\",\"subject\":\"subject\",\"text\":\"This is a note\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000}}],\"confidence\":\"http://gedcomx.org/High\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000},\"extracted\":false,\"evidence\":[{\"resource\":\"S-1\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000}}],\"media\":[{\"description\":\"SD-1\",\"descriptionId\":\"Description id of the target source\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000},\"qualifiers\":[{\"name\":\"http://gedcomx.org/RectangleRegion\",\"value\":\"rectangle region value\"}]}]}")
+        assert_eq!(json, "{\"id\":\"local_id\",\"lang\":\"en\",\"sources\":[{\"description\":\"SD-1\",\"descriptionId\":\"Description id of the target source\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000},\"qualifiers\":[{\"name\":\"http://gedcomx.org/RectangleRegion\",\"value\":\"rectangle region value\"}]}],\"analysis\":{\"resource\":\"http://identifier/for/analysis/document\"},\"notes\":[{\"lang\":\"en\",\"subject\":\"subject\",\"text\":\"This is a note\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000}}],\"confidence\":\"http://gedcomx.org/High\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000},\"extracted\":false,\"evidence\":[{\"resource\":\"S-1\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000}}],\"media\":[{\"description\":\"SD-1\",\"descriptionId\":\"Description id of the target source\",\"attribution\":{\"contributor\":{\"resource\":\"A-1\"},\"modified\":1394175600000},\"qualifiers\":[{\"name\":\"http://gedcomx.org/RectangleRegion\",\"value\":\"rectangle region value\"}]}],\"identifiers\":{\"$\":[\"identifier1\"]}}")
     }
 
     #[test]
