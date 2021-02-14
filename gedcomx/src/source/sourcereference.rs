@@ -5,6 +5,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
     Attribution, EnumAsString, GedcomxError, Id, Qualifier, Result, SourceDescription, Uri,
@@ -12,7 +13,7 @@ use crate::{
 
 /// A reference to a source description.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct SourceReference {
@@ -20,9 +21,11 @@ pub struct SourceReference {
     ///
     /// MUST resolve to an instance of http://gedcomx.org/v1/SourceDescription.
     // TODO: Enforce
+    #[yaserde(attribute)]
     pub description: Uri,
 
     /// The id of the target source.
+    #[yaserde(rename = "descriptionId", attribute)]
     pub description_id: Option<Id>,
 
     /// The attribution of this source reference.
@@ -33,6 +36,7 @@ pub struct SourceReference {
 
     /// Qualifiers for the reference, used to identify specific fragments of the
     /// source that are being referenced.
+    #[yaserde(rename = "qualifier")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
 }

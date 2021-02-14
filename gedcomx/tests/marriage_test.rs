@@ -282,5 +282,5 @@ fn test_example() {
         .person(sam_conclusion)
         .build();
 
-    common::assert_matching_json(gx, "marriage");
+    common::assert_matching_json(&gx, "marriage");
 }

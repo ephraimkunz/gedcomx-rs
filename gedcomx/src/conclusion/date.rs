@@ -1,9 +1,10 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 /// A concluded genealogical date.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Date {
     /// The original value of the date as supplied by the contributor.

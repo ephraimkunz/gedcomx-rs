@@ -2,6 +2,7 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{Attribution, EnumAsString, Id, Lang, Note, ResourceReference, SourceReference, Uri};
 
@@ -17,13 +18,15 @@ use crate::{Attribution, EnumAsString, Id, Lang, Note, ResourceReference, Source
 /// the interpreter was diligent in representing the information verbatim as it
 /// was found in the original.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, YaSerialize, YaDeserialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct ConclusionData {
     /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
+    #[yaserde(attribute)]
     pub id: Option<Id>,
 
     /// The locale identifier for the conclusion.
+    #[yaserde(attribute)]
     pub lang: Option<Lang>,
 
     /// The list of references to the sources of related to this conclusion.
@@ -31,6 +34,7 @@ pub struct ConclusionData {
     /// to be sources of the entities that contain them. For example, a source
     /// associated with the `Name` of a `Person` is also source for the
     /// `Person`.
+    #[yaserde(rename = "source")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub sources: Vec<SourceReference>,
 
@@ -42,10 +46,12 @@ pub struct ConclusionData {
     pub analysis: Option<ResourceReference>,
 
     /// A list of notes about this conclusion.
+    #[yaserde(rename = "note")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub notes: Vec<Note>,
 
     /// The level of confidence the contributor has about the data.
+    #[yaserde(attribute)]
     pub confidence: Option<ConfidenceLevel>,
 
     /// The attribution of this conclusion.
@@ -69,7 +75,7 @@ impl ConclusionData {
 }
 
 /// Levels of confidence.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum ConfidenceLevel {
@@ -104,6 +110,12 @@ impl fmt::Display for ConfidenceLevel {
             Self::Low => write!(f, "http://gedcomx.org/Low"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Default for ConfidenceLevel {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
     }
 }
 

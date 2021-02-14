@@ -1,13 +1,15 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{ConclusionData, Date, ResourceReference, Uri};
 
 /// A role of a person in a group.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct GroupRole {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
@@ -23,6 +25,7 @@ pub struct GroupRole {
     pub details: Option<String>,
 
     /// The participant's role.
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub group_role_type: Option<GroupRoleType>,
 }
@@ -40,11 +43,17 @@ impl GroupRole {
 }
 
 /// Group role types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(untagged)]
 pub enum GroupRoleType {
     Custom(Uri),
+}
+
+impl Default for GroupRoleType {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
+    }
 }
 
 #[cfg(test)]

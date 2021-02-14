@@ -2,6 +2,7 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
     Conclusion, ConclusionData, Date, EnumAsString, EventRole, PlaceReference, Subject,
@@ -10,13 +11,15 @@ use crate::{
 
 /// A description of a historical event.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Event {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub subject: SubjectData,
 
     /// The type of the event.
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub event_type: Option<EventType>,
 
@@ -27,6 +30,7 @@ pub struct Event {
     pub place: Option<PlaceReference>,
 
     /// Information about how persons participated in the event.
+    #[yaserde(rename = "role")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub roles: Vec<EventRole>,
 }
@@ -94,7 +98,7 @@ impl EventBuilder {
 }
 
 /// Standard event types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum EventType {
@@ -244,6 +248,12 @@ impl fmt::Display for EventType {
             Self::Retirement => write!(f, "http://gedcomx.org/Retirement"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Default for EventType {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
     }
 }
 

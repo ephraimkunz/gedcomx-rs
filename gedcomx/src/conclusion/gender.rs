@@ -1,17 +1,20 @@
 use std::fmt;
 
 use serde::{Deserialize, Serialize};
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{Conclusion, ConclusionData, EnumAsString, Uri};
 
 /// A gender of a person.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Gender {
     /// The type of the gender.
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub gender_type: GenderType,
 
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 }
@@ -74,7 +77,7 @@ impl Conclusion for Gender {
 }
 
 /// Type of gender.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum GenderType {

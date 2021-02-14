@@ -1,11 +1,12 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::Lang;
 
 /// A container for the metadata necessary for an agent to identify a source(s).
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct SourceCitation {
     /// The locale identifier for the bibliographic metadata.

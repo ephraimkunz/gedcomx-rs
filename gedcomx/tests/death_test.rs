@@ -251,5 +251,6 @@ fn test_example() {
         .person(aloiau_conclusion)
         .build();
 
-    common::assert_matching_json(gx, "death");
+    common::assert_matching_json(&gx, "death");
+    common::assert_matching_xml(&gx, "death");
 }

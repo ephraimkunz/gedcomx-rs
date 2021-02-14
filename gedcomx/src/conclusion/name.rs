@@ -2,6 +2,7 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{Conclusion, ConclusionData, Date, EnumAsString, Lang, Qualifier, Uri};
 
@@ -53,14 +54,16 @@ use crate::{Conclusion, ConclusionData, Date, EnumAsString, Lang, Qualifier, Uri
 /// Name2.nameForms[1].fullText=Sasha
 /// ```
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Name {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
     /// The name type.
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub name_type: Option<NameType>,
 
@@ -72,6 +75,7 @@ pub struct Name {
     /// be representations of the same name, and NOT variants of
     /// the name (i.e., not nicknames or spelling variations).
     // TODO: Must be non-empty. Enforce with type system? Vec1<>? Or just error from build method?
+    #[yaserde(rename = "nameForm")]
     pub name_forms: Vec<NameForm>,
 
     /// The date of applicability of the name.
@@ -169,7 +173,7 @@ impl From<&str> for Name {
 }
 
 /// Standard name types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NameType {
@@ -224,6 +228,12 @@ impl fmt::Display for NameType {
             Self::ReligiousName => write!(f, "http://gedcomx.org/ReligiousName"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Default for NameType {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
     }
 }
 
@@ -288,7 +298,7 @@ impl fmt::Display for NameType {
 /// NameForm3.parts[2].value=Tchaikovsky
 /// ```
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NameForm {
@@ -296,9 +306,11 @@ pub struct NameForm {
     pub lang: Option<Lang>,
 
     /// A full rendering of the name (or as much of the name as is known).
+    #[yaserde(rename = "fullText")]
     pub full_text: Option<String>,
 
     /// Any identified name parts from the name.
+    #[yaserde(rename = "part")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub parts: Vec<NamePart>,
 }
@@ -358,10 +370,11 @@ impl NameFormBuilder {
 /// Some name parts may have qualifiers to provide additional semantic meaning
 /// to the name part (e.g., "given name" or "surname").
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct NamePart {
     /// The type of the name part.
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub part_type: Option<NamePartType>,
 
@@ -375,6 +388,7 @@ pub struct NamePart {
     pub value: String,
 
     /// Qualifiers to add additional semantic meaning to the name part.
+    #[yaserde(rename = "qualifier")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
 }
@@ -423,7 +437,7 @@ impl NamePartBuilder {
 }
 
 /// Standard name part types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NamePartType {
@@ -462,6 +476,12 @@ impl fmt::Display for NamePartType {
             Self::Surname => write!(f, "http://gedcomx.org/Surname"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Default for NamePartType {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
     }
 }
 

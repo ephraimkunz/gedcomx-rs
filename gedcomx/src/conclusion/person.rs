@@ -2,6 +2,7 @@ use std::convert::TryInto;
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
     Conclusion, ConclusionData, Fact, GedcomxError, Gender, Name, Result, SourceReference, Subject,
@@ -10,14 +11,16 @@ use crate::{
 
 /// A description of a person.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct Person {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub subject: SubjectData,
 
     /// Whether this instance of Person has been designated for limited
     /// distribution or display.
+    #[yaserde(attribute)]
     pub private: Option<bool>,
 
     /// The sex of the person as assigned at birth (see [Sex Assignment](https://en.wikipedia.org/wiki/Sex_assignment)).
@@ -28,10 +31,12 @@ pub struct Person {
     /// If more than one name is provided, names are assumed to be given in
     /// order of preference, with the most preferred name in the first position
     /// in the list.
+    #[yaserde(rename = "name")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub names: Vec<Name>,
 
     /// The facts of the person.
+    #[yaserde(rename = "fact")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub facts: Vec<Fact>,
 }

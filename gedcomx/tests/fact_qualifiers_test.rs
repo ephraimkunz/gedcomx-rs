@@ -54,7 +54,7 @@ fn test_census_and_residence_like_facts() {
 
     let gx = Gedcomx::builder().person(person).build();
 
-    common::assert_matching_json(gx, "census");
+    common::assert_matching_json(&gx, "census");
 }
 
 #[test]
@@ -93,7 +93,7 @@ fn test_military_service_facts() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    common::assert_matching_json(gx, "military");
+    common::assert_matching_json(&gx, "military");
 }
 
 #[test]
@@ -126,7 +126,7 @@ fn test_education_and_occupation_facts() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    common::assert_matching_json(gx, "education");
+    common::assert_matching_json(&gx, "education");
 }
 
 #[test]
@@ -225,7 +225,7 @@ fn test_religious_or_cultural_facts() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    common::assert_matching_json(gx, "religious");
+    common::assert_matching_json(&gx, "religious");
 }
 
 #[test]
@@ -255,7 +255,7 @@ fn test_fact_qualifiers() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    common::assert_matching_json(gx, "fact_qualifiers");
+    common::assert_matching_json(&gx, "fact_qualifiers");
 }
 
 #[test]
@@ -270,7 +270,7 @@ fn test_custom_fact() {
         .build();
 
     let gx = Gedcomx::builder().person(person).build();
-    common::assert_matching_json(gx, "custom_facts");
+    common::assert_matching_json(&gx, "custom_facts");
 }
 
 #[test]
@@ -365,5 +365,5 @@ fn test_relationship_facts() {
         .relationship(parent_child)
         .build();
 
-    common::assert_matching_json(gx, "relationships");
+    common::assert_matching_json(&gx, "relationships");
 }

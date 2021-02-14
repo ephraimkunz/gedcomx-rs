@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
     Conclusion, ConclusionData, Date, ResourceReference, Subject, SubjectData, TextValue, Uri,
@@ -9,21 +10,24 @@ use crate::{
 /// time period, and/or a geospatial description -- functioning as a description
 /// of a place as a snapshot in time.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct PlaceDescription {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub subject: SubjectData,
 
     /// A list of standardized (or normalized), fully-qualified (in terms of
     /// what is known of the applicable jurisdictional hierarchy) names for this
     /// place that are applicable to this description of this place.
+    #[yaserde(rename = "name")]
     pub names: Vec<TextValue>, // TODO: Must contain at least 1 name.
 
     /// An implementation-specific uniform resource identifier (URI) used to
     /// identify the type of a place (e.g., address, city, county, province,
     /// state, country, etc.).
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub place_type: Option<Uri>,
 
@@ -58,6 +62,7 @@ pub struct PlaceDescription {
 
     /// A description of the time period to which this place description is
     /// relevant.
+    #[yaserde(rename = "temporalDescription")]
     pub temporal_description: Option<Date>,
 
     /// A reference to a geospatial description of this place.
@@ -65,6 +70,7 @@ pub struct PlaceDescription {
     /// It is RECOMMENDED that this geospatial description resolve to a KML
     /// document.
     // TODO: Enforce through type system?
+    #[yaserde(rename = "spatialDescription")]
     pub spatial_description: Option<ResourceReference>,
 }
 

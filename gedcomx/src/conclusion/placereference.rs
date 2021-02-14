@@ -2,12 +2,13 @@ use std::convert::TryInto;
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{PlaceDescription, Result, Uri};
 
 ///  A reference to a description of a place.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct PlaceReference {
     /// The original place name text as supplied by the contributor.

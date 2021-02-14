@@ -1,7 +1,7 @@
-<gedcomx xmlns="http://gedcomx.org/v1/">
+<gedcomx>
     <attribution>
         <contributor resource="#A-1"/>
-        <modified>2014-04-04T00:00:00-06:00</modified>
+        <modified>2014-03-27T06:00:00</modified>
     </attribution>
     <person extracted="true" id="P-1">
         <source description="#S-4"/>
@@ -82,7 +82,7 @@
         <title>Translation of Grave Marker of WONG Aloiau, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii</title>
         <attribution>
             <contributor resource="#A-3"/>
-            <modified>2014-04-04T00:00:00-06:00</modified>
+            <modified>2014-03-27T06:00:00</modified>
         </attribution>
     </sourceDescription>
     <agent id="A-1">

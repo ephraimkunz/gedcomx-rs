@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
     Conclusion, ConclusionData, Date, GroupRole, PlaceReference, Subject, SubjectData, TextValue,
@@ -12,14 +13,16 @@ use crate::{
 /// Examples of a group could include plantations, orphanages, or military
 /// units.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Group {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub subject: SubjectData,
 
     /// A list of names of the group. The list must contain at least 1 name.
     // TODO: Enforce in type system?
+    #[yaserde(rename = "name")]
     pub names: Vec<TextValue>,
 
     /// The date of applicability of the group.
@@ -29,6 +32,7 @@ pub struct Group {
     pub place: Option<PlaceReference>,
 
     /// Information about how persons were associated with the group.
+    #[yaserde(rename = "role")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub roles: Vec<GroupRole>,
 }

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{ConclusionData, EvidenceReference, Identifier, SourceReference};
 
@@ -22,13 +23,15 @@ use crate::{ConclusionData, EvidenceReference, Identifier, SourceReference};
 /// be spelled).
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct SubjectData {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
     /// Whether this subject is to be constrained as an extracted conclusion.
+    #[yaserde(attribute)]
     pub extracted: Option<bool>,
 
     /// References to other subjects that support this subject.
@@ -55,6 +58,7 @@ pub struct SubjectData {
     pub media: Vec<SourceReference>,
 
     /// A list of identifiers for the subject.
+    #[yaserde(rename = "identifier")]
     #[serde(
         skip_serializing_if = "Vec::is_empty",
         default,

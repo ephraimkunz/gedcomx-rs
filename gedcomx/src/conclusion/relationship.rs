@@ -2,6 +2,7 @@ use std::{convert::TryInto, fmt};
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
     Conclusion, ConclusionData, EnumAsString, Fact, GedcomxError, Person, ResourceReference,
@@ -16,13 +17,15 @@ use crate::{
 /// person1 property refers to the parent and the person2 property refers to the
 /// child.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct Relationship {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub subject: SubjectData,
 
     /// The type of the relationship.
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub relationship_type: Option<RelationshipType>,
 
@@ -38,6 +41,7 @@ pub struct Relationship {
     pub person2: ResourceReference,
 
     /// The facts about the relationship.
+    #[yaserde(rename = "fact")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub facts: Vec<Fact>,
 }
@@ -124,7 +128,7 @@ impl RelationshipBuilder {
 }
 
 /// Standard relationship types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum RelationshipType {
@@ -170,6 +174,12 @@ impl fmt::Display for RelationshipType {
             Self::ParentChild => write!(f, "http://gedcomx.org/ParentChild"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Default for RelationshipType {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
     }
 }
 

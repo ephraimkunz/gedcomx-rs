@@ -2,6 +2,7 @@ use std::{convert::TryInto, fmt};
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
     Agent, Attribution, Coverage, EnumAsString, Id, Identifier, Note, ResourceReference, Result,
@@ -10,15 +11,17 @@ use crate::{
 
 /// A description of a source of genealogical information.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SourceDescription {
     /// An identifier for the data structure holding the source description
     /// data.
+    #[yaserde(attribute)]
     pub id: Option<Id>,
 
     /// The type of resource being described.
+    #[yaserde(rename = "resourceType", attribute)]
     pub resource_type: Option<ResourceType>,
 
     /// The citation(s) for this source.
@@ -26,15 +29,18 @@ pub struct SourceDescription {
     /// At least one citation MUST be provided. If more than one citation is
     /// provided, citations are assumed to be given in order of preference, with
     /// the most preferred citation in the first position in the list.
+    #[yaserde(rename = "citation")]
     pub citations: Vec<SourceCitation>, // TODO: Must have at least one.
 
     /// A hint about the media type of the resource being described.
     ///
     /// If provided, MUST be a valid MIME (media) type as specified by RFC 4288.
     // TODO: Newtype?
+    #[yaserde(rename = "mediaType", attribute)]
     pub media_type: Option<String>,
 
     /// A uniform resource identifier (URI) for the resource being described.
+    #[yaserde(attribute)]
     pub about: Option<Uri>,
 
     /// A reference to the entity that mediates access to the described source.
@@ -54,10 +60,12 @@ pub struct SourceDescription {
     ///
     /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
     // TODO: Enforce
+    #[yaserde(rename = "author")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub authors: Vec<ResourceReference>,
 
     /// A list of references to any sources from which this source is derived.
+    #[yaserde(rename = "source")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub sources: Vec<SourceReference>,
 
@@ -69,6 +77,7 @@ pub struct SourceDescription {
     /// A reference to the source that contains this source, i.e. its parent
     /// context. Used when the description of a source is not complete without
     /// the description of its parent (or containing) source.
+    #[yaserde(rename = "componentOf")]
     pub component_of: Option<SourceReference>,
 
     /// The display name(s) for this source.
@@ -76,10 +85,12 @@ pub struct SourceDescription {
     /// If more than one title is provided, titles are assumed to be given in
     /// order of preference, with the most preferred title in the first position
     /// in the list.
+    #[yaserde(rename = "title")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub titles: Vec<TextValue>,
 
     /// A list of notes about a source.
+    #[yaserde(rename = "note")]
     pub notes: Option<Note>,
 
     /// The attribution of this source description.
@@ -101,10 +112,12 @@ pub struct SourceDescription {
     /// If more than one description is provided, descriptions are assumed to be
     /// given in order of preference, with the most preferred description in the
     /// first position in the list.
+    #[yaserde(rename = "description")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub descriptions: Vec<TextValue>,
 
     /// A list of identifiers for the resource being described.
+    #[yaserde(rename = "identifier")]
     #[serde(
         skip_serializing_if = "Vec::is_empty",
         default,
@@ -278,7 +291,7 @@ impl SourceDescriptionBuilder {
 }
 
 /// Standard resource types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum ResourceType {
@@ -322,5 +335,11 @@ impl fmt::Display for ResourceType {
             Self::Record => write!(f, "http://gedcomx.org/Record"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Default for ResourceType {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
     }
 }

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{Attribution, Lang};
 
@@ -8,10 +9,11 @@ use crate::{Attribution, Lang};
 /// Notes are not intended to contain genealogical conclusions. Notes are only
 /// associated with a single genealogical resource.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Note {
     /// The locale identifier for the note.
+    #[yaserde(attribute)]
     pub lang: Option<Lang>,
 
     /// A subject or title for the note.

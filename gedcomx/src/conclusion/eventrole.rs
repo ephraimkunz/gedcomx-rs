@@ -2,14 +2,16 @@ use std::{convert::TryInto, fmt};
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{Conclusion, ConclusionData, EnumAsString, Person, ResourceReference, Result, Uri};
 
 /// A role played in an event by a person.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct EventRole {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
@@ -20,6 +22,7 @@ pub struct EventRole {
     pub person: ResourceReference,
 
     /// The participant's role.
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub event_role_type: Option<EventRoleType>,
 
@@ -104,7 +107,7 @@ impl EventRoleBuilder {
 }
 
 /// Standard event roles.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum EventRoleType {
@@ -145,6 +148,12 @@ impl fmt::Display for EventRoleType {
             Self::Witness => write!(f, "http://gedcomx.org/Witness"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Default for EventRoleType {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
     }
 }
 

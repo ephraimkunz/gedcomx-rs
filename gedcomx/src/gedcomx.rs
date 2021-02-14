@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
     Agent, Attribution, Document, Event, Group, Id, Lang, Person, PlaceDescription, Relationship,
@@ -8,48 +9,59 @@ use crate::{
 
 /// A container for a set of GEDCOM X data.
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, Debug, PartialEq, Clone, Default)]
+#[derive(Deserialize, Serialize, YaSerialize, YaDeserialize, Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]
+#[yaserde(rename = "gedcomx")]
 #[serde(rename_all = "camelCase")]
 pub struct Gedcomx {
     /// An identifier for the data set.
+    #[yaserde(attribute)]
     pub id: Option<Id>,
 
     /// The locale identifier for the data set.
+    #[yaserde(attribute)]
     pub lang: Option<Lang>,
 
     /// The attribution of this data set.
     pub attribution: Option<Attribution>,
 
     /// The list of persons contained in the data set.
+    #[yaserde(rename = "person")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub persons: Vec<Person>,
 
     /// The list of relationships contained in the data set.
+    #[yaserde(rename = "relationship")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub relationships: Vec<Relationship>,
 
     /// The list of source descriptions contained in the data set.
+    #[yaserde(rename = "sourceDescription")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub source_descriptions: Vec<SourceDescription>,
 
     /// The list of agents contained in the data set.
+    #[yaserde(rename = "agent")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub agents: Vec<Agent>,
 
     /// The list of events contained in the data set.
+    #[yaserde(rename = "event")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub events: Vec<Event>,
 
     /// The list of documents contained in the data set.
+    #[yaserde(rename = "document")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub documents: Vec<Document>,
 
     /// The list of places contained in the data set.
+    #[yaserde(rename = "place")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub places: Vec<PlaceDescription>,
 
     /// The list of groups contained in the data set.
+    #[yaserde(rename = "group")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub groups: Vec<Group>,
 
@@ -57,6 +69,7 @@ pub struct Gedcomx {
     ///
     /// If provided, MUST resolve to an instance of SourceDescription.
     // TODO: Enforce
+    #[yaserde(attribute)]
     pub description: Option<Uri>,
 }
 

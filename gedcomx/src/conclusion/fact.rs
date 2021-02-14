@@ -2,6 +2,7 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Qualifier, Uri};
 
@@ -10,13 +11,15 @@ use crate::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Qual
 ///
 /// To distinguish the concept of "fact" from "event", refer to [Events Versus Facts](https://github.com/FamilySearch/gedcomx/blob/master/specifications/conceptual-model-specification.md#events-vs-facts).
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct Fact {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
     /// The type of the fact.
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub fact_type: FactType,
 
@@ -31,6 +34,7 @@ pub struct Fact {
 
     /// Qualifiers to add additional details about the fact.
     // TODO: Should we enforce these as FactQualifiers?
+    #[yaserde(rename = "qualifier")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
 }
@@ -118,7 +122,7 @@ impl FactBuilder {
 }
 
 /// Standard fact types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum FactType {

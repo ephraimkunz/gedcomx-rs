@@ -2,20 +2,23 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{Attribution, Conclusion, ConclusionData, EnumAsString, Uri};
 
 /// The base conceptual model for genealogical data that are managed as textual
 /// documents.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Document {
+    #[yaserde(flatten)]
     #[serde(flatten)]
     pub conclusion: ConclusionData,
 
     /// Enumerated value identifying the type of the document.
+    #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub document_type: Option<DocumentType>,
 
@@ -27,6 +30,7 @@ pub struct Document {
     ///
     /// If provided, the value MUST be a [valid text type](https://github.com/FamilySearch/gedcomx/blob/master/specifications/conceptual-model-specification.md#text-types). If no value is provided, "plain" is assumed
     // TODO: Newtype for this?
+    #[yaserde(rename = "textType")]
     pub text_type: Option<String>,
 
     /// The text of the document.
@@ -104,7 +108,7 @@ impl DocumentBuilder {
 }
 
 /// Document types
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum DocumentType {
@@ -144,6 +148,12 @@ impl fmt::Display for DocumentType {
             Self::Translation => write!(f, "http://gedcomx.org/Translation"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Default for DocumentType {
+    fn default() -> Self {
+        Self::Custom(Uri::default())
     }
 }
 
