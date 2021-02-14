@@ -15,7 +15,8 @@ use crate::{
     rename = "gedcomx",
     prefix = "gx",
     default_namespace = "gx",
-    namespace = "gx: http://gedcomx.org/v1/"
+    namespace = "gx: http://gedcomx.org/v1/",
+    namespace = "xml: http://www.w3.org/XML/1998/namespace"
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Gedcomx {
