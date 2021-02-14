@@ -18,31 +18,41 @@ fn main() {
     //     .unwrap()
     // );
 
-    let test = A {
-        b: B {
-            c: "Hi".to_string(),
-        },
-    };
+    // let test = EventRoleType::Custom(Uri("hi".to_string()));
 
-    println!("{}", yaserde::ser::to_string(&test).unwrap());
+    // println!("{}", yaserde::ser::to_string(&test).unwrap());
 }
 
-use serde::{Deserialize, Serialize};
-use yaserde_derive::{YaDeserialize, YaSerialize};
+// use serde::{Deserialize, Serialize};
 
-#[derive(YaSerialize, YaDeserialize, Serialize, Deserialize)]
-pub struct A {
-    b: B,
-}
-#[derive(Serialize, Deserialize, YaSerialize, YaDeserialize, Default)]
-pub struct B {
-    c: String,
-}
+// #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 // pub struct Uri(String);
 
-// impl YaSerialize for Uri {
-//     fn serialize<W: Write>(&self, writer: &mut yaserde::ser::Serializer<W>) -> Result<(), String> {
-//         let _ret = writer.write(xml::writer::XmlEvent::characters(&self.0));
+// #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+// #[non_exhaustive]
+// pub enum EventRoleType {
+//     /// The person is the principal person of the event.
+//     ///
+//     /// For example, the principal of a birth event is the person that was born.
+//     Principal,
+
+//     /// A participant in the event.
+//     Participant,
+
+//     /// A person officiating the event.
+//     Official,
+
+//     /// A witness of the event.
+//     Witness,
+//     Custom(Uri),
+// }
+
+// impl yaserde::YaSerialize for EventRoleType {
+//     fn serialize<W: std::io::Write>(
+//         &self,
+//         writer: &mut yaserde::ser::Serializer<W>,
+//     ) -> Result<(), String> {
+//         let _ret = writer.write(xml::writer::XmlEvent::characters(&self.to_string()));
 //         Ok(())
 //     }
 
@@ -61,14 +71,33 @@ pub struct B {
 //     }
 // }
 
-// impl yaserde::YaDeserialize for Uri {
+// impl yaserde::YaDeserialize for EventRoleType {
 //     fn deserialize<R: std::io::Read>(
 //         reader: &mut yaserde::de::Deserializer<R>,
 //     ) -> Result<Self, String> {
+//         if let xml::reader::XmlEvent::StartElement { name, .. } = reader.peek()?.to_owned() {
+//             let expected_name = "Alpha".to_owned();
+//             if name.local_name != expected_name {
+//                 return Err(format!(
+//                     "Wrong StartElement name: {}, expected: {}",
+//                     name, expected_name
+//                 ));
+//             }
+//             let _next = reader.next_event();
+//         } else {
+//             return Err("StartElement missing".to_string());
+//         }
+
 //         if let xml::reader::XmlEvent::Characters(text) = reader.peek()?.to_owned() {
-//             Ok(Self(text))
+//             Ok(Self::Principal)
 //         } else {
 //             Err("Characters missing".to_string())
 //         }
+//     }
+// }
+
+// impl Display for EventRoleType {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+//         write!(f, "hi")
 //     }
 // }

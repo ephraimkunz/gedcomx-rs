@@ -122,7 +122,7 @@ impl FactBuilder {
 }
 
 /// Standard fact types.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum FactType {
@@ -396,6 +396,8 @@ pub enum FactType {
     Custom(Uri),
 }
 
+impl_enumasstring_yaserialize_yadeserialize!(FactType, "FactType");
+
 impl fmt::Display for FactType {
     #[allow(clippy::too_many_lines)]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
@@ -650,6 +652,8 @@ pub enum FactQualifier {
     NonConsensual,
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(FactQualifier, "FactQualifier");
 
 impl From<EnumAsString> for FactQualifier {
     fn from(f: EnumAsString) -> Self {

@@ -2,8 +2,8 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
 /// Defined by [IETF BCP 47](https://tools.ietf.org/html/bcp47).
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Lang(String);
 
 impl_characters_yaserialize_yadeserialize!(Lang, "Lang");

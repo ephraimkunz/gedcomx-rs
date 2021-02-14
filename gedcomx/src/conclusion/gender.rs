@@ -77,7 +77,7 @@ impl Conclusion for Gender {
 }
 
 /// Type of gender.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum GenderType {
@@ -101,6 +101,8 @@ impl Default for GenderType {
         Self::Custom(Uri::from(String::default()))
     }
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(GenderType, "GenderType");
 
 impl From<EnumAsString> for GenderType {
     fn from(f: EnumAsString) -> Self {

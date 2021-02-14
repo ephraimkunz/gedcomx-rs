@@ -107,7 +107,7 @@ impl EventRoleBuilder {
 }
 
 /// Standard event roles.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum EventRoleType {
@@ -126,6 +126,8 @@ pub enum EventRoleType {
     Witness,
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(EventRoleType, "EventRoleType");
 
 impl From<EnumAsString> for EventRoleType {
     fn from(f: EnumAsString) -> Self {

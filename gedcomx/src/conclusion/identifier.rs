@@ -1,7 +1,6 @@
 use std::fmt;
 
 use serde::{Deserialize, Serialize};
-use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{EnumAsString, Uri};
 
@@ -140,7 +139,7 @@ impl yaserde::YaDeserialize for Identifier {
 }
 
 /// Standard identifier types.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum IdentifierType {
@@ -175,6 +174,8 @@ impl Default for IdentifierType {
         Self::Custom(Uri::default())
     }
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(IdentifierType, "IdentifierType");
 
 impl From<EnumAsString> for IdentifierType {
     fn from(f: EnumAsString) -> Self {

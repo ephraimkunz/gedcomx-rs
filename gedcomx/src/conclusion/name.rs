@@ -173,7 +173,7 @@ impl From<&str> for Name {
 }
 
 /// Standard name types.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NameType {
@@ -200,6 +200,8 @@ pub enum NameType {
     ReligiousName,
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(NameType, "NameType");
 
 impl From<EnumAsString> for NameType {
     fn from(f: EnumAsString) -> Self {
@@ -437,7 +439,7 @@ impl NamePartBuilder {
 }
 
 /// Standard name part types.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NamePartType {
@@ -454,6 +456,8 @@ pub enum NamePartType {
     Surname,
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(NamePartType, "NamePartType");
 
 impl From<EnumAsString> for NamePartType {
     fn from(f: EnumAsString) -> Self {
@@ -560,6 +564,8 @@ pub enum NamePartQualifier {
     RootName,
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(NamePartQualifier, "NamePartQualifier");
 
 impl From<EnumAsString> for NamePartQualifier {
     fn from(f: EnumAsString) -> Self {

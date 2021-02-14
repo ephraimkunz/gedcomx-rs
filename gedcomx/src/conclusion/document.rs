@@ -108,7 +108,7 @@ impl DocumentBuilder {
 }
 
 /// Document types
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum DocumentType {
@@ -126,6 +126,8 @@ pub enum DocumentType {
     Translation,
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(DocumentType, "DocumentType");
 
 impl From<EnumAsString> for DocumentType {
     fn from(f: EnumAsString) -> Self {

@@ -291,7 +291,7 @@ impl SourceDescriptionBuilder {
 }
 
 /// Standard resource types.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum ResourceType {
@@ -313,6 +313,8 @@ pub enum ResourceType {
 
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(ResourceType, "ResourceType");
 
 impl From<EnumAsString> for ResourceType {
     fn from(f: EnumAsString) -> Self {

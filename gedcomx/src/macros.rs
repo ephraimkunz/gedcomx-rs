@@ -14,6 +14,61 @@ macro_rules! try_from_evidencereference {
     };
 }
 
+macro_rules! impl_enumasstring_yaserialize_yadeserialize {
+    ($for_type: ty, $name: tt) => {
+        impl yaserde::YaSerialize for $for_type {
+            fn serialize<W: std::io::Write>(
+                &self,
+                writer: &mut yaserde::ser::Serializer<W>,
+            ) -> std::result::Result<(), String> {
+                let _ret = writer.write(xml::writer::XmlEvent::characters(&self.to_string()));
+                Ok(())
+            }
+
+            fn serialize_attributes(
+                &self,
+                attributes: Vec<xml::attribute::OwnedAttribute>,
+                namespace: xml::namespace::Namespace,
+            ) -> std::result::Result<
+                (
+                    Vec<xml::attribute::OwnedAttribute>,
+                    xml::namespace::Namespace,
+                ),
+                String,
+            > {
+                Ok((attributes, namespace))
+            }
+        }
+
+        impl yaserde::YaDeserialize for $for_type {
+            fn deserialize<R: std::io::Read>(
+                reader: &mut yaserde::de::Deserializer<R>,
+            ) -> std::result::Result<Self, String> {
+                if let xml::reader::XmlEvent::StartElement { name, .. } = reader.peek()?.to_owned()
+                {
+                    let expected_name = $name.to_owned();
+                    if name.local_name != expected_name {
+                        return Err(format!(
+                            "Wrong StartElement name: {}, expected: {}",
+                            name, expected_name
+                        ));
+                    }
+                    let _next = reader.next_event();
+                } else {
+                    return Err("StartElement missing".to_string());
+                }
+
+                if let xml::reader::XmlEvent::Characters(text) = reader.peek()?.to_owned() {
+                    let enum_as_string = crate::EnumAsString(text);
+                    Ok(Self::from(enum_as_string))
+                } else {
+                    Err("Characters missing".to_string())
+                }
+            }
+        }
+    };
+}
+
 macro_rules! impl_characters_yaserialize_yadeserialize {
     ($for_type: ty, $name: tt) => {
         impl yaserde::YaSerialize for $for_type {

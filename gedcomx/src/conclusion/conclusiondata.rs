@@ -20,13 +20,19 @@ use crate::{Attribution, EnumAsString, Id, Lang, Note, ResourceReference, Source
 #[skip_serializing_none]
 #[derive(Debug, Serialize, YaSerialize, YaDeserialize, Deserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/",
+    namespace = "xml: http://www.w3.org/XML/1998/namespace"
+)]
 pub struct ConclusionData {
     /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
     #[yaserde(attribute)]
     pub id: Option<Id>,
 
     /// The locale identifier for the conclusion.
-    #[yaserde(attribute)]
+    #[yaserde(attribute, prefix = "xml")]
     pub lang: Option<Lang>,
 
     /// The list of references to the sources of related to this conclusion.
@@ -75,7 +81,7 @@ impl ConclusionData {
 }
 
 /// Levels of confidence.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum ConfidenceLevel {
@@ -90,6 +96,8 @@ pub enum ConfidenceLevel {
     Low,
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(ConfidenceLevel, "ConfidenceLevel");
 
 impl From<EnumAsString> for ConfidenceLevel {
     fn from(f: EnumAsString) -> Self {

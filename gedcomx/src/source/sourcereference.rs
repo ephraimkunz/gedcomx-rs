@@ -139,6 +139,8 @@ pub enum SourceReferenceQualifier {
     Custom(Uri),
 }
 
+impl_enumasstring_yaserialize_yadeserialize!(SourceReferenceQualifier, "SourceReferenceQualifier");
+
 impl From<EnumAsString> for SourceReferenceQualifier {
     fn from(f: EnumAsString) -> Self {
         match f.0.as_ref() {

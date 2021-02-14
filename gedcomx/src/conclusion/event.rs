@@ -98,7 +98,7 @@ impl EventBuilder {
 }
 
 /// Standard event types.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum EventType {
@@ -166,6 +166,8 @@ pub enum EventType {
     Retirement,
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(EventType, "EventType");
 
 impl From<EnumAsString> for EventType {
     fn from(f: EnumAsString) -> Self {

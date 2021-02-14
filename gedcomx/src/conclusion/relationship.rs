@@ -128,7 +128,7 @@ impl RelationshipBuilder {
 }
 
 /// Standard relationship types.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum RelationshipType {
@@ -150,6 +150,8 @@ pub enum RelationshipType {
 
     Custom(Uri),
 }
+
+impl_enumasstring_yaserialize_yadeserialize!(RelationshipType, "RelationshipType");
 
 impl From<EnumAsString> for RelationshipType {
     fn from(f: EnumAsString) -> Self {

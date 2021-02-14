@@ -11,7 +11,12 @@ use crate::{
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, YaSerialize, YaDeserialize, Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]
-#[yaserde(rename = "gedcomx")]
+#[yaserde(
+    rename = "gedcomx",
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Gedcomx {
     /// An identifier for the data set.
@@ -23,6 +28,7 @@ pub struct Gedcomx {
     pub lang: Option<Lang>,
 
     /// The attribution of this data set.
+    #[yaserde(prefix = "gx")]
     pub attribution: Option<Attribution>,
 
     /// The list of persons contained in the data set.
