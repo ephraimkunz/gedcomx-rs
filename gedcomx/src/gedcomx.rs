@@ -13,10 +13,8 @@ use crate::{
 #[non_exhaustive]
 #[yaserde(
     rename = "gedcomx",
-    prefix = "gx",
     default_namespace = "gx",
-    namespace = "gx: http://gedcomx.org/v1/",
-    namespace = "xml: http://www.w3.org/XML/1998/namespace"
+    namespace = "gx: http://gedcomx.org/v1/"
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Gedcomx {
@@ -29,7 +27,6 @@ pub struct Gedcomx {
     pub lang: Option<Lang>,
 
     /// The attribution of this data set.
-    #[yaserde(prefix = "gx")]
     pub attribution: Option<Attribution>,
 
     /// The list of persons contained in the data set.

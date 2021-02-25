@@ -1,4 +1,4 @@
-<gedcomx>
+<gedcomx xmlns="http://gedcomx.org/v1/">
     <attribution>
         <contributor resource="#A-1"/>
         <modified>2014-03-27T06:00:00</modified>

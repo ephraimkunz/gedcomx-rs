@@ -21,13 +21,12 @@ pub fn assert_matching_json(gx: &Gedcomx, filename: &str) {
 
 #[allow(dead_code)]
 pub fn assert_matching_xml(gx: &Gedcomx, filename: &str) {
-    // let file_string = std::fs::read_to_string(format!("../data/{}.xml",
-    // filename)).unwrap();
+    let file_string = std::fs::read_to_string(format!("../data/{}.xml", filename)).unwrap();
     let file_string_nowhitespace =
         std::fs::read_to_string(format!("../data/{}_nowhitespace.xml", filename)).unwrap();
 
-    // let file_des: Gedcomx = yaserde::de::from_str(&file_string).unwrap();
-    // assert_eq!(&file_des, gx);
+    let file_des: Gedcomx = yaserde::de::from_str(&file_string).unwrap();
+    assert_eq!(&file_des, gx);
 
     let object_ser = yaserde::ser::to_string_with_config(
         gx,
