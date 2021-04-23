@@ -10,20 +10,28 @@ use crate::{Attribution, Lang};
 /// associated with a single genealogical resource.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct Note {
     /// The locale identifier for the note.
-    #[yaserde(attribute)]
+    #[yaserde(attribute, prefix = "xml")]
     pub lang: Option<Lang>,
 
     /// A subject or title for the note.
+    #[yaserde(prefix = "gx")]
     pub subject: Option<String>,
 
     /// The text of the note.
+    #[yaserde(prefix = "gx")]
     pub text: String,
 
     /// The attribution of this note. If not provided, the attribution of the
     /// containing resource of the note is assumed.
+    #[yaserde(prefix = "gx")]
     pub attribution: Option<Attribution>,
 }
 

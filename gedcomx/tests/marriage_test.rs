@@ -78,7 +78,7 @@ fn test_example() {
     //The transcription described as a source.
     let transcription_description = SourceDescription::builder()
         .id("S-2")
-        .about(transcription.conclusion.id.clone().unwrap().into())
+        .about(transcription.id.clone().unwrap().into())
         .title(
             "Transcription of marriage entry for Samuel Ham and Elizabeth Spiller, Parish \
              Register, Wilton, Somerset, England",
@@ -283,4 +283,5 @@ fn test_example() {
         .build();
 
     common::assert_matching_json(&gx, "marriage");
+    common::assert_matching_xml(&gx, "marriage");
 }

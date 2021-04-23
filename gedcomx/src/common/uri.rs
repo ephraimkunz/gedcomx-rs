@@ -3,8 +3,8 @@ use std::{convert::TryFrom, fmt};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    Conclusion, FactQualifier, GedcomxError, Id, NamePartQualifier, PlaceDescription,
-    SourceDescription, SourceReferenceQualifier,
+    FactQualifier, GedcomxError, Id, NamePartQualifier, PlaceDescription, SourceDescription,
+    SourceReferenceQualifier,
 };
 
 /// Specified by [RFC 3986](https://tools.ietf.org/html/rfc3986).
@@ -54,7 +54,7 @@ impl TryFrom<&PlaceDescription> for Uri {
     type Error = GedcomxError;
 
     fn try_from(pd: &PlaceDescription) -> Result<Self, Self::Error> {
-        match &pd.conclusion().id {
+        match &pd.id {
             Some(id) => Ok(id.into()),
             None => Err(GedcomxError::NoId("PlaceDescription".to_string())),
         }

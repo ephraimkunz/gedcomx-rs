@@ -98,7 +98,7 @@ fn test_example() {
     //The transcription described as a source.
     let transcription_description = SourceDescription::builder()
         .id("S-3")
-        .about(transcription.conclusion.id.clone().unwrap().into())
+        .about(transcription.id.clone().unwrap().into())
         .title(
             "Transcription of Grave Marker of WONG Aloiau, Lin Yee Chung Cemetery, Honolulu, \
              Oahu, Hawaii",
@@ -134,7 +134,7 @@ fn test_example() {
     //The translation described as a source.
     let translation_description = SourceDescription::builder()
         .id("S-4")
-        .about(translation.conclusion.id.clone().unwrap().into())
+        .about(translation.id.clone().unwrap().into())
         .title(
             "Translation of Grave Marker of WONG Aloiau, Lin Yee Chung Cemetery, Honolulu, Oahu, \
              Hawaii",

@@ -3,7 +3,7 @@ use std::convert::TryFrom;
 use serde::{Deserialize, Serialize};
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-use crate::{Agent, Conclusion, Document, DocumentType, GedcomxError, Person, Uri};
+use crate::{Agent, Document, DocumentType, GedcomxError, Person, Uri};
 
 /// A generic reference to a resource.
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
@@ -43,11 +43,11 @@ impl TryFrom<&Person> for ResourceReference {
     type Error = GedcomxError;
 
     fn try_from(person: &Person) -> Result<Self, Self::Error> {
-        match &person.conclusion().id {
+        match &person.id {
             Some(id) => Ok(Self {
                 resource: id.into(),
             }),
-            None => Err(GedcomxError::NoId(person.type_name())),
+            None => Err(GedcomxError::NoId("Person".to_string())),
         }
     }
 }
@@ -57,14 +57,14 @@ impl TryFrom<&Document> for ResourceReference {
 
     fn try_from(document: &Document) -> Result<Self, Self::Error> {
         match (
-            &document.conclusion().id,
+            &document.id,
             document.document_type == None
                 || document.document_type == Some(DocumentType::Analysis),
         ) {
             (Some(id), true) => Ok(Self {
                 resource: id.into(),
             }),
-            (None, _) => Err(GedcomxError::NoId(document.type_name())),
+            (None, _) => Err(GedcomxError::NoId("Document".to_string())),
             (_, false) => Err(GedcomxError::WrongDocumentType {
                 expected: DocumentType::Analysis,
                 actual: document.document_type.as_ref().unwrap().clone(), /* Should never be None

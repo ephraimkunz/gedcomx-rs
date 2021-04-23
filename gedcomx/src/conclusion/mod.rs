@@ -1,5 +1,5 @@
-mod conclusiondata;
-pub use conclusiondata::{ConclusionData, ConfidenceLevel};
+mod confidencelevel;
+pub use confidencelevel::ConfidenceLevel;
 
 mod date;
 pub use date::Date;
@@ -45,19 +45,3 @@ pub use placereference::{PlaceReference, PlaceReferenceBuilder};
 
 mod relationship;
 pub use relationship::{Relationship, RelationshipBuilder, RelationshipType};
-
-mod subjectdata;
-pub use subjectdata::SubjectData;
-
-/// Trait representing a type that is a conclusion.
-pub trait Conclusion {
-    fn conclusion(&self) -> &ConclusionData;
-    fn conclusion_mut(&mut self) -> &mut ConclusionData;
-    fn type_name(&self) -> String;
-}
-
-/// Trait representing a type that is a subject.
-pub trait Subject: Conclusion {
-    fn subject(&self) -> &SubjectData;
-    fn subject_mut(&mut self) -> &mut SubjectData;
-}

@@ -5,43 +5,57 @@ use yaserde_derive::{YaDeserialize, YaSerialize};
 /// A street or postal address of a person or organization.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, YaSerialize, YaDeserialize, Deserialize, PartialEq, Clone, Default)]
-#[yaserde(rename = "address")]
+#[yaserde(
+    rename = "address",
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct Address {
     /// A full representation of the complete address.
+    #[yaserde(prefix = "gx")]
     pub value: Option<String>,
 
     /// The city.
+    #[yaserde(prefix = "gx")]
     pub city: Option<String>,
 
     /// The country.
+    #[yaserde(prefix = "gx")]
     pub country: Option<String>,
 
     /// The postal code.
-    #[yaserde(rename = "postalCode")]
+    #[yaserde(rename = "postalCode", prefix = "gx")]
     pub postal_code: Option<String>,
 
     /// The state or province.
-    #[yaserde(rename = "stateOrProvince")]
+    #[yaserde(rename = "stateOrProvince", prefix = "gx")]
     pub state_or_province: Option<String>,
 
     /// The street.
+    #[yaserde(prefix = "gx")]
     pub street: Option<String>,
 
     /// The street (second line).
+    #[yaserde(prefix = "gx")]
     pub street2: Option<String>,
 
     /// The street (third line).
+    #[yaserde(prefix = "gx")]
     pub street3: Option<String>,
 
     /// The street (fourth line).
+    #[yaserde(prefix = "gx")]
     pub street4: Option<String>,
 
     /// The street (fifth line).
+    #[yaserde(prefix = "gx")]
     pub street5: Option<String>,
 
     /// The street (sixth line).
+    #[yaserde(prefix = "gx")]
     pub street6: Option<String>,
 }
 
@@ -161,6 +175,8 @@ impl AddressBuilder {
 
 #[cfg(test)]
 mod test {
+    use yaserde::ser::Config;
+
     use super::*;
 
     #[test]
@@ -270,11 +286,14 @@ mod test {
             .state_or_province("California")
             .street("2299 Poplar Ave")
             .build();
-        let xml = yaserde::ser::to_string_content(&address).unwrap();
+
+        let mut config = Config::default();
+        config.write_document_declaration = false;
+        let xml = yaserde::ser::to_string_with_config(&address, &config).unwrap();
 
         assert_eq!(
             xml,
-            r#"<city>East Palo Alto</city><country>United States</country><postalCode>94303</postalCode><stateOrProvince>California</stateOrProvince><street>2299 Poplar Ave</street>"#
+            r#"<address xmlns="http://gedcomx.org/v1/"><city>East Palo Alto</city><country>United States</country><postalCode>94303</postalCode><stateOrProvince>California</stateOrProvince><street>2299 Poplar Ave</street></address>"#
         )
     }
 }

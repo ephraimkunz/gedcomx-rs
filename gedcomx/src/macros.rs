@@ -4,10 +4,11 @@ macro_rules! try_from_evidencereference {
             type Error = GedcomxError;
 
             fn try_from(f: &$from_type) -> Result<Self, Self::Error> {
-                use crate::Conclusion;
-                match &f.conclusion().id {
+                match &f.id {
                     Some(id) => Ok(Self::new(id.into(), None)),
-                    None => Err(GedcomxError::NoId(f.type_name())),
+                    None => Err(GedcomxError::NoId(
+                        std::any::type_name::<$from_type>().to_string(),
+                    )),
                 }
             }
         }
@@ -126,13 +127,12 @@ macro_rules! impl_characters_yaserialize_yadeserialize {
 macro_rules! conclusion_builder_functions {
     ($final_type: ty) => {
         pub fn id<I: Into<crate::Id>>(&mut self, id: I) -> &mut Self {
-            use crate::Conclusion;
-            self.0.conclusion_mut().id = Some(id.into());
+            self.0.id = Some(id.into());
             self
         }
 
         pub fn lang<I: Into<crate::Lang>>(&mut self, lang: I) -> &mut Self {
-            self.0.conclusion_mut().lang = Some(lang.into());
+            self.0.lang = Some(lang.into());
             self
         }
 
@@ -147,8 +147,13 @@ macro_rules! conclusion_builder_functions {
             &mut self,
             source: I,
         ) -> crate::Result<&mut Self> {
-            self.0.conclusion_mut().sources.push(source.try_into()?);
+            self.0.sources.push(source.try_into()?);
             Ok(self)
+        }
+
+        pub fn source_ref(&mut self, source_ref: crate::SourceReference) -> &mut Self {
+            self.0.sources.push(source_ref);
+            self
         }
 
         /// # Errors
@@ -158,22 +163,22 @@ macro_rules! conclusion_builder_functions {
         /// set or has the wrong `document_type`.
         pub fn analysis(&mut self, document: &crate::Document) -> crate::Result<&mut Self> {
             use std::convert::TryInto;
-            self.0.conclusion_mut().analysis = Some(document.try_into()?);
+            self.0.analysis = Some(document.try_into()?);
             Ok(self)
         }
 
         pub fn note(&mut self, note: crate::Note) -> &mut Self {
-            self.0.conclusion_mut().notes.push(note);
+            self.0.notes.push(note);
             self
         }
 
         pub fn confidence(&mut self, confidence: crate::ConfidenceLevel) -> &mut Self {
-            self.0.conclusion_mut().confidence = Some(confidence);
+            self.0.confidence = Some(confidence);
             self
         }
 
         pub fn attribution(&mut self, attribution: crate::Attribution) -> &mut Self {
-            self.0.conclusion_mut().attribution = Some(attribution);
+            self.0.attribution = Some(attribution);
             self
         }
     };
@@ -184,7 +189,7 @@ macro_rules! subject_builder_functions {
         conclusion_builder_functions!($final_type);
 
         pub fn extracted(&mut self, extracted: bool) -> &mut Self {
-            self.0.subject.extracted = Some(extracted);
+            self.0.extracted = Some(extracted);
             self
         }
 
@@ -195,7 +200,7 @@ macro_rules! subject_builder_functions {
         /// This happens if the passed argument has no `id` set.
         pub fn evidence(&mut self, e: &$final_type) -> crate::Result<&mut Self> {
             use std::convert::TryInto;
-            self.0.subject.evidence.push(e.try_into()?);
+            self.0.evidence.push(e.try_into()?);
             Ok(self)
         }
 
@@ -206,12 +211,12 @@ macro_rules! subject_builder_functions {
         /// This happens if `media` has no `id` set.
         pub fn media(&mut self, media: &crate::SourceDescription) -> crate::Result<&mut Self> {
             use std::convert::TryInto;
-            self.0.subject.media.push(media.try_into()?);
+            self.0.media.push(media.try_into()?);
             Ok(self)
         }
 
         pub fn identifier(&mut self, identifier: crate::Identifier) -> &mut Self {
-            self.0.subject.identifiers.push(identifier);
+            self.0.identifiers.push(identifier);
             self
         }
     };

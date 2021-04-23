@@ -24,7 +24,12 @@ use crate::{Attribution, Event, GedcomxError, Person, PlaceDescription, Relation
 /// "fghij" are the same person, he will add two `EvidenceReference` instances
 /// to the working `Person`: one for "abcde" and one for "fghij".
 #[skip_serializing_none]
-#[yaserde(rename = "evidence")]
+#[yaserde(
+    rename = "evidence",
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct EvidenceReference {
@@ -35,6 +40,7 @@ pub struct EvidenceReference {
     /// The attribution of this evidence reference. If not provided, the
     /// attribution of the containing resource of the source reference is
     /// assumed.
+    #[yaserde(prefix = "gx")]
     pub attribution: Option<Attribution>,
 }
 
@@ -58,6 +64,7 @@ try_from_evidencereference!(Relationship);
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
+    use yaserde::ser::Config;
 
     use super::*;
     use crate::TestData;
@@ -157,9 +164,11 @@ mod test {
             attribution: Some(Attribution::default()),
         };
 
-        let xml = yaserde::ser::to_string_content(&evidence_reference).unwrap();
+        let mut config = Config::default();
+        config.write_document_declaration = false;
+        let xml = yaserde::ser::to_string_with_config(&evidence_reference, &config).unwrap();
 
-        let expected_xml = r#"<attribution />"#;
+        let expected_xml = r#"<evidence xmlns="http://gedcomx.org/v1/" resource="http://identifier/for/data/being/referenced"><attribution /></evidence>"#;
 
         assert_eq!(xml, expected_xml)
     }
@@ -171,9 +180,11 @@ mod test {
             attribution: None,
         };
 
-        let xml = yaserde::ser::to_string_content(&evidence_reference).unwrap();
+        let mut config = Config::default();
+        config.write_document_declaration = false;
+        let xml = yaserde::ser::to_string_with_config(&evidence_reference, &config).unwrap();
 
-        let expected_xml = "";
+        let expected_xml = r#"<evidence xmlns="http://gedcomx.org/v1/" resource="http://identifier/for/data/being/referenced" />"#;
 
         assert_eq!(xml, expected_xml)
     }

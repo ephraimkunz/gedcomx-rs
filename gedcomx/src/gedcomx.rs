@@ -13,6 +13,7 @@ use crate::{
 #[non_exhaustive]
 #[yaserde(
     rename = "gedcomx",
+    prefix = "gx",
     default_namespace = "gx",
     namespace = "gx: http://gedcomx.org/v1/"
 )]
@@ -30,7 +31,7 @@ pub struct Gedcomx {
     pub attribution: Option<Attribution>,
 
     /// The list of persons contained in the data set.
-    #[yaserde(rename = "person")]
+    #[yaserde(rename = "person", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub persons: Vec<Person>,
 

@@ -10,7 +10,7 @@ use crate::Lang;
 #[non_exhaustive]
 pub struct TextValue {
     /// The locale identifier for the value of the text.
-    #[yaserde(attribute)]
+    #[yaserde(attribute, prefix = "xml")]
     pub lang: Option<Lang>,
 
     /// The text value.

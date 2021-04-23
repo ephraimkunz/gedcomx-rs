@@ -33,6 +33,7 @@ fn test_basic_western_name() {
         .build();
 
     common::assert_matching_json(&gx, "names1");
+    common::assert_matching_xml(&gx, "names1");
 }
 
 #[test]
@@ -92,6 +93,7 @@ fn test_multiple_japanese_forms() {
         .build();
 
     common::assert_matching_json(&gx, "names2");
+    common::assert_matching_xml(&gx, "names2");
 }
 
 #[test]
@@ -116,6 +118,7 @@ fn test_multiple_name_parts_one_part_per_type() {
         .build();
 
     common::assert_matching_json(&gx, "names3");
+    common::assert_matching_xml(&gx, "names3");
 }
 
 #[test]
@@ -159,7 +162,9 @@ fn test_multiple_name_parts_multiple_parts_per_type() {
     let gx = Gedcomx::builder()
         .person(Person::builder().name(name).build())
         .build();
-    common::assert_matching_json(&gx, "names4")
+
+    common::assert_matching_json(&gx, "names4");
+    common::assert_matching_xml(&gx, "names4");
 }
 
 #[test]
@@ -186,7 +191,9 @@ fn test_patronymic() {
     let gx = Gedcomx::builder()
         .person(Person::builder().name(name).build())
         .build();
-    common::assert_matching_json(&gx, "names5")
+
+    common::assert_matching_json(&gx, "names5");
+    common::assert_matching_xml(&gx, "names5");
 }
 
 #[test]

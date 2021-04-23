@@ -136,14 +136,23 @@ mod serde_vec_identifier_to_map {
     }
 }
 
+struct TestConclusionData {
+    pub id: Option<Id>,
+    pub lang: Option<Lang>,
+    pub sources: Vec<SourceReference>,
+    pub analysis: Option<ResourceReference>,
+    pub notes: Vec<Note>,
+    pub confidence: Option<ConfidenceLevel>,
+    pub attribution: Option<Attribution>,
+}
+
 #[allow(dead_code)]
 struct TestData {
     attribution: Attribution,
     source_reference: SourceReference,
     note: Note,
-    conclusion_data: ConclusionData,
     evidence_reference: EvidenceReference,
-    subject_data: SubjectData,
+    conclusion_data: TestConclusionData,
 }
 
 impl TestData {
@@ -175,26 +184,20 @@ impl TestData {
         note.lang = Some("en".into());
         note.subject = Some("subject".to_string());
 
-        let mut conclusion_data = ConclusionData::new();
-        conclusion_data.id = Some("local_id".into());
-        conclusion_data.lang = Some("en".into());
-        conclusion_data.sources = vec![source_reference.clone()];
-        conclusion_data.analysis = Some(ResourceReference::from(
-            "http://identifier/for/analysis/document",
-        ));
-        conclusion_data.notes = vec![note.clone()];
-        conclusion_data.confidence = Some(ConfidenceLevel::High);
-        conclusion_data.attribution = Some(attribution.clone());
+        let conclusion_data = TestConclusionData {
+            id: Some("local_id".into()),
+            lang: Some("en".into()),
+            sources: vec![source_reference.clone()],
+            analysis: Some(ResourceReference::from(
+                "http://identifier/for/analysis/document",
+            )),
+            notes: vec![note.clone()],
+            confidence: Some(ConfidenceLevel::High),
+            attribution: Some(attribution.clone()),
+        };
 
         let mut evidence_reference = EvidenceReference::new(Uri::from("S-1"), None);
         evidence_reference.attribution = Some(attribution.clone());
-
-        let mut subject_data = SubjectData::new(conclusion_data.clone());
-        subject_data.extracted = Some(false);
-        subject_data.evidence = vec![evidence_reference.clone()];
-        subject_data.media = vec![source_reference.clone()];
-        subject_data.identifiers = vec![Identifier::new("identifier1", None)];
-        subject_data.conclusion = conclusion_data.clone();
 
         Self {
             attribution,
@@ -202,7 +205,6 @@ impl TestData {
             note,
             conclusion_data,
             evidence_reference,
-            subject_data,
         }
     }
 }

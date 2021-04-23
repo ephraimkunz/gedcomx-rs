@@ -13,28 +13,37 @@ use crate::{Agent, ResourceReference, Result, Timestamp};
 /// the nature of the data being attributed.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
-#[yaserde(rename = "attribution")]
+#[yaserde(
+    rename = "attribution",
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Attribution {
     /// Reference to the agent to whom the attributed data is attributed. If
     /// provided, MUST resolve to an instance of [`Agent`](crate::Agent).
+    #[yaserde(prefix = "gx")]
     pub contributor: Option<ResourceReference>, // TODO: Enforce this constraint?
 
     /// Timestamp of when the attributed data was modified.
+    #[yaserde(prefix = "gx")]
     pub modified: Option<Timestamp>,
 
     /// A statement of why the attributed data is being provided by the
     /// contributor.
-    #[yaserde(rename = "changeMessage")]
+    #[yaserde(rename = "changeMessage", prefix = "gx")]
     pub change_message: Option<String>,
 
     /// Reference to the agent that created the attributed data. The creator MAY
     /// be different from the contributor if changes were made to the
     /// attributed data. If provided, MUST resolve to an instance of
     /// [`Agent`](crate::Agent).
+    #[yaserde(prefix = "gx")]
     pub creator: Option<ResourceReference>,
 
     /// Timestamp of when the attributed data was contributed.
+    #[yaserde(prefix = "gx")]
     pub created: Option<Timestamp>,
 }
 
@@ -116,6 +125,7 @@ impl AttributionBuilder {
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
+    use yaserde::ser::Config;
 
     use super::*;
 
@@ -251,9 +261,11 @@ mod test {
             created: Some("2012-05-29T00:00:00".parse().unwrap()),
         };
 
-        let xml = yaserde::ser::to_string_content(&attribution).unwrap();
+        let mut config = Config::default();
+        config.write_document_declaration = false;
+        let xml = yaserde::ser::to_string_with_config(&attribution, &config).unwrap();
 
-        let expected_xml = r#"<contributor resource="http://identifier/for/contributor" /><modified>2012-06-29T00:00:00</modified><changeMessage>...change message here...</changeMessage><creator resource="http://identifier/for/creator" /><created>2012-05-29T00:00:00</created>"#;
+        let expected_xml = r#"<attribution xmlns="http://gedcomx.org/v1/"><contributor resource="http://identifier/for/contributor" /><modified>2012-06-29T00:00:00</modified><changeMessage>...change message here...</changeMessage><creator resource="http://identifier/for/creator" /><created>2012-05-29T00:00:00</created></attribution>"#;
 
         assert_eq!(xml, expected_xml)
     }
@@ -262,9 +274,11 @@ mod test {
     fn xml_serialize_optional_fields() {
         let attribution = Attribution::default();
 
-        let xml = yaserde::ser::to_string_content(&attribution).unwrap();
+        let mut config = Config::default();
+        config.write_document_declaration = false;
+        let xml = yaserde::ser::to_string_with_config(&attribution, &config).unwrap();
 
-        let expected_xml = r#""#;
+        let expected_xml = r#"<attribution xmlns="http://gedcomx.org/v1/" />"#;
 
         assert_eq!(xml, expected_xml)
     }

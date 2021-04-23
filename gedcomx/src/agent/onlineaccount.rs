@@ -5,17 +5,22 @@ use crate::ResourceReference;
 
 /// A description of an account for an online service provider.
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
-#[yaserde(rename = "account")]
+#[yaserde(
+    rename = "account",
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct OnlineAccount {
     /// The homepage of the service that provides this account.
-    #[yaserde(rename = "serviceHomepage")]
+    #[yaserde(rename = "serviceHomepage", prefix = "gx")]
     pub service_homepage: ResourceReference,
 
     /// The name, label, or id that uniquely identifies the account maintained
     /// by the online service provider.
-    #[yaserde(rename = "accountName")]
+    #[yaserde(rename = "accountName", prefix = "gx")]
     pub account_name: String,
 }
 
@@ -34,6 +39,8 @@ impl OnlineAccount {
 
 #[cfg(test)]
 mod test {
+    use yaserde::ser::Config;
+
     use super::*;
 
     #[test]
@@ -92,11 +99,13 @@ mod test {
             account_name: "Family Search Account".to_string(),
         };
 
-        let xml = yaserde::ser::to_string_content(&online_account).unwrap();
+        let mut config = Config::default();
+        config.write_document_declaration = false;
+        let xml = yaserde::ser::to_string_with_config(&online_account, &config).unwrap();
 
         assert_eq!(
             xml,
-            r#"<serviceHomepage resource="http://familysearch.org/" /><accountName>Family Search Account</accountName>"#
+            r#"<account xmlns="http://gedcomx.org/v1/"><serviceHomepage resource="http://familysearch.org/" /><accountName>Family Search Account</accountName></account>"#
         )
     }
 }

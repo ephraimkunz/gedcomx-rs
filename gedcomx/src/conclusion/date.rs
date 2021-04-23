@@ -5,14 +5,21 @@ use yaserde_derive::{YaDeserialize, YaSerialize};
 /// A concluded genealogical date.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct Date {
     /// The original value of the date as supplied by the contributor.
+    #[yaserde(prefix = "gx")]
     pub original: Option<String>,
 
     /// The standardized formal value of the date, formatted according to the
     /// GEDCOM X Date Format specification.
     // TODO: I think I should be using a different type for this one.
+    #[yaserde(prefix = "gx")]
     pub formal: Option<String>,
 }
 

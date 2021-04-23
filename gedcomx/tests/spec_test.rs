@@ -230,4 +230,5 @@ fn cite_george_martha_and_marriage(
 #[test]
 fn deserialize_and_serialize() {
     common::assert_matching_json(&test_struct(), "spec");
+    common::assert_matching_xml(&test_struct(), "spec");
 }

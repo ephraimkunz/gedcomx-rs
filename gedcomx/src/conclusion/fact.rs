@@ -4,7 +4,10 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-use crate::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Qualifier, Uri};
+use crate::{
+    Attribution, ConfidenceLevel, Date, EnumAsString, Id, Lang, Note, PlaceReference, Qualifier,
+    ResourceReference, SourceReference, Uri,
+};
 
 /// A data item that is presumed to be true about a specific subject, such as a
 /// person or relationship.
@@ -14,9 +17,45 @@ use crate::{Conclusion, ConclusionData, Date, EnumAsString, PlaceReference, Qual
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
 #[non_exhaustive]
 pub struct Fact {
-    #[yaserde(flatten)]
-    #[serde(flatten)]
-    pub conclusion: ConclusionData,
+    /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
+    #[yaserde(attribute)]
+    pub id: Option<Id>,
+
+    /// The locale identifier for the conclusion.
+    #[yaserde(attribute, prefix = "xml")]
+    pub lang: Option<Lang>,
+
+    /// The list of references to the sources of related to this conclusion.
+    /// Note that the sources referenced from conclusions are also considered
+    /// to be sources of the entities that contain them. For example, a source
+    /// associated with the `Name` of a `Person` is also source for the
+    /// `Person`.
+    #[yaserde(rename = "source", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub sources: Vec<SourceReference>,
+
+    /// A reference to the analysis document explaining the analysis that went
+    /// into this conclusion. If provided, MUST resolve to an instance of
+    /// [Document](crate::Document) of type
+    /// [Analysis](crate::DocumentType::Analysis).
+    // TODO: Validate this at compile time somehow?
+    #[yaserde(prefix = "gx")]
+    pub analysis: Option<ResourceReference>,
+
+    /// A list of notes about this conclusion.
+    #[yaserde(rename = "note", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub notes: Vec<Note>,
+
+    /// The level of confidence the contributor has about the data.
+    #[yaserde(attribute)]
+    pub confidence: Option<ConfidenceLevel>,
+
+    /// The attribution of this conclusion.
+    /// If not provided, the attribution of the containing data set (e.g. file)
+    /// of the conclusion is assumed.
+    #[yaserde(prefix = "gx")]
+    pub attribution: Option<Attribution>,
 
     /// The type of the fact.
     #[yaserde(rename = "type", attribute)]
@@ -39,32 +78,30 @@ pub struct Fact {
     pub qualifiers: Vec<Qualifier>,
 }
 
-impl Conclusion for Fact {
-    fn conclusion(&self) -> &ConclusionData {
-        &self.conclusion
-    }
-
-    fn conclusion_mut(&mut self) -> &mut ConclusionData {
-        &mut self.conclusion
-    }
-
-    fn type_name(&self) -> std::string::String {
-        String::from("Fact")
-    }
-}
-
 impl Fact {
     pub fn new(
+        id: Option<Id>,
+        lang: Option<Lang>,
+        sources: Vec<SourceReference>,
+        analysis: Option<ResourceReference>,
+        notes: Vec<Note>,
+        confidence: Option<ConfidenceLevel>,
+        attribution: Option<Attribution>,
         fact_type: FactType,
-        conclusion: ConclusionData,
         date: Option<Date>,
         place: Option<PlaceReference>,
         value: Option<String>,
         qualifiers: Vec<Qualifier>,
     ) -> Self {
         Self {
+            id,
+            lang,
+            sources,
+            analysis,
+            notes,
+            confidence,
+            attribution,
             fact_type,
-            conclusion,
             date,
             place,
             value,
@@ -111,8 +148,14 @@ impl FactBuilder {
 
     pub fn build(&self) -> Fact {
         Fact::new(
+            self.0.id.clone(),
+            self.0.lang.clone(),
+            self.0.sources.clone(),
+            self.0.analysis.clone(),
+            self.0.notes.clone(),
+            self.0.confidence.clone(),
+            self.0.attribution.clone(),
             self.0.fact_type.clone(),
-            self.0.conclusion.clone(),
             self.0.date.clone(),
             self.0.place.clone(),
             self.0.value.clone(),
@@ -756,7 +799,13 @@ mod test {
         assert_eq!(
             fact,
             Fact {
-                conclusion: data.conclusion_data,
+                id: data.conclusion_data.id,
+                lang: data.conclusion_data.lang,
+                sources: data.conclusion_data.sources,
+                analysis: data.conclusion_data.analysis,
+                notes: data.conclusion_data.notes,
+                confidence: data.conclusion_data.confidence,
+                attribution: data.conclusion_data.attribution,
                 fact_type: FactType::Birth,
                 place: Some(PlaceReference {
                     original: Some("This is a place reference".to_string()),
@@ -820,7 +869,13 @@ mod test {
         assert_eq!(
             fact,
             Fact {
-                conclusion: data.conclusion_data,
+                id: data.conclusion_data.id,
+                lang: data.conclusion_data.lang,
+                sources: data.conclusion_data.sources,
+                analysis: data.conclusion_data.analysis,
+                notes: data.conclusion_data.notes,
+                confidence: data.conclusion_data.confidence,
+                attribution: data.conclusion_data.attribution,
                 fact_type: FactType::Birth,
                 place: None,
                 value: None,
@@ -835,7 +890,13 @@ mod test {
         let data = TestData::new();
 
         let fact = Fact {
-            conclusion: data.conclusion_data,
+            id: data.conclusion_data.id,
+            lang: data.conclusion_data.lang,
+            sources: data.conclusion_data.sources,
+            analysis: data.conclusion_data.analysis,
+            notes: data.conclusion_data.notes,
+            confidence: data.conclusion_data.confidence,
+            attribution: data.conclusion_data.attribution,
             fact_type: FactType::Birth,
             place: Some(PlaceReference {
                 original: Some("This is a place reference".to_string()),
@@ -862,7 +923,13 @@ mod test {
         let data = TestData::new();
 
         let fact = Fact {
-            conclusion: data.conclusion_data,
+            id: data.conclusion_data.id,
+            lang: data.conclusion_data.lang,
+            sources: data.conclusion_data.sources,
+            analysis: data.conclusion_data.analysis,
+            notes: data.conclusion_data.notes,
+            confidence: data.conclusion_data.confidence,
+            attribution: data.conclusion_data.attribution,
             fact_type: FactType::Birth,
             place: None,
             value: None,

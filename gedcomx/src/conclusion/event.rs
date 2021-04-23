@@ -5,8 +5,8 @@ use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
-    Conclusion, ConclusionData, Date, EnumAsString, EventRole, PlaceReference, Subject,
-    SubjectData, Uri,
+    Attribution, ConfidenceLevel, Date, EnumAsString, EventRole, EvidenceReference, Id, Identifier,
+    Lang, Note, PlaceReference, ResourceReference, SourceReference, Uri,
 };
 
 /// A description of a historical event.
@@ -14,9 +14,83 @@ use crate::{
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct Event {
-    #[yaserde(flatten)]
-    #[serde(flatten)]
-    pub subject: SubjectData,
+    /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
+    #[yaserde(attribute)]
+    pub id: Option<Id>,
+
+    /// The locale identifier for the conclusion.
+    #[yaserde(attribute, prefix = "xml")]
+    pub lang: Option<Lang>,
+
+    /// The list of references to the sources of related to this conclusion.
+    /// Note that the sources referenced from conclusions are also considered
+    /// to be sources of the entities that contain them. For example, a source
+    /// associated with the `Name` of a `Person` is also source for the
+    /// `Person`.
+    #[yaserde(rename = "source", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub sources: Vec<SourceReference>,
+
+    /// A reference to the analysis document explaining the analysis that went
+    /// into this conclusion. If provided, MUST resolve to an instance of
+    /// [Document](crate::Document) of type
+    /// [Analysis](crate::DocumentType::Analysis).
+    // TODO: Validate this at compile time somehow?
+    #[yaserde(prefix = "gx")]
+    pub analysis: Option<ResourceReference>,
+
+    /// A list of notes about this conclusion.
+    #[yaserde(rename = "note", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub notes: Vec<Note>,
+
+    /// The level of confidence the contributor has about the data.
+    #[yaserde(attribute)]
+    pub confidence: Option<ConfidenceLevel>,
+
+    /// The attribution of this conclusion.
+    /// If not provided, the attribution of the containing data set (e.g. file)
+    /// of the conclusion is assumed.
+    #[yaserde(prefix = "gx")]
+    pub attribution: Option<Attribution>,
+
+    /// Whether this subject is to be constrained as an extracted conclusion.
+    #[yaserde(attribute)]
+    pub extracted: Option<bool>,
+
+    /// References to other subjects that support this subject.
+    ///
+    /// If provided, each reference MUST resolve to an instance of subject of
+    /// the same type as this instance (e.g., if the subject is an instance of
+    /// Person, all of its evidence references must resolve to instances of
+    /// Person).
+    #[yaserde(prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub evidence: Vec<EvidenceReference>,
+
+    /// References to multimedia resources for this subject, such as photos or
+    /// videos, intended to provide additional context or illustration for the
+    /// subject and not considered evidence supporting the identity of the
+    /// subject or its supporting conclusions.
+    ///
+    /// Media references SHOULD be ordered by priority such that applications
+    /// that wish to display a single media item (such as an image) MAY choose
+    /// the first applicable media reference. Note that the SourceReference is
+    /// used for multimedia references and therefore MUST resolve to a
+    /// SourceDescription of the resource, which in turn provides a reference to
+    /// the resource itself.
+    #[yaserde(prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub media: Vec<SourceReference>,
+
+    /// A list of identifiers for the subject.
+    #[yaserde(rename = "identifier", prefix = "gx")]
+    #[serde(
+        skip_serializing_if = "Vec::is_empty",
+        default,
+        with = "crate::serde_vec_identifier_to_map"
+    )]
+    pub identifiers: Vec<Identifier>,
 
     /// The type of the event.
     #[yaserde(rename = "type", attribute)]
@@ -37,14 +111,34 @@ pub struct Event {
 
 impl Event {
     pub fn new(
-        subject: SubjectData,
+        id: Option<Id>,
+        lang: Option<Lang>,
+        sources: Vec<SourceReference>,
+        analysis: Option<ResourceReference>,
+        notes: Vec<Note>,
+        confidence: Option<ConfidenceLevel>,
+        attribution: Option<Attribution>,
+        extracted: Option<bool>,
+        evidence: Vec<EvidenceReference>,
+        media: Vec<SourceReference>,
+        identifiers: Vec<Identifier>,
         event_type: Option<EventType>,
         date: Option<Date>,
         place: Option<PlaceReference>,
         roles: Vec<EventRole>,
     ) -> Self {
         Self {
-            subject,
+            id,
+            lang,
+            sources,
+            analysis,
+            notes,
+            confidence,
+            attribution,
+            extracted,
+            evidence,
+            media,
+            identifiers,
             event_type,
             date,
             place,
@@ -88,7 +182,17 @@ impl EventBuilder {
 
     pub fn build(&self) -> Event {
         Event::new(
-            self.0.subject.clone(),
+            self.0.id.clone(),
+            self.0.lang.clone(),
+            self.0.sources.clone(),
+            self.0.analysis.clone(),
+            self.0.notes.clone(),
+            self.0.confidence.clone(),
+            self.0.attribution.clone(),
+            self.0.extracted.clone(),
+            self.0.evidence.clone(),
+            self.0.media.clone(),
+            self.0.identifiers.clone(),
             self.0.event_type.clone(),
             self.0.date.clone(),
             self.0.place.clone(),
@@ -256,29 +360,5 @@ impl fmt::Display for EventType {
 impl Default for EventType {
     fn default() -> Self {
         Self::Custom(Uri::default())
-    }
-}
-
-impl Conclusion for Event {
-    fn conclusion(&self) -> &ConclusionData {
-        &self.subject().conclusion
-    }
-
-    fn conclusion_mut(&mut self) -> &mut ConclusionData {
-        &mut self.subject_mut().conclusion
-    }
-
-    fn type_name(&self) -> std::string::String {
-        String::from("Event")
-    }
-}
-
-impl Subject for Event {
-    fn subject(&self) -> &SubjectData {
-        &self.subject
-    }
-
-    fn subject_mut(&mut self) -> &mut SubjectData {
-        &mut self.subject
     }
 }

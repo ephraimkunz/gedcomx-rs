@@ -2,16 +2,54 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-use crate::{ConclusionData, Date, ResourceReference, Uri};
+use crate::{
+    Attribution, ConfidenceLevel, Date, Id, Lang, Note, ResourceReference, SourceReference, Uri,
+};
 
 /// A role of a person in a group.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct GroupRole {
-    #[yaserde(flatten)]
-    #[serde(flatten)]
-    pub conclusion: ConclusionData,
+    /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
+    #[yaserde(attribute)]
+    pub id: Option<Id>,
+
+    /// The locale identifier for the conclusion.
+    #[yaserde(attribute, prefix = "xml")]
+    pub lang: Option<Lang>,
+
+    /// The list of references to the sources of related to this conclusion.
+    /// Note that the sources referenced from conclusions are also considered
+    /// to be sources of the entities that contain them. For example, a source
+    /// associated with the `Name` of a `Person` is also source for the
+    /// `Person`.
+    #[yaserde(rename = "source", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub sources: Vec<SourceReference>,
+
+    /// A reference to the analysis document explaining the analysis that went
+    /// into this conclusion. If provided, MUST resolve to an instance of
+    /// [Document](crate::Document) of type
+    /// [Analysis](crate::DocumentType::Analysis).
+    // TODO: Validate this at compile time somehow?
+    #[yaserde(prefix = "gx")]
+    pub analysis: Option<ResourceReference>,
+
+    /// A list of notes about this conclusion.
+    #[yaserde(rename = "note", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub notes: Vec<Note>,
+
+    /// The level of confidence the contributor has about the data.
+    #[yaserde(attribute)]
+    pub confidence: Option<ConfidenceLevel>,
+
+    /// The attribution of this conclusion.
+    /// If not provided, the attribution of the containing data set (e.g. file)
+    /// of the conclusion is assumed.
+    #[yaserde(prefix = "gx")]
+    pub attribution: Option<Attribution>,
 
     /// Reference to the group participant.	MUST resolve to an instance of
     /// [`Person`](crate::Person).
@@ -31,9 +69,24 @@ pub struct GroupRole {
 }
 
 impl GroupRole {
-    pub fn new(conclusion: ConclusionData, person: ResourceReference) -> Self {
+    pub fn new(
+        id: Option<Id>,
+        lang: Option<Lang>,
+        sources: Vec<SourceReference>,
+        analysis: Option<ResourceReference>,
+        notes: Vec<Note>,
+        confidence: Option<ConfidenceLevel>,
+        attribution: Option<Attribution>,
+        person: ResourceReference,
+    ) -> Self {
         Self {
-            conclusion,
+            id,
+            lang,
+            sources,
+            analysis,
+            notes,
+            confidence,
+            attribution,
             person,
             date: None,
             details: None,
@@ -116,7 +169,13 @@ mod test {
         assert_eq!(
             group_role,
             GroupRole {
-                conclusion: data.conclusion_data,
+                id: data.conclusion_data.id,
+                lang: data.conclusion_data.lang,
+                sources: data.conclusion_data.sources,
+                analysis: data.conclusion_data.analysis,
+                notes: data.conclusion_data.notes,
+                confidence: data.conclusion_data.confidence,
+                attribution: data.conclusion_data.attribution,
                 date: Some(Date {
                     original: Some("the original text".to_string()),
                     formal: None
@@ -178,7 +237,13 @@ mod test {
         assert_eq!(
             group_role,
             GroupRole {
-                conclusion: data.conclusion_data,
+                id: data.conclusion_data.id,
+                lang: data.conclusion_data.lang,
+                sources: data.conclusion_data.sources,
+                analysis: data.conclusion_data.analysis,
+                notes: data.conclusion_data.notes,
+                confidence: data.conclusion_data.confidence,
+                attribution: data.conclusion_data.attribution,
                 date: None,
                 group_role_type: None,
                 details: None,
@@ -192,7 +257,13 @@ mod test {
         let data = TestData::new();
 
         let group_role = GroupRole {
-            conclusion: data.conclusion_data,
+            id: data.conclusion_data.id,
+            lang: data.conclusion_data.lang,
+            sources: data.conclusion_data.sources,
+            analysis: data.conclusion_data.analysis,
+            notes: data.conclusion_data.notes,
+            confidence: data.conclusion_data.confidence,
+            attribution: data.conclusion_data.attribution,
             date: Some(Date {
                 original: Some("the original text".to_string()),
                 formal: None,
@@ -215,7 +286,13 @@ mod test {
         let data = TestData::new();
 
         let group_role = GroupRole {
-            conclusion: data.conclusion_data,
+            id: data.conclusion_data.id,
+            lang: data.conclusion_data.lang,
+            sources: data.conclusion_data.sources,
+            analysis: data.conclusion_data.analysis,
+            notes: data.conclusion_data.notes,
+            confidence: data.conclusion_data.confidence,
+            attribution: data.conclusion_data.attribution,
             date: None,
             group_role_type: None,
             details: None,

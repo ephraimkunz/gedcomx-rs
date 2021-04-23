@@ -7,6 +7,11 @@ use crate::Lang;
 /// A container for the metadata necessary for an agent to identify a source(s).
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct SourceCitation {
     /// The locale identifier for the bibliographic metadata.
@@ -17,6 +22,7 @@ pub struct SourceCitation {
     ///  This string is plain text, but MAY include an xhtml cite element. If
     /// the value includes a cite element, the text-level semantics defined for
     /// cite MUST apply—i.e., the element MUST represent the title of a work.
+    #[yaserde(prefix = "gx")]
     pub value: String,
 }
 

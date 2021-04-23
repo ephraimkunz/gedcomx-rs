@@ -4,7 +4,10 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-use crate::{Conclusion, ConclusionData, Date, EnumAsString, Lang, Qualifier, Uri};
+use crate::{
+    Attribution, ConfidenceLevel, Date, EnumAsString, Id, Lang, Note, Qualifier, ResourceReference,
+    SourceReference, Uri,
+};
 
 /// A name of a person.
 ///
@@ -58,9 +61,45 @@ use crate::{Conclusion, ConclusionData, Date, EnumAsString, Lang, Qualifier, Uri
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Name {
-    #[yaserde(flatten)]
-    #[serde(flatten)]
-    pub conclusion: ConclusionData,
+    /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
+    #[yaserde(attribute)]
+    pub id: Option<Id>,
+
+    /// The locale identifier for the conclusion.
+    #[yaserde(attribute, prefix = "xml")]
+    pub lang: Option<Lang>,
+
+    /// The list of references to the sources of related to this conclusion.
+    /// Note that the sources referenced from conclusions are also considered
+    /// to be sources of the entities that contain them. For example, a source
+    /// associated with the `Name` of a `Person` is also source for the
+    /// `Person`.
+    #[yaserde(rename = "source", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub sources: Vec<SourceReference>,
+
+    /// A reference to the analysis document explaining the analysis that went
+    /// into this conclusion. If provided, MUST resolve to an instance of
+    /// [Document](crate::Document) of type
+    /// [Analysis](crate::DocumentType::Analysis).
+    // TODO: Validate this at compile time somehow?
+    #[yaserde(prefix = "gx")]
+    pub analysis: Option<ResourceReference>,
+
+    /// A list of notes about this conclusion.
+    #[yaserde(rename = "note", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub notes: Vec<Note>,
+
+    /// The level of confidence the contributor has about the data.
+    #[yaserde(attribute)]
+    pub confidence: Option<ConfidenceLevel>,
+
+    /// The attribution of this conclusion.
+    /// If not provided, the attribution of the containing data set (e.g. file)
+    /// of the conclusion is assumed.
+    #[yaserde(prefix = "gx")]
+    pub attribution: Option<Attribution>,
 
     /// The name type.
     #[yaserde(rename = "type", attribute)]
@@ -84,13 +123,25 @@ pub struct Name {
 
 impl Name {
     pub fn new(
-        conclusion: ConclusionData,
+        id: Option<Id>,
+        lang: Option<Lang>,
+        sources: Vec<SourceReference>,
+        analysis: Option<ResourceReference>,
+        notes: Vec<Note>,
+        confidence: Option<ConfidenceLevel>,
+        attribution: Option<Attribution>,
         name_type: Option<NameType>,
         name_forms: Vec<NameForm>,
         date: Option<Date>,
     ) -> Self {
         Self {
-            conclusion,
+            id,
+            lang,
+            sources,
+            analysis,
+            notes,
+            confidence,
+            attribution,
             name_type,
             name_forms,
             date,
@@ -109,20 +160,6 @@ impl Name {
 
     pub fn builder() -> NameBuilder {
         NameBuilder::new()
-    }
-}
-
-impl Conclusion for Name {
-    fn conclusion(&self) -> &ConclusionData {
-        &self.conclusion
-    }
-
-    fn conclusion_mut(&mut self) -> &mut ConclusionData {
-        &mut self.conclusion
-    }
-
-    fn type_name(&self) -> std::string::String {
-        String::from("Name")
     }
 }
 
@@ -152,7 +189,13 @@ impl NameBuilder {
 
     pub fn build(&self) -> Name {
         Name::new(
-            self.0.conclusion.clone(),
+            self.0.id.clone(),
+            self.0.lang.clone(),
+            self.0.sources.clone(),
+            self.0.analysis.clone(),
+            self.0.notes.clone(),
+            self.0.confidence.clone(),
+            self.0.attribution.clone(),
             self.0.name_type.clone(),
             self.0.name_forms.clone(),
             self.0.date.clone(),
@@ -302,13 +345,18 @@ impl Default for NameType {
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct NameForm {
     /// The locale identifier for the name form.
     pub lang: Option<Lang>,
 
     /// A full rendering of the name (or as much of the name as is known).
-    #[yaserde(rename = "fullText")]
+    #[yaserde(rename = "fullText", prefix = "gx")]
     pub full_text: Option<String>,
 
     /// Any identified name parts from the name.
@@ -677,7 +725,13 @@ mod test {
         assert_eq!(
             name,
             Name {
-                conclusion: data.conclusion_data,
+                id: data.conclusion_data.id,
+                lang: data.conclusion_data.lang,
+                sources: data.conclusion_data.sources,
+                analysis: data.conclusion_data.analysis,
+                notes: data.conclusion_data.notes,
+                confidence: data.conclusion_data.confidence,
+                attribution: data.conclusion_data.attribution,
                 name_type: Some(NameType::BirthName),
                 date: None, // TODO: Add in once we get the date type working
                 name_forms: vec![NameForm {
@@ -751,7 +805,13 @@ mod test {
         assert_eq!(
             name,
             Name {
-                conclusion: data.conclusion_data,
+                id: data.conclusion_data.id,
+                lang: data.conclusion_data.lang,
+                sources: data.conclusion_data.sources,
+                analysis: data.conclusion_data.analysis,
+                notes: data.conclusion_data.notes,
+                confidence: data.conclusion_data.confidence,
+                attribution: data.conclusion_data.attribution,
                 name_type: None,
                 date: None, // TODO: Add in once we get the date type working
                 name_forms: vec![NameForm {
@@ -768,7 +828,13 @@ mod test {
         let data = TestData::new();
 
         let name = Name {
-            conclusion: data.conclusion_data,
+            id: data.conclusion_data.id,
+            lang: data.conclusion_data.lang,
+            sources: data.conclusion_data.sources,
+            analysis: data.conclusion_data.analysis,
+            notes: data.conclusion_data.notes,
+            confidence: data.conclusion_data.confidence,
+            attribution: data.conclusion_data.attribution,
             name_type: Some(NameType::BirthName),
             date: None, // TODO: Add in once we get the date type working
             name_forms: vec![NameForm {
@@ -804,7 +870,13 @@ mod test {
         let data = TestData::new();
 
         let name = Name {
-            conclusion: data.conclusion_data,
+            id: data.conclusion_data.id,
+            lang: data.conclusion_data.lang,
+            sources: data.conclusion_data.sources,
+            analysis: data.conclusion_data.analysis,
+            notes: data.conclusion_data.notes,
+            confidence: data.conclusion_data.confidence,
+            attribution: data.conclusion_data.attribution,
             name_type: None,
             date: None,
             name_forms: vec![NameForm {

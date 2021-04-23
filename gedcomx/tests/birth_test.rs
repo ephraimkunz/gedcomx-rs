@@ -125,4 +125,5 @@ fn test_struct() -> Gedcomx {
 #[test]
 fn test_deserialize_serialize() {
     common::assert_matching_json(&test_struct(), "birth");
+    common::assert_matching_xml(&test_struct(), "birth");
 }

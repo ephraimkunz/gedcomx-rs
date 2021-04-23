@@ -7,11 +7,12 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# gedcomx = { path = "../gedcomx"}
+gedcomx = { path = "../gedcomx"}
 serde_json = "1"
 serde = "1"
 
-yaserde = "0.6"
-yaserde_derive = "0.6"
+yaserde = { path = "../../yaserde/yaserde"}
+yaserde_derive = { path = "../../yaserde/yaserde_derive"}
 log = "0.4"
 xml-rs = "0.8"
+env_logger = "0"

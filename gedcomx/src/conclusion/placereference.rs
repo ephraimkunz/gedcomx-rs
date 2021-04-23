@@ -9,9 +9,15 @@ use crate::{PlaceDescription, Result, Uri};
 ///  A reference to a description of a place.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct PlaceReference {
     /// The original place name text as supplied by the contributor.
+    #[yaserde(prefix = "gx")]
     pub original: Option<String>,
 
     /// A reference to a description of this place.

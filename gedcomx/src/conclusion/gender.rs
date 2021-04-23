@@ -1,28 +1,89 @@
 use std::fmt;
 
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-use crate::{Conclusion, ConclusionData, EnumAsString, Uri};
+use crate::{
+    Attribution, ConfidenceLevel, EnumAsString, Id, Lang, Note, ResourceReference, SourceReference,
+    Uri,
+};
 
 /// A gender of a person.
+#[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 pub struct Gender {
+    /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
+    #[yaserde(attribute)]
+    pub id: Option<Id>,
+
+    /// The locale identifier for the conclusion.
+    #[yaserde(attribute, prefix = "xml")]
+    pub lang: Option<Lang>,
+
+    /// The list of references to the sources of related to this conclusion.
+    /// Note that the sources referenced from conclusions are also considered
+    /// to be sources of the entities that contain them. For example, a source
+    /// associated with the `Name` of a `Person` is also source for the
+    /// `Person`.
+    #[yaserde(rename = "source", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub sources: Vec<SourceReference>,
+
+    /// A reference to the analysis document explaining the analysis that went
+    /// into this conclusion. If provided, MUST resolve to an instance of
+    /// [Document](crate::Document) of type
+    /// [Analysis](crate::DocumentType::Analysis).
+    // TODO: Validate this at compile time somehow?
+    #[yaserde(prefix = "gx")]
+    pub analysis: Option<ResourceReference>,
+
+    /// A list of notes about this conclusion.
+    #[yaserde(rename = "note", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub notes: Vec<Note>,
+
+    /// The level of confidence the contributor has about the data.
+    #[yaserde(attribute)]
+    pub confidence: Option<ConfidenceLevel>,
+
+    /// The attribution of this conclusion.
+    /// If not provided, the attribution of the containing data set (e.g. file)
+    /// of the conclusion is assumed.
+    #[yaserde(prefix = "gx")]
+    pub attribution: Option<Attribution>,
+
     /// The type of the gender.
     #[yaserde(rename = "type", attribute)]
     #[serde(rename = "type")]
     pub gender_type: GenderType,
-
-    #[yaserde(flatten)]
-    #[serde(flatten)]
-    pub conclusion: ConclusionData,
 }
 
 impl Gender {
-    pub fn new(conclusion: ConclusionData, gender_type: GenderType) -> Self {
+    pub fn new(
+        id: Option<Id>,
+        lang: Option<Lang>,
+        sources: Vec<SourceReference>,
+        analysis: Option<ResourceReference>,
+        notes: Vec<Note>,
+        confidence: Option<ConfidenceLevel>,
+        attribution: Option<Attribution>,
+        gender_type: GenderType,
+    ) -> Self {
         Self {
-            conclusion,
+            id,
+            lang,
+            sources,
+            analysis,
+            notes,
+            confidence,
+            attribution,
             gender_type,
         }
     }
@@ -46,10 +107,16 @@ impl GenderBuilder {
 
     #[allow(dead_code)] // Nothing in the crate currently uses it, but clients of the crate may want it.
     fn build(&self) -> Gender {
-        Gender {
-            gender_type: self.0.gender_type.clone(),
-            conclusion: self.0.conclusion.clone(),
-        }
+        Gender::new(
+            self.0.id.clone(),
+            self.0.lang.clone(),
+            self.0.sources.clone(),
+            self.0.analysis.clone(),
+            self.0.notes.clone(),
+            self.0.confidence.clone(),
+            self.0.attribution.clone(),
+            self.0.gender_type.clone(),
+        )
     }
 }
 
@@ -59,20 +126,6 @@ impl From<GenderType> for Gender {
             gender_type,
             ..Self::default()
         }
-    }
-}
-
-impl Conclusion for Gender {
-    fn conclusion(&self) -> &ConclusionData {
-        &self.conclusion
-    }
-
-    fn conclusion_mut(&mut self) -> &mut ConclusionData {
-        &mut self.conclusion
-    }
-
-    fn type_name(&self) -> std::string::String {
-        String::from("Gender")
     }
 }
 
@@ -130,6 +183,8 @@ impl fmt::Display for GenderType {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::TestData;
 
@@ -180,8 +235,14 @@ mod test {
         assert_eq!(
             gender,
             Gender {
+                id: data.conclusion_data.id,
+                lang: data.conclusion_data.lang,
+                sources: data.conclusion_data.sources,
+                analysis: data.conclusion_data.analysis,
+                notes: data.conclusion_data.notes,
+                confidence: data.conclusion_data.confidence,
+                attribution: data.conclusion_data.attribution,
                 gender_type: GenderType::Male,
-                conclusion: data.conclusion_data
             }
         )
     }
@@ -191,15 +252,21 @@ mod test {
         let data = TestData::new();
 
         let gender = Gender {
+            id: data.conclusion_data.id,
+            lang: data.conclusion_data.lang,
+            sources: data.conclusion_data.sources,
+            analysis: data.conclusion_data.analysis,
+            notes: data.conclusion_data.notes,
+            confidence: data.conclusion_data.confidence,
+            attribution: data.conclusion_data.attribution,
             gender_type: GenderType::Male,
-            conclusion: data.conclusion_data,
         };
 
         let json = serde_json::to_string(&gender).unwrap();
 
         assert_eq!(
             json,
-            r#"{"type":"http://gedcomx.org/Male","id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}"#
+            r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"type":"http://gedcomx.org/Male"}"#
         )
     }
 }

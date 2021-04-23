@@ -12,7 +12,12 @@ use crate::{Address, Id, Identifier, OnlineAccount, Person, ResourceReference, R
 /// In genealogical research, an agent often takes the role of a contributor.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
-#[yaserde(rename = "agent")]
+#[yaserde(
+    rename = "agent",
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct Agent {
     /// An identifier for the data structure holding the agent data.
@@ -23,7 +28,7 @@ pub struct Agent {
     pub id: Option<Id>,
 
     /// A list of identifiers for the agent.
-    #[yaserde(rename = "identifier")]
+    #[yaserde(rename = "identifier", prefix = "gx")]
     #[serde(
         skip_serializing_if = "Vec::is_empty",
         default,
@@ -34,26 +39,28 @@ pub struct Agent {
     /// The name(s) of the person or organization. If more than one name is
     /// provided, names are assumed to be given in order of preference, with
     /// the most preferred name in the first position in the list.
-    #[yaserde(rename = "name")]
+    #[yaserde(rename = "name", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub names: Vec<TextValue>,
 
     /// The homepage of the person or organization. Note this is different from
     /// the homepage of the service where the person or organization has an
     /// account.
+    #[yaserde(prefix = "gx")]
     pub homepage: Option<ResourceReference>,
 
     /// The [openid](https://openid.net) of the person or organization.
+    #[yaserde(prefix = "gx")]
     pub openid: Option<ResourceReference>,
 
     /// The online account(s) of the person or organization.
-    #[yaserde(rename = "account")]
+    #[yaserde(rename = "account", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub accounts: Vec<OnlineAccount>,
 
     /// The email address(es) of the person or organization. If provided, MUST
     /// resolve to a valid e-mail address (e.g. "mailto:someone@gedcomx.org").
-    #[yaserde(rename = "email")]
+    #[yaserde(rename = "email", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub emails: Vec<ResourceReference>, /* TODO: Should I use a type here that would validate
                                          * this is a valid email address? */
@@ -61,18 +68,19 @@ pub struct Agent {
     /// The phone(s) (voice, fax, mobile) of the person or organization. If
     /// provided, MUST resolve to a valid phone number (e.g.
     /// "tel:+1-201-555-0123").
-    #[yaserde(rename = "phone")]
+    #[yaserde(rename = "phone", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub phones: Vec<ResourceReference>, /* TODO: Should I use a type that would validate this is
                                          * a valid phone number? */
 
     /// The address(es) of the person or organization.
-    #[yaserde(rename = "address")]
+    #[yaserde(rename = "address", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub addresses: Vec<Address>,
 
     /// A reference to the person that describes this agent. MUST resolve to an
     /// instance of [Person](crate::Person).
+    #[yaserde(prefix = "gx")]
     pub person: Option<ResourceReference>, // TODO: Enforce constraint?
 }
 
@@ -189,6 +197,7 @@ impl AgentBuilder {
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
+    use yaserde::ser::Config;
 
     use super::*;
     use crate::IdentifierType;
@@ -268,8 +277,10 @@ mod test {
             .unwrap()
             .build();
 
-        let xml = yaserde::ser::to_string_content(&agent).unwrap();
-        let expected_xml = r##"<identifier type="http://gedcomx.org/Primary">primaryIdentifier</identifier><name>Ephraim Kunz</name><name lang="es">Ephraim Kunz Spanish</name><homepage resource="www.ephraimkunz.com" /><openid resource="some_openid_value" /><account><serviceHomepage resource="http://familysearch.org/" /><accountName>Family Search Account</accountName></account><email resource="mailto:someone@gedcomx.org" /><email resource="mailto:someone2@gedcomx.org" /><phone resource="tel:+1-201-555-0123" /><address><country>United States</country></address><person resource="#P-1" />"##;
+        let mut config = Config::default();
+        config.write_document_declaration = false;
+        let xml = yaserde::ser::to_string_with_config(&agent, &config).unwrap();
+        let expected_xml = r##"<agent xmlns="http://gedcomx.org/v1/" id="local_id"><identifier type="http://gedcomx.org/Primary">primaryIdentifier</identifier><name>Ephraim Kunz</name><name xml:lang="es">Ephraim Kunz Spanish</name><homepage resource="www.ephraimkunz.com" /><openid resource="some_openid_value" /><account><serviceHomepage resource="http://familysearch.org/" /><accountName>Family Search Account</accountName></account><email resource="mailto:someone@gedcomx.org" /><email resource="mailto:someone2@gedcomx.org" /><phone resource="tel:+1-201-555-0123" /><address><country>United States</country></address><person resource="#P-1" /></agent>"##;
         assert_eq!(xml, expected_xml)
     }
 }
