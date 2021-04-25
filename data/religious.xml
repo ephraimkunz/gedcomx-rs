@@ -1,0 +1,124 @@
+<gedcomx xmlns="http://gedcomx.org/v1/">
+    <person>
+        <fact type="http://gedcomx.org/AdultChristening">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Baptism">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/BarMitzvah">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/BatMitzvah">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Caste">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Christening">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Circumcision">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Clan">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Confirmation">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Excommunication">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/FirstCommunion">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Nationality">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Ordination">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Religion">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Yahrzeit">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+    </person>
+</gedcomx>

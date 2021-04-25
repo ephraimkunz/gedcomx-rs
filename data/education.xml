@@ -1,0 +1,36 @@
+<gedcomx xmlns="http://gedcomx.org/v1/">
+    <person>
+        <fact type="http://gedcomx.org/Apprenticeship">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Education">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Occupation">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/Retirement">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+    </person>
+</gedcomx>

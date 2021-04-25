@@ -1,0 +1,44 @@
+<gedcomx xmlns="http://gedcomx.org/v1/">
+    <person>
+        <fact type="http://gedcomx.org/MilitaryAward">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/MilitaryDischarge">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/MilitaryDraftRegistration">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/MilitaryInduction">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+        <fact type="http://gedcomx.org/MilitaryService">
+            <date>
+                <original>...</original>
+            </date>
+            <place>
+                <original>...</original>
+            </place>
+        </fact>
+    </person>
+</gedcomx>

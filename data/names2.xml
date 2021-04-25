@@ -1,0 +1,21 @@
+<gedcomx xmlns="http://gedcomx.org/v1/">
+    <person>
+        <name>
+            <nameForm xml:lang="ja-Hani">
+                <fullText>山田太郎</fullText>
+                <part type="http://gedcomx.org/Surname" value="山田"/>
+                <part type="http://gedcomx.org/Given" value="太郎"/>
+            </nameForm>
+            <nameForm xml:lang="ja-Kana">
+                <fullText>ヤマダタロー</fullText>
+                <part type="http://gedcomx.org/Surname" value="ヤマダ"/>
+                <part type="http://gedcomx.org/Given" value="タロー"/>
+            </nameForm>
+            <nameForm xml:lang="ja-Latn">
+                <fullText>Yamada Tarō</fullText>
+                <part type="http://gedcomx.org/Surname" value="Tarō"/>
+                <part type="http://gedcomx.org/Given" value="Yamada"/>
+            </nameForm>
+        </name>
+    </person>
+</gedcomx>

@@ -1,0 +1,12 @@
+<gedcomx xmlns="http://gedcomx.org/v1/">
+    <person>
+        <name>
+            <nameForm xml:lang="en">
+                <fullText>John Fitzgerald Kennedy</fullText>
+                <part type="http://gedcomx.org/Given" value="John"/>
+                <part type="http://gedcomx.org/Given" value="Fitzgerald"/>
+                <part type="http://gedcomx.org/Surname" value="Kennedy"/>
+            </nameForm>
+        </name>
+    </person>
+</gedcomx>
