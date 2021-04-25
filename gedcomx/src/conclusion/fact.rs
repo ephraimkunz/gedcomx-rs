@@ -15,6 +15,11 @@ use crate::{
 /// To distinguish the concept of "fact" from "event", refer to [Events Versus Facts](https://github.com/FamilySearch/gedcomx/blob/master/specifications/conceptual-model-specification.md#events-vs-facts).
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct Fact {
     /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
@@ -63,17 +68,20 @@ pub struct Fact {
     pub fact_type: FactType,
 
     /// The date of applicability of the fact.
+    #[yaserde(prefix = "gx")]
     pub date: Option<Date>,
 
     /// A reference to the place applicable to this fact.
+    #[yaserde(prefix = "gx")]
     pub place: Option<PlaceReference>,
 
     /// The value of the fact.
+    #[yaserde(prefix = "gx")]
     pub value: Option<String>,
 
     /// Qualifiers to add additional details about the fact.
     // TODO: Should we enforce these as FactQualifiers?
-    #[yaserde(rename = "qualifier")]
+    #[yaserde(rename = "qualifier", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
 }
@@ -814,7 +822,7 @@ mod test {
                 value: Some("the original value of the fact".to_string()),
                 qualifiers: vec![Qualifier {
                     name: FactQualifier::Age.into(),
-                    value: Some("val".to_string())
+                    value: Some("val".into())
                 }],
                 date: None, // TODO: Add in once we get the date type working
             }
@@ -905,7 +913,7 @@ mod test {
             value: Some("the original value of the fact".to_string()),
             qualifiers: vec![Qualifier {
                 name: FactQualifier::Age.into(),
-                value: Some("val".to_string()),
+                value: Some("val".into()),
             }],
             date: None, // TODO: Add in once we get the date type working
         };

@@ -226,7 +226,7 @@ impl RelationshipBuilder {
             self.0.notes.clone(),
             self.0.confidence.clone(),
             self.0.attribution.clone(),
-            self.0.extracted.clone(),
+            self.0.extracted,
             self.0.evidence.clone(),
             self.0.media.clone(),
             self.0.identifiers.clone(),

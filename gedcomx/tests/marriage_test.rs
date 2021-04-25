@@ -49,11 +49,11 @@ fn test_example() {
         .citation(
             SourceCitation::builder(
                 "Joseph Houghton Spencer, transcriber, Church of England, Parish Church of Wilton \
-                 (Somerset). <cite>A copy of the registers of the baptisms, marriages, and \
-                 burials at the church of St. George in the parish of Wilton : adjoining Taunton, \
-                 in the county of Somerset from A.D. 1558 to A.D. 1837</cite>; Marriage entry for \
-                 Samuel Ham and Elizabeth Spiller (3 November 1828), (Taunton: Barnicott, 1890), \
-                 p. 224, No. 86.",
+                 (Somerset). A copy of the registers of the baptisms, marriages, and burials at \
+                 the church of St. George in the parish of Wilton : adjoining Taunton, in the \
+                 county of Somerset from A.D. 1558 to A.D. 1837; Marriage entry for Samuel Ham \
+                 and Elizabeth Spiller (3 November 1828), (Taunton: Barnicott, 1890), p. 224, No. \
+                 86.",
             )
             .build(),
         )
@@ -92,11 +92,11 @@ fn test_example() {
         .citation(
             SourceCitation::builder(
                 "Joseph Houghton Spencer, transcriber, Church of England, Parish Church of Wilton \
-                 (Somerset). <cite>A copy of the registers of the baptisms, marriages, and \
-                 burials at the church of St. George in the parish of Wilton : adjoining Taunton, \
-                 in the county of Somerset from A.D. 1558 to A.D. 1837</cite>; Marriage entry for \
-                 Samuel Ham and Elizabeth Spiller (3 November 1828), (Taunton: Barnicott, 1890), \
-                 p. 224, No. 86.",
+                 (Somerset). A copy of the registers of the baptisms, marriages, and burials at \
+                 the church of St. George in the parish of Wilton : adjoining Taunton, in the \
+                 county of Somerset from A.D. 1558 to A.D. 1837; Marriage entry for Samuel Ham \
+                 and Elizabeth Spiller (3 November 1828), (Taunton: Barnicott, 1890), p. 224, No. \
+                 86.",
             )
             .build(),
         )

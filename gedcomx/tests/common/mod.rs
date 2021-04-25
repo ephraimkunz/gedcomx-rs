@@ -21,6 +21,10 @@ pub fn assert_matching_json(gx: &Gedcomx, filename: &str) {
 
 #[allow(dead_code)]
 pub fn assert_matching_xml(gx: &Gedcomx, filename: &str) {
+    // Start a logger. To see logs from yaserde, run a test like this:
+    // RUST_LOG=debug cargo test --package gedcomx --test marriage_test
+    let _ = env_logger::builder().is_test(true).try_init();
+
     let file_string = std::fs::read_to_string(format!("../data/{}.xml", filename)).unwrap();
     let file_string_nowhitespace =
         std::fs::read_to_string(format!("../data/{}_nowhitespace.xml", filename)).unwrap();

@@ -1,3 +1,5 @@
+use std::fmt;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -18,14 +20,38 @@ pub struct Qualifier {
 
     /// The value of the qualifier. Some qualifiers may not have values,
     /// indicating that the qualifier is to be treated more like a "tag".
-    pub value: Option<String>,
+    #[yaserde(flatten)]
+    pub value: Option<QualifierValue>,
 }
 
 impl Qualifier {
     pub fn new<U: Into<Uri>, S: Into<String>>(name: U, value: Option<S>) -> Self {
         Self {
             name: name.into(),
-            value: value.map(std::convert::Into::into),
+            value: value.map(|v| QualifierValue::from(v.into())),
         }
+    }
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+pub struct QualifierValue(String);
+
+impl_characters_yaserialize_yadeserialize!(QualifierValue, "QualifierValue");
+
+impl fmt::Display for QualifierValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        self.0.fmt(f)
+    }
+}
+
+impl From<&str> for QualifierValue {
+    fn from(s: &str) -> Self {
+        Self(s.into())
+    }
+}
+
+impl From<String> for QualifierValue {
+    fn from(s: String) -> Self {
+        Self(s)
     }
 }

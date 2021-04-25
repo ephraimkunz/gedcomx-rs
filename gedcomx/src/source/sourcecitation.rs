@@ -15,6 +15,7 @@ use crate::Lang;
 #[non_exhaustive]
 pub struct SourceCitation {
     /// The locale identifier for the bibliographic metadata.
+    #[yaserde(attribute, prefix = "xml")]
     pub lang: Option<Lang>,
 
     /// The bibliographic metadata rendered as a full citation.

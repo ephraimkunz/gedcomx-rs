@@ -4,6 +4,7 @@
 // #![deny(clippy::cargo)]
 // #![deny(missing_docs)]
 // #![deny(missing_doc_code_examples)]
+#![allow(clippy::clippy::too_many_arguments)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::new_without_default)]
 #![allow(clippy::pub_enum_variant_names)]
@@ -172,7 +173,7 @@ impl TestData {
 
         let qualifier = Qualifier {
             name: SourceReferenceQualifier::RectangleRegion.into(),
-            value: Some("rectangle region value".to_string()),
+            value: Some("rectangle region value".into()),
         };
         let mut source_reference = SourceReference::builder_with_raw(Uri::from("SD-1")).build();
         source_reference.description_id = Some("Description id of the target source".into());
