@@ -353,6 +353,7 @@ impl Default for NameType {
 #[serde(rename_all = "camelCase")]
 pub struct NameForm {
     /// The locale identifier for the name form.
+    #[yaserde(attribute, prefix = "xml")]
     pub lang: Option<Lang>,
 
     /// A full rendering of the name (or as much of the name as is known).
@@ -435,6 +436,7 @@ pub struct NamePart {
     /// Fitzgerald Kennedy". If multiple terms are detailed in a single
     /// NamePart, these terms SHOULD be separated using the name separator
     /// appropriate to the locale applicable to the containing name form.
+    #[yaserde(attribute)]
     pub value: String,
 
     /// Qualifiers to add additional semantic meaning to the name part.

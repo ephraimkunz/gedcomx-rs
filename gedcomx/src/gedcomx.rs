@@ -24,7 +24,7 @@ pub struct Gedcomx {
     pub id: Option<Id>,
 
     /// The locale identifier for the data set.
-    #[yaserde(attribute)]
+    #[yaserde(attribute, prefix = "xml")]
     pub lang: Option<Lang>,
 
     /// The attribution of this data set.

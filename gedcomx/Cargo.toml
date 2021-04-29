@@ -18,8 +18,8 @@ serde = { version = "1", features = ["derive"] }
 serde_with = "1"
 chrono = { version = "0.4", features = ["serde"] }
 thiserror = "1"
-yaserde = "0.6"
-yaserde_derive = "0.6"
+yaserde = {path = "../../yaserde/yaserde"}
+yaserde_derive = {path = "../../yaserde/yaserde_derive"}
 log = "0.4"
 xml-rs = "0.8"
 
