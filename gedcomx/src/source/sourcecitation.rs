@@ -29,7 +29,7 @@ pub struct SourceCitation {
 
 impl SourceCitation {
     pub fn new(value: String, lang: Option<Lang>) -> Self {
-        Self { value, lang }
+        Self { lang, value }
     }
 
     pub fn builder<I: Into<String>>(value: I) -> SourceCitationBuilder {

@@ -4,11 +4,11 @@
 // #![deny(clippy::cargo)]
 // #![deny(missing_docs)]
 // #![deny(missing_doc_code_examples)]
-#![allow(clippy::clippy::too_many_arguments)]
+#![allow(clippy::too_many_arguments)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::new_without_default)]
 #![allow(clippy::pub_enum_variant_names)]
-#![allow(clippy::clippy::must_use_candidate)]
+#![allow(clippy::must_use_candidate)]
 #![allow(clippy::missing_const_for_fn)]
 
 #[macro_use]
@@ -204,8 +204,8 @@ impl TestData {
             attribution,
             source_reference,
             note,
-            conclusion_data,
             evidence_reference,
+            conclusion_data,
         }
     }
 }

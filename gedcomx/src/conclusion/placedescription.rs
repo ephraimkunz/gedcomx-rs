@@ -114,7 +114,7 @@ pub struct PlaceDescription {
     /// An identifier for the place being described.
     ///
     ///  Descriptions that provide the same value for place are interpreted as alternate descriptions of the same place. If provided, MUST NOT use a base URI of http://gedcomx.org/. If provided, the value MAY resolve to an external resource that is application-specific and outside the scope of this specification.
-    #[yaserde(prefix = "gx", rename = "place")]
+    #[yaserde(prefix = "gx")]
     pub place: Option<ResourceReference>,
 
     /// A reference to a description of the jurisdiction of this place.	If provided, MUST resolve to an instance of http://gedcomx.org/v1/PlaceDescription.

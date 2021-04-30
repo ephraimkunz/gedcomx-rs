@@ -24,13 +24,13 @@ use crate::{Attribution, Event, GedcomxError, Person, PlaceDescription, Relation
 /// "fghij" are the same person, he will add two `EvidenceReference` instances
 /// to the working `Person`: one for "abcde" and one for "fghij".
 #[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[yaserde(
     rename = "evidence",
     prefix = "gx",
     default_namespace = "gx",
     namespace = "gx: http://gedcomx.org/v1/"
 )]
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct EvidenceReference {
     /// Reference to the supporting data.
