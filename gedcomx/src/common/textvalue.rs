@@ -7,6 +7,11 @@ use crate::Lang;
 /// An element representing a text value that may be in a specific language.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct TextValue {
     /// The locale identifier for the value of the text.

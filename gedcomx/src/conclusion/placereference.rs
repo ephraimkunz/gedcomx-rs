@@ -24,6 +24,7 @@ pub struct PlaceReference {
     ///
     /// MUST resolve to a PlaceDescription.
     // TODO: Enforce with type system.
+    #[yaserde(attribute, rename = "description")]
     #[serde(rename = "description")]
     pub description_ref: Option<Uri>,
 }

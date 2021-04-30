@@ -65,10 +65,10 @@
         <source description="#FFF-FFFF"/>
         <person1 resource="#BBB-BBBB"/>
         <person2 resource="#CCC-CCCC"/>
-        <fact>
+        <fact type="http://gedcomx.org/Marriage">
             <date>
                 <original>January 6, 1759</original>
-                <formal>+01-06-1759</formal>
+                <formal>+1759-01-06</formal>
             </date>
             <place>
                 <original>White House Plantation</original>

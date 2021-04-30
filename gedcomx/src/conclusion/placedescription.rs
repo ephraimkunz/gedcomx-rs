@@ -12,6 +12,11 @@ use crate::{
 /// of a place as a snapshot in time.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct PlaceDescription {
@@ -96,7 +101,7 @@ pub struct PlaceDescription {
     /// A list of standardized (or normalized), fully-qualified (in terms of
     /// what is known of the applicable jurisdictional hierarchy) names for this
     /// place that are applicable to this description of this place.
-    #[yaserde(rename = "name")]
+    #[yaserde(rename = "name", prefix = "gx")]
     pub names: Vec<TextValue>, // TODO: Must contain at least 1 name.
 
     /// An implementation-specific uniform resource identifier (URI) used to
@@ -109,10 +114,12 @@ pub struct PlaceDescription {
     /// An identifier for the place being described.
     ///
     ///  Descriptions that provide the same value for place are interpreted as alternate descriptions of the same place. If provided, MUST NOT use a base URI of http://gedcomx.org/. If provided, the value MAY resolve to an external resource that is application-specific and outside the scope of this specification.
+    #[yaserde(prefix = "gx", rename = "place")]
     pub place: Option<ResourceReference>,
 
     /// A reference to a description of the jurisdiction of this place.	If provided, MUST resolve to an instance of http://gedcomx.org/v1/PlaceDescription.
     // TODO: Enforce through type system?
+    #[yaserde(prefix = "gx")]
     pub jurisdiction: Option<ResourceReference>,
 
     /// Angular distance, in degrees, north or south of the Equator (0.0
@@ -123,6 +130,7 @@ pub struct PlaceDescription {
     /// It is assumed that descriptions that provide the same value for the
     /// place property share identical longitude values.
     // TODO: Enforce longitude also set.
+    #[yaserde(prefix = "gx")]
     pub latitude: Option<f64>,
 
     /// Angular distance, in degrees, east or west of the Prime Meridian (0.0
@@ -133,11 +141,12 @@ pub struct PlaceDescription {
     /// It is assumed that descriptions that provide the same value for the
     /// place property share identical latitude values.
     // TODO: enforce through type system.
+    #[yaserde(prefix = "gx")]
     pub longitude: Option<f64>,
 
     /// A description of the time period to which this place description is
     /// relevant.
-    #[yaserde(rename = "temporalDescription")]
+    #[yaserde(rename = "temporalDescription", prefix = "gx")]
     pub temporal_description: Option<Date>,
 
     /// A reference to a geospatial description of this place.
@@ -145,7 +154,7 @@ pub struct PlaceDescription {
     /// It is RECOMMENDED that this geospatial description resolve to a KML
     /// document.
     // TODO: Enforce through type system?
-    #[yaserde(rename = "spatialDescription")]
+    #[yaserde(rename = "spatialDescription", prefix = "gx")]
     pub spatial_description: Option<ResourceReference>,
 }
 
