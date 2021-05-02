@@ -34,6 +34,9 @@ pub struct Identifier {
     /// If no type is provided, the usage and nature of the identifier is
     /// application-specific.
     pub identifier_type: Option<IdentifierType>,
+
+    // Private, to properly round-trip JSON.
+    value_in_vec: bool,
 }
 
 impl Identifier {
@@ -41,6 +44,7 @@ impl Identifier {
         Self {
             value: value.into(),
             identifier_type,
+            value_in_vec: true,
         }
     }
 }
@@ -131,10 +135,139 @@ impl yaserde::YaDeserialize for Identifier {
             Ok(Self {
                 value: text.into(),
                 identifier_type,
+                value_in_vec: true,
             })
         } else {
             Err("Uri missing".to_string())
         }
+    }
+}
+
+pub mod serde_vec_identifier_to_map {
+    use std::{collections::HashMap, fmt};
+
+    use serde::{
+        de::{Deserializer, MapAccess, Visitor},
+        ser::{SerializeMap, Serializer},
+        Deserialize, Serialize,
+    };
+
+    use crate::{EnumAsString, Identifier, Uri};
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(untagged)]
+    enum VecOrUri {
+        Vec(Vec<Uri>),
+        Uri(Uri),
+    }
+
+    /// # Errors
+    /// Returns serde errors if serialization fails.
+    pub fn serialize<S>(identifiers: &[Identifier], serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut hashmap: HashMap<String, VecOrUri> = HashMap::with_capacity(identifiers.len());
+        for id in identifiers {
+            let e = hashmap
+                .entry(
+                    id.identifier_type
+                        .as_ref()
+                        .map_or(String::from("$"), std::string::ToString::to_string),
+                )
+                .or_insert_with(|| {
+                    if id.value_in_vec {
+                        VecOrUri::Vec(Vec::new())
+                    } else {
+                        VecOrUri::Uri(Uri::default())
+                    }
+                });
+
+            match e {
+                VecOrUri::Uri(u) => *u = id.value.clone(),
+                VecOrUri::Vec(v) => {
+                    v.push(id.value.clone());
+                    v.sort_by_key(std::string::ToString::to_string)
+                }
+            }
+        }
+
+        let mut map = serializer.serialize_map(Some(identifiers.len()))?;
+
+        let mut keys = hashmap.keys().collect::<Vec<_>>();
+        keys.sort();
+
+        for k in keys {
+            if let Some(v) = hashmap.get(k) {
+                map.serialize_entry(k, v)?;
+            }
+        }
+
+        map.end()
+    }
+
+    struct IdentifierVisitor;
+
+    impl<'de> Visitor<'de> for IdentifierVisitor {
+        // The type that our Visitor is going to produce.
+        type Value = Vec<Identifier>;
+
+        // Format a message stating what data this Visitor expects to receive.
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("A map of identifier types to lists of values")
+        }
+
+        // Deserialize Value from an abstract "map" provided by the
+        // Deserializer. The MapAccess input is a callback provided by
+        // the Deserializer to let us see each entry in the map.
+        fn visit_map<M>(self, mut access: M) -> Result<Self::Value, M::Error>
+        where
+            M: MapAccess<'de>,
+        {
+            let mut identifiers = Vec::with_capacity(access.size_hint().unwrap_or(0));
+
+            // While there are entries remaining in the input, add them
+            // into our vec. According to https://github.com/FamilySearch/gedcomx/blob/master/specifications/json-format-specification.md#31-the-identifier-data-type,
+            // identifiers values may be either a single string or a vec.
+
+            while let Ok(Some((key, value))) = access.next_entry::<EnumAsString, VecOrUri>() {
+                match value {
+                    VecOrUri::Vec(vec) => {
+                        for v in vec {
+                            let k = if key.0 == "$" {
+                                None
+                            } else {
+                                Some(key.clone().into())
+                            };
+                            identifiers.push(Identifier::new(v, k));
+                        }
+                    }
+                    VecOrUri::Uri(uri) => {
+                        let k = if key.0 == "$" {
+                            None
+                        } else {
+                            Some(key.clone().into())
+                        };
+                        let mut identifier = Identifier::new(uri, k);
+                        identifier.value_in_vec = false;
+                        identifiers.push(identifier);
+                    }
+                }
+            }
+
+            Ok(identifiers)
+        }
+    }
+
+    /// # Errors
+    /// Returns serde errors if deserialization fails.
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<Identifier>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        // Instantiate our Visitor and ask the Deserializer to drive
+        // it over the input data, resulting in an instance of MyMap.
+        deserializer.deserialize_map(IdentifierVisitor {})
     }
 }
 
@@ -218,8 +351,17 @@ mod test {
         let json = r#"{
             "$":["untyped_identifier1","untyped_identifier2"],
             "http://custom.org/SingleValuedIdentifierType":["singlevalued1"],
-            "http://gedcomx.org/Primary":["primary1","primary2"]
+            "http://gedcomx.org/Primary":["primary1","primary2"],
+            "http://custom.org/SingleValuedIdentifierType2": "nolist"
         }"#;
+
+        let mut no_list_identifier = Identifier::new(
+            "nolist",
+            Some(IdentifierType::Custom(
+                "http://custom.org/SingleValuedIdentifierType2".into(),
+            )),
+        );
+        no_list_identifier.value_in_vec = false;
 
         let identifiers: TestIdentifierGroup = serde_json::from_str(&json).unwrap();
 
@@ -235,6 +377,7 @@ mod test {
                 ),
                 Identifier::new("primary1", Some(IdentifierType::Primary)),
                 Identifier::new("primary2", Some(IdentifierType::Primary)),
+                no_list_identifier,
             ],
         };
 
