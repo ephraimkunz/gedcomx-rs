@@ -151,8 +151,8 @@ dependencies = [
  "serde_with",
  "thiserror",
  "xml-rs",
- "yaserde 0.6.0 (git+https://github.com/ephraimkunz/yaserde.git?branch=text-attribute-optional-strings)",
- "yaserde_derive 0.6.0 (git+https://github.com/ephraimkunz/yaserde.git?branch=text-attribute-optional-strings)",
+ "yaserde 0.6.0 (git+https://github.com/ephraimkunz/yaserde.git?branch=gedcomx-fixes)",
+ "yaserde_derive 0.6.0 (git+https://github.com/ephraimkunz/yaserde.git?branch=gedcomx-fixes)",
 ]
 
 [[package]]
@@ -164,8 +164,8 @@ dependencies = [
  "serde",
  "serde_json",
  "xml-rs",
- "yaserde 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "yaserde_derive 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "yaserde 0.6.0",
+ "yaserde_derive 0.6.0",
 ]
 
 [[package]]
@@ -481,8 +481,6 @@ checksum = "b07db065a5cf61a7e4ba64f29e67db906fb1787316516c4e6e5ff0fea1efcd8a"
 [[package]]
 name = "yaserde"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc096efbee9ec8fee0600a15bb4fd651ccc14570cb05b6d4dd66b0325e4a0b5e"
 dependencies = [
  "log",
  "xml-rs",
@@ -491,7 +489,7 @@ dependencies = [
 [[package]]
 name = "yaserde"
 version = "0.6.0"
-source = "git+https://github.com/ephraimkunz/yaserde.git?branch=text-attribute-optional-strings#4b27b04ba4784e7b2bac5c6fcba46d0dc026b368"
+source = "git+https://github.com/ephraimkunz/yaserde.git?branch=gedcomx-fixes#370a04fbbe8943fb5ee2b2b2a9f5bbab5caa89c7"
 dependencies = [
  "log",
  "xml-rs",
@@ -500,19 +498,19 @@ dependencies = [
 [[package]]
 name = "yaserde_derive"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9af81f1d48039716dd825cf4a7d61d39583f8b12705994abb446bae749a977bb"
 dependencies = [
  "heck",
+ "log",
  "proc-macro2",
  "quote",
  "syn",
+ "xml-rs",
 ]
 
 [[package]]
 name = "yaserde_derive"
 version = "0.6.0"
-source = "git+https://github.com/ephraimkunz/yaserde.git?branch=text-attribute-optional-strings#4b27b04ba4784e7b2bac5c6fcba46d0dc026b368"
+source = "git+https://github.com/ephraimkunz/yaserde.git?branch=gedcomx-fixes#370a04fbbe8943fb5ee2b2b2a9f5bbab5caa89c7"
 dependencies = [
  "heck",
  "log",

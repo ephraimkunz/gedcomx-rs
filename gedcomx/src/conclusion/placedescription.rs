@@ -15,7 +15,10 @@ use crate::{
 #[yaserde(
     prefix = "gx",
     default_namespace = "gx",
-    namespace = "gx: http://gedcomx.org/v1/"
+    namespace = "gx: http://gedcomx.org/v1/",
+
+    // Needed so nested deserialization with the same name works, see https://github.com/media-io/yaserde/issues/110.
+    rename = "place"
 )]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]

@@ -18,8 +18,8 @@ serde = { version = "1", features = ["derive"] }
 serde_with = "1"
 chrono = { version = "0.4", features = ["serde"] }
 thiserror = "1"
-yaserde = {git = "https://github.com/ephraimkunz/yaserde.git", branch = "text-attribute-optional-strings"}
-yaserde_derive = {git = "https://github.com/ephraimkunz/yaserde.git", branch = "text-attribute-optional-strings"}
+yaserde = {git = "https://github.com/ephraimkunz/yaserde.git", branch = "gedcomx-fixes"}
+yaserde_derive = {git = "https://github.com/ephraimkunz/yaserde.git", branch = "gedcomx-fixes"}
 log = "0.4"
 xml-rs = "0.8"
 
