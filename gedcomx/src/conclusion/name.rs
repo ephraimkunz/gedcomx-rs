@@ -58,6 +58,11 @@ use crate::{
 /// ```
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Name {

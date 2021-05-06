@@ -152,7 +152,9 @@ impl fmt::Display for Timestamp {
         // to_rfc3339 always includes a timezone. Since XSD follows ISO 8601, timezones
         // can be unspecified. If we know this Timestamp has an unspecified
         // timezone, remove it from the string.
-        let full = self.value.to_rfc3339();
+        let full = self
+            .value
+            .to_rfc3339_opts(chrono::SecondsFormat::AutoSi, true);
         let partial = if self.undetermined_tz {
             &full[..19]
         } else {

@@ -5,16 +5,24 @@ use gedcomx::Gedcomx;
 #[cfg(test)]
 use pretty_assertions::assert_eq;
 
-pub fn read_json(filename: &str) -> String {
+fn read_json(filename: &str) -> String {
     std::fs::read_to_string(format!("../data/{}.json", filename)).unwrap()
 }
 
-pub fn read_xml(filename: &str, whitespace: bool) -> String {
+fn read_xml(filename: &str, whitespace: bool) -> String {
     if whitespace {
         std::fs::read_to_string(format!("../data/{}.xml", filename)).unwrap()
     } else {
         std::fs::read_to_string(format!("../data/{}_nowhitespace.xml", filename)).unwrap()
     }
+}
+
+pub fn assert_roundtrip_xml(filename: &str) {
+    let xml = read_xml(filename, true);
+    let gx = yaserde::de::from_str::<Gedcomx>(&xml).unwrap();
+    let new_xml = yaserde::ser::to_string(&gx).unwrap();
+
+    assert_eq!(new_xml, xml);
 }
 
 pub fn assert_roundtrip_json(filename: &str) {
