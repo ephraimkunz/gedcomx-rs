@@ -23,3 +23,4 @@ A Rust library for working with GEDCOMX.
 - Fully documented:
 - Well tested: 
 - Use builder pattern safely build Gedcomx data models.
+- Use with stable Rust.

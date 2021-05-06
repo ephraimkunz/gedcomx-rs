@@ -143,7 +143,7 @@ impl yaserde::YaDeserialize for Identifier {
     }
 }
 
-pub mod serde_vec_identifier_to_map {
+pub(crate) mod serde_vec_identifier_to_map {
     use std::{collections::HashMap, fmt};
 
     use serde::{

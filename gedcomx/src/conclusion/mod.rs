@@ -26,7 +26,8 @@ mod grouprole;
 pub use grouprole::{GroupRole, GroupRoleType};
 
 mod identifier;
-pub use identifier::{serde_vec_identifier_to_map, Identifier, IdentifierType};
+pub(crate) use identifier::serde_vec_identifier_to_map;
+pub use identifier::{Identifier, IdentifierType};
 
 mod name;
 pub use name::{
