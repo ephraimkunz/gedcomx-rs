@@ -180,6 +180,39 @@ mod test {
     use super::*;
 
     #[test]
+    fn builder() {
+        let address_1 = Address {
+            value: Some("value".to_string()),
+            city: Some("city".to_string()),
+            country: Some("country".to_string()),
+            postal_code: Some("postalcode".to_string()),
+            state_or_province: Some("stateorprovince".to_string()),
+            street: Some("street".to_string()),
+            street2: Some("street2".to_string()),
+            street3: Some("street3".to_string()),
+            street4: Some("street4".to_string()),
+            street5: Some("street5".to_string()),
+            street6: Some("street6".to_string()),
+        };
+
+        let address_2 = Address::builder()
+            .value("value")
+            .city("city")
+            .country("country")
+            .postal_code("postalcode")
+            .state_or_province("stateorprovince")
+            .street("street")
+            .street2("street2")
+            .street3("street3")
+            .street4("street4")
+            .street5("street5")
+            .street6("street6")
+            .build();
+
+        assert_eq!(address_1, address_2)
+    }
+
+    #[test]
     fn json_deserialize() {
         let json = r#"{
             "value" : "value",

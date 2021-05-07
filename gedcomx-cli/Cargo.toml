@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 serde_json = "1"
 serde = "1"
+gedcomx = {path = "../gedcomx"}
 
 yaserde = "0.6"
 yaserde_derive = "0.6"

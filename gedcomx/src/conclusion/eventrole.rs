@@ -12,6 +12,11 @@ use crate::{
 /// A role played in an event by a person.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct EventRole {
     /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
@@ -58,6 +63,7 @@ pub struct EventRole {
     ///
     /// MUST resolve to an instance of [`Person`](crate::Person).
     // TODO: Enforce this with type system?
+    #[yaserde(prefix = "gx")]
     pub person: ResourceReference,
 
     /// The participant's role.
@@ -66,6 +72,7 @@ pub struct EventRole {
     pub event_role_type: Option<EventRoleType>,
 
     /// Details about the role of participant in the event.
+    #[yaserde(prefix = "gx")]
     pub details: Option<String>,
 }
 

@@ -62,16 +62,14 @@ pub struct Agent {
     /// resolve to a valid e-mail address (e.g. "mailto:someone@gedcomx.org").
     #[yaserde(rename = "email", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub emails: Vec<ResourceReference>, /* TODO: Should I use a type here that would validate
-                                         * this is a valid email address? */
+    pub emails: Vec<ResourceReference>,
 
     /// The phone(s) (voice, fax, mobile) of the person or organization. If
     /// provided, MUST resolve to a valid phone number (e.g.
     /// "tel:+1-201-555-0123").
     #[yaserde(rename = "phone", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub phones: Vec<ResourceReference>, /* TODO: Should I use a type that would validate this is
-                                         * a valid phone number? */
+    pub phones: Vec<ResourceReference>,
 
     /// The address(es) of the person or organization.
     #[yaserde(rename = "address", prefix = "gx")]
@@ -81,7 +79,7 @@ pub struct Agent {
     /// A reference to the person that describes this agent. MUST resolve to an
     /// instance of [Person](crate::Person).
     #[yaserde(prefix = "gx")]
-    pub person: Option<ResourceReference>, // TODO: Enforce constraint?
+    pub person: Option<ResourceReference>,
 }
 
 impl Agent {
@@ -200,7 +198,107 @@ mod test {
     use yaserde::ser::Config;
 
     use super::*;
-    use crate::IdentifierType;
+    use crate::{GedcomxError, IdentifierType};
+
+    #[test]
+    fn builder() {
+        let identifier = Identifier::new("primaryIdentifier", Some(IdentifierType::Primary));
+
+        let account = OnlineAccount::new("http://familysearch.org/", "Family Search Account");
+
+        let person = Person::builder().id("P-1").build();
+
+        let agent_1 = Agent {
+            id: Some("local_id".into()),
+            identifiers: vec![identifier.clone()],
+            names: vec![
+                "Ephraim Kunz".into(),
+                TextValue::new("Ephraim Kunz Spanish", Some("es")),
+            ],
+            homepage: Some("www.ephraimkunz.com".into()),
+            openid: Some("some_openid_value".into()),
+            accounts: vec![account.clone()],
+            emails: vec![
+                "mailto:someone@gedcomx.org".into(),
+                "mailto:someone2@gedcomx.org".into(),
+            ],
+            phones: vec!["tel:+1-201-555-0123".into()],
+            addresses: vec![Address::builder().country("United States").build()],
+            person: Some((&person).try_into().unwrap()),
+        };
+
+        let agent_2 = Agent::builder()
+            .id("local_id")
+            .identifier(identifier)
+            .name("Ephraim Kunz")
+            .name(TextValue::new("Ephraim Kunz Spanish", Some("es")))
+            .homepage("www.ephraimkunz.com")
+            .openid("some_openid_value")
+            .account(account)
+            .email("mailto:someone@gedcomx.org")
+            .email("mailto:someone2@gedcomx.org")
+            .phone("tel:+1-201-555-0123")
+            .address(Address::builder().country("United States").build())
+            .person(&person)
+            .unwrap()
+            .build();
+
+        assert_eq!(agent_1, agent_2)
+    }
+
+    #[test]
+    fn builder_fails_correctly() {
+        let person = Person::builder().build();
+        let agent = Agent::builder().person(&person).map(|b| b.build());
+        assert_eq!(agent, Err(GedcomxError::NoId("Person".to_string())))
+    }
+
+    #[test]
+    fn json_deserialize() {
+        let json = r##"{
+            "id" : "local_id",
+            "names" : [ ],
+            "homepage" : {
+              "resource" : "..."
+            },
+            "openid" : {
+              "resource" : "..."
+            },
+            "accounts" : [ ],
+            "emails" : [ { "resource" : "mailto:someone@gedcomx.org" } , { "resource" : "mailto:someone@somewhere-else.org" } ],
+            "phones" : [ { "resource" : "tel:+1-201-555-0123" } , { "resource" : "fax:+1-201-555-5555" } ],
+            "addresses" : [ ]
+          }"##;
+
+        let agent = Agent::builder()
+            .id("local_id")
+            .homepage("...")
+            .openid("...")
+            .email("mailto:someone@gedcomx.org")
+            .email("mailto:someone@somewhere-else.org")
+            .phone("tel:+1-201-555-0123")
+            .phone("fax:+1-201-555-5555")
+            .build();
+
+        assert_eq!(serde_json::from_str::<Agent>(&json).unwrap(), agent)
+    }
+
+    #[test]
+    fn json_serialize() {
+        let expected = r##"{"id":"local_id","homepage":{"resource":"..."},"openid":{"resource":"..."},"emails":[{"resource":"mailto:someone@gedcomx.org"},{"resource":"mailto:someone@somewhere-else.org"}],"phones":[{"resource":"tel:+1-201-555-0123"},{"resource":"fax:+1-201-555-5555"}]}"##;
+
+        let agent = Agent::builder()
+            .id("local_id")
+            .homepage("...")
+            .openid("...")
+            .email("mailto:someone@gedcomx.org")
+            .email("mailto:someone@somewhere-else.org")
+            .phone("tel:+1-201-555-0123")
+            .phone("fax:+1-201-555-5555")
+            .build();
+
+        assert_eq!(serde_json::to_string(&agent).unwrap(), expected)
+    }
 
     #[test]
     fn xml_deserialize() {
