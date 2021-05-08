@@ -20,11 +20,12 @@ use crate::{Agent, ResourceReference, Result, Timestamp};
     namespace = "gx: http://gedcomx.org/v1/"
 )]
 #[serde(rename_all = "camelCase")]
+#[non_exhaustive]
 pub struct Attribution {
     /// Reference to the agent to whom the attributed data is attributed. If
     /// provided, MUST resolve to an instance of [`Agent`](crate::Agent).
     #[yaserde(prefix = "gx")]
-    pub contributor: Option<ResourceReference>, // TODO: Enforce this constraint?
+    pub contributor: Option<ResourceReference>,
 
     /// Timestamp of when the attributed data was modified.
     #[yaserde(prefix = "gx")]
@@ -86,6 +87,16 @@ impl AttributionBuilder {
         Ok(self)
     }
 
+    pub fn modified<I: Into<Timestamp>>(&mut self, timestamp: I) -> &mut Self {
+        self.0.modified = Some(timestamp.into());
+        self
+    }
+
+    pub fn change_message<I: Into<String>>(&mut self, change_message: I) -> &mut Self {
+        self.0.change_message = Some(change_message.into());
+        self
+    }
+
     /// # Errors
     ///
     /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
@@ -96,18 +107,8 @@ impl AttributionBuilder {
         Ok(self)
     }
 
-    pub fn modified<I: Into<Timestamp>>(&mut self, timestamp: I) -> &mut Self {
-        self.0.modified = Some(timestamp.into());
-        self
-    }
-
     pub fn created<I: Into<Timestamp>>(&mut self, timestamp: I) -> &mut Self {
         self.0.created = Some(timestamp.into());
-        self
-    }
-
-    pub fn change_message<I: Into<String>>(&mut self, change_message: I) -> &mut Self {
-        self.0.change_message = Some(change_message.into());
         self
     }
 
@@ -128,6 +129,48 @@ mod test {
     use yaserde::ser::Config;
 
     use super::*;
+    use crate::GedcomxError;
+
+    #[test]
+    fn builder() {
+        let creator = Agent::builder().id("creator").build();
+        let contributor = Agent::builder().id("contributor").build();
+
+        let expected = Attribution {
+            contributor: Some((&contributor).try_into().unwrap()),
+            modified: Some(Timestamp::default()),
+            change_message: Some("change message".to_string()),
+            creator: Some((&creator).try_into().unwrap()),
+            created: Some(Timestamp::default()),
+        };
+
+        let actual = Attribution::builder()
+            .contributor(&contributor)
+            .unwrap()
+            .modified(Timestamp::default())
+            .change_message("change message")
+            .creator(&creator)
+            .unwrap()
+            .created(Timestamp::default())
+            .build();
+
+        assert_eq!(actual, expected)
+    }
+
+    #[test]
+    fn builder_fails_correctly() {
+        let creator = Agent::default();
+        let contributor = Agent::default();
+        let expected = Err(GedcomxError::NoId(String::from("Agent")));
+
+        let actual = Attribution::builder()
+            .contributor(&contributor)
+            .map(|b| b.build());
+        assert_eq!(actual, expected);
+
+        let actual = Attribution::builder().creator(&creator).map(|b| b.build());
+        assert_eq!(actual, expected)
+    }
 
     #[test]
     fn json_deserialize() {
