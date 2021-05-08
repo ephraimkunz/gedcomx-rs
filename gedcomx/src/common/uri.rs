@@ -40,13 +40,13 @@ impl From<String> for Uri {
 
 impl From<Id> for Uri {
     fn from(id: Id) -> Self {
-        Self(format!("#{}", id.0))
+        Self(format!("#{}", id.to_string()))
     }
 }
 
 impl From<&Id> for Uri {
     fn from(id: &Id) -> Self {
-        Self(format!("#{}", id.0))
+        Self(format!("#{}", id.to_string()))
     }
 }
 

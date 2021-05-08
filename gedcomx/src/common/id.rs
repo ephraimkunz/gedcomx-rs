@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// A local, context-specific id for the data.
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-pub struct Id(pub(crate) String);
+pub struct Id(String);
 
 impl_characters_yaserialize_yadeserialize!(Id, "Id");
 
