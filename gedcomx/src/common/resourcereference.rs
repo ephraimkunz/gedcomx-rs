@@ -52,6 +52,9 @@ impl TryFrom<&Person> for ResourceReference {
     }
 }
 
+// The only use of a Document as a ResourceReference is as the analysis field of
+// Conclusion and SourceDescription. In both those cases, we care about the
+// document being the right type so we'll check it in our try_into impl.
 impl TryFrom<&Document> for ResourceReference {
     type Error = GedcomxError;
 
@@ -72,5 +75,98 @@ impl TryFrom<&Document> for ResourceReference {
                                                                            * match statement. */
             }),
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::convert::TryInto;
+
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+    use crate::GedcomxError;
+
+    #[test]
+    fn from_agent() {
+        let agent = Agent::builder().id("my id").build();
+        let rr: ResourceReference = (&agent).try_into().unwrap();
+        let expected = ResourceReference::from("#my id");
+        assert_eq!(rr, expected)
+    }
+
+    #[test]
+    fn from_agent_no_id() {
+        let agent = Agent::default();
+        let rr: Result<ResourceReference, GedcomxError> = (&agent).try_into();
+        let expected = Err(GedcomxError::NoId("Agent".to_string()));
+        assert_eq!(rr, expected)
+    }
+
+    #[test]
+    fn from_person() {
+        let person = Person::builder().id("my id").build();
+        let rr: ResourceReference = (&person).try_into().unwrap();
+        let expected = ResourceReference::from("#my id");
+        assert_eq!(rr, expected)
+    }
+
+    #[test]
+    fn from_person_no_id() {
+        let person = Person::default();
+        let rr: Result<ResourceReference, GedcomxError> = (&person).try_into();
+        let expected = Err(GedcomxError::NoId("Person".to_string()));
+        assert_eq!(rr, expected)
+    }
+
+    #[test]
+    fn from_document() {
+        let document = Document::builder("")
+            .id("my id")
+            .document_type(DocumentType::Analysis)
+            .build();
+        let rr: ResourceReference = (&document).try_into().unwrap();
+        let expected = ResourceReference::from("#my id");
+        assert_eq!(rr, expected)
+    }
+
+    #[test]
+    fn from_document_no_type() {
+        let document = Document::builder("").id("my id").build();
+        let rr: ResourceReference = (&document).try_into().unwrap();
+        let expected = ResourceReference::from("#my id");
+        assert_eq!(rr, expected)
+    }
+
+    #[test]
+    fn from_document_no_id() {
+        let document = Document::builder("")
+            .document_type(DocumentType::Analysis)
+            .build();
+        let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
+        let expected = Err(GedcomxError::NoId("Document".to_string()));
+        assert_eq!(rr, expected)
+    }
+
+    #[test]
+    fn from_document_wrong_type() {
+        let document = Document::builder("")
+            .id("my id")
+            .document_type(DocumentType::Abstract)
+            .build();
+        let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
+        let expected = Err(GedcomxError::WrongDocumentType {
+            expected: DocumentType::Analysis,
+            actual: DocumentType::Abstract,
+        });
+        assert_eq!(rr, expected)
+    }
+
+    #[test]
+    fn from_document_wrong_type_no_id() {
+        let document = Document::default();
+        let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
+        let expected = Err(GedcomxError::NoId("Document".to_string()));
+        assert_eq!(rr, expected)
     }
 }
