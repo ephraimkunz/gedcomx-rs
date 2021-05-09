@@ -11,6 +11,7 @@ use crate::{Attribution, Lang};
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[yaserde(
+    rename = "note",
     prefix = "gx",
     default_namespace = "gx",
     namespace = "gx: http://gedcomx.org/v1/"
@@ -36,22 +37,82 @@ pub struct Note {
 }
 
 impl Note {
-    pub fn new(text: String) -> Self {
+    pub fn new(
+        lang: Option<Lang>,
+        subject: Option<String>,
+        text: String,
+        attribution: Option<Attribution>,
+    ) -> Self {
         Self {
+            lang,
+            subject,
             text,
-            lang: None,
-            subject: None,
-            attribution: None,
+            attribution,
         }
+    }
+
+    pub fn builder<I: Into<String>>(text: I) -> NoteBuilder {
+        NoteBuilder::new(text)
     }
 }
 
-// TODO: Builder for this?
+pub struct NoteBuilder(Note);
+
+impl NoteBuilder {
+    pub(crate) fn new<I: Into<String>>(text: I) -> Self {
+        Self(Note {
+            text: text.into(),
+            ..Note::default()
+        })
+    }
+
+    pub fn lang<I: Into<Lang>>(&mut self, lang: I) -> &mut Self {
+        self.0.lang = Some(lang.into());
+        self
+    }
+
+    pub fn subject<I: Into<String>>(&mut self, subject: I) -> &mut Self {
+        self.0.subject = Some(subject.into());
+        self
+    }
+
+    pub fn attribution(&mut self, attribution: Attribution) -> &mut Self {
+        self.0.attribution = Some(attribution);
+        self
+    }
+
+    pub fn build(&self) -> Note {
+        Note::new(
+            self.0.lang.clone(),
+            self.0.subject.clone(),
+            self.0.text.clone(),
+            self.0.attribution.clone(),
+        )
+    }
+}
 
 #[cfg(test)]
 mod test {
     use super::*;
     use crate::TestData;
+
+    #[test]
+    fn builder() {
+        let expected = Note {
+            lang: Some("en".into()),
+            subject: Some("subject".to_string()),
+            text: "text".to_string(),
+            attribution: Some(Attribution::default()),
+        };
+
+        let actual = Note::builder("text")
+            .lang("en")
+            .subject("subject")
+            .attribution(Attribution::default())
+            .build();
+
+        assert_eq!(actual, expected)
+    }
 
     #[test]
     fn json_deserialize() {
@@ -88,7 +149,7 @@ mod test {
         }"#;
 
         let note: Note = serde_json::from_str(json).unwrap();
-        assert_eq!(note, Note::new("This is a note".to_string()))
+        assert_eq!(note, Note::builder("This is a note").build())
     }
 
     #[test]
@@ -112,10 +173,44 @@ mod test {
 
     #[test]
     fn json_serialize_optional_fields() {
-        let note = Note::new("This is a note".to_string());
+        let note = Note::builder("This is a note").build();
 
         let json = serde_json::to_string(&note).unwrap();
 
         assert_eq!(json, r#"{"text":"This is a note"}"#);
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let note = Note::builder("...text of the note...")
+            .lang("en")
+            .subject("...subject or title...")
+            .attribution(Attribution::default())
+            .build();
+
+        let mut config = yaserde::ser::Config::default();
+        config.write_document_declaration = false;
+        let xml = yaserde::ser::to_string_with_config(&note, &config).unwrap();
+        let expected = r##"<note xmlns="http://gedcomx.org/v1/" xml:lang="en"><subject>...subject or title...</subject><text>...text of the note...</text><attribution /></note>"##;
+
+        assert_eq!(xml, expected)
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r##"<note xml:lang="en">
+        <subject>...subject or title...</subject>
+        <text>...text of the note...</text>
+        <attribution>
+        </attribution>    
+        </note>"##;
+
+        let note: Note = yaserde::de::from_str(&xml).unwrap();
+        let expected = Note::builder("...text of the note...")
+            .lang("en")
+            .subject("...subject or title...")
+            .attribution(Attribution::default())
+            .build();
+        assert_eq!(note, expected)
     }
 }

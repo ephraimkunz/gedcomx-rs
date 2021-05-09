@@ -94,10 +94,11 @@ impl TestData {
         source_reference.attribution = Some(attribution.clone());
         source_reference.qualifiers = vec![qualifier];
 
-        let mut note = Note::new("This is a note".to_string());
-        note.attribution = Some(attribution.clone());
-        note.lang = Some("en".into());
-        note.subject = Some("subject".to_string());
+        let note = Note::builder("This is a note")
+            .lang("en")
+            .subject("subject")
+            .attribution(attribution.clone())
+            .build();
 
         let conclusion_data = TestConclusionData {
             id: Some("local_id".into()),

@@ -11,7 +11,7 @@ mod lang;
 pub use lang::Lang;
 
 mod note;
-pub use note::Note;
+pub use note::{Note, NoteBuilder};
 
 mod qualifier;
 pub use qualifier::Qualifier;
