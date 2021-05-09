@@ -7,11 +7,6 @@ use crate::Lang;
 /// An element representing a text value that may be in a specific language.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
-#[yaserde(
-    prefix = "gx",
-    default_namespace = "gx",
-    namespace = "gx: http://gedcomx.org/v1/"
-)]
 #[non_exhaustive]
 pub struct TextValue {
     /// The locale identifier for the value of the text.
@@ -95,5 +90,28 @@ mod test {
         let json = serde_json::to_string(&text_value).unwrap();
 
         assert_eq!(json, r#"{"value":"text of the value"}"#)
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let textvalue = TextValue::new("...textual value...", Some("en"));
+
+        let mut config = yaserde::ser::Config::default();
+        config.write_document_declaration = false;
+
+        let xml = yaserde::ser::to_string_with_config(&textvalue, &config).unwrap();
+
+        let expected = r##"<TextValue xml:lang="en">...textual value...</TextValue>"##;
+
+        assert_eq!(xml, expected)
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r##"<TextValue xml:lang="en">...textual value...</TextValue>"##;
+
+        let textvalue: TextValue = yaserde::de::from_str(&xml).unwrap();
+        let expected = TextValue::new("...textual value...", Some("en"));
+        assert_eq!(textvalue, expected)
     }
 }
