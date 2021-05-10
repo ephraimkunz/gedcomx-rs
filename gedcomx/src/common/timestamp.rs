@@ -8,8 +8,12 @@ use yaserde::{YaDeserialize, YaSerialize};
 ///
 /// Not the same as [`Date`](crate::Date) which represents things in the Gedcomx
 /// date format.
+///
+/// In JSON this is represented as the number of milliseconds since the Unix
+/// epoch. In XML it's represented by xsd:dateTime.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(transparent)]
+#[non_exhaustive]
 pub struct Timestamp {
     #[serde(with = "ts_milliseconds")]
     value: DateTime<Utc>,
@@ -23,6 +27,8 @@ pub struct Timestamp {
     undetermined_tz: bool,
 }
 
+// Don't consider undetermined_tz when comparing, since that's just to ensure
+// proper XML roundtripping.
 impl PartialEq for Timestamp {
     fn eq(&self, other: &Self) -> bool {
         self.value.eq(&other.value)
@@ -162,5 +168,130 @@ impl fmt::Display for Timestamp {
         };
 
         write!(f, "{}", partial)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use chrono::{FixedOffset, NaiveDate, TimeZone};
+
+    use super::*;
+
+    #[test]
+    fn json_deserialize() {
+        let json = "1338494969";
+        let expected = Timestamp::from(Utc.timestamp_millis(1338494969));
+        assert_eq!(serde_json::from_str::<Timestamp>(&json).unwrap(), expected)
+    }
+
+    #[test]
+    fn json_serialize() {
+        let timestamp = Timestamp::from(Utc.timestamp_millis(1338494969));
+        let expected = "1338494969";
+        assert_eq!(serde_json::to_string(&timestamp).unwrap(), expected)
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        // No timezone.
+        let offset = FixedOffset::east(0);
+        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
+
+        assert_eq!(
+            Timestamp::from_str("2020-03-07T04:40:00"),
+            Ok(Timestamp {
+                value: dt,
+                undetermined_tz: true
+            })
+        );
+
+        // Timezone "Z".
+        assert_eq!(
+            Timestamp::from_str("2020-03-07T04:40:00Z"),
+            Ok(Timestamp {
+                value: dt,
+                undetermined_tz: false
+            })
+        );
+
+        // Positive offset.
+        let offset = FixedOffset::east(6 * 3600 + 30 * 60);
+        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
+        assert_eq!(
+            Timestamp::from_str("2020-03-07T04:40:00+06:30"),
+            Ok(Timestamp {
+                value: dt,
+                undetermined_tz: false
+            })
+        );
+
+        // Negative offset.
+        let offset = FixedOffset::west(6 * 3600 + 30 * 60);
+        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
+        assert_eq!(
+            Timestamp::from_str("2020-03-07T04:40:00-06:30"),
+            Ok(Timestamp {
+                value: dt,
+                undetermined_tz: false
+            })
+        );
+    }
+
+    #[test]
+    fn xml_serialize() {
+        // Timezone +00:00.
+        let offset = FixedOffset::east(0);
+        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
+        assert_eq!(
+            Timestamp {
+                value: dt,
+                undetermined_tz: false
+            }
+            .to_string(),
+            "2020-03-07T04:40:00Z"
+        );
+
+        // Positive offset.
+        let offset = FixedOffset::east(6 * 3600 + 30 * 60);
+        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
+        assert_eq!(
+            Timestamp {
+                value: dt,
+                undetermined_tz: false
+            }
+            .to_string(),
+            "2020-03-06T22:10:00Z"
+        );
+
+        // Negative offset.
+        let offset = FixedOffset::west(6 * 3600 + 30 * 60);
+        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
+        assert_eq!(
+            Timestamp {
+                value: dt,
+                undetermined_tz: false
+            }
+            .to_string(),
+            "2020-03-07T11:10:00Z"
+        );
+
+        // Undetermined timezone.
+        let offset = FixedOffset::west(0);
+        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
+        assert_eq!(
+            Timestamp {
+                value: dt,
+                undetermined_tz: true
+            }
+            .to_string(),
+            "2020-03-07T04:40:00"
+        );
     }
 }
