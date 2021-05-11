@@ -25,12 +25,6 @@ impl From<&str> for Uri {
     }
 }
 
-impl From<&String> for Uri {
-    fn from(s: &String) -> Self {
-        Self(s.clone())
-    }
-}
-
 impl From<String> for Uri {
     fn from(s: String) -> Self {
         Self(s)

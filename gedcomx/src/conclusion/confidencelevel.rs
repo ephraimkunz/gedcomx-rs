@@ -50,3 +50,62 @@ impl Default for ConfidenceLevel {
         Self::Custom(Uri::default())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn roundtrip_to_string() {
+        let variant = ConfidenceLevel::High;
+        let s = variant.to_string();
+        let roundtripped: ConfidenceLevel = EnumAsString::from(s).into();
+        assert_eq!(variant, roundtripped);
+    }
+
+    #[test]
+    fn roundtrip_to_string_custom() {
+        let variant = ConfidenceLevel::Custom("custom uri".into());
+        let s = variant.to_string();
+        let roundtripped: ConfidenceLevel = EnumAsString::from(s).into();
+        assert_eq!(variant, roundtripped);
+    }
+
+    #[test]
+    fn deserialize() {
+        let xml = "<ConfidenceLevel>http://gedcomx.org/High</ConfidenceLevel>";
+        let cl: ConfidenceLevel = yaserde::de::from_str(xml).unwrap();
+        assert_eq!(cl, ConfidenceLevel::High)
+    }
+
+    #[test]
+    fn deserialize_custom() {
+        let xml = "<ConfidenceLevel>this is a test</ConfidenceLevel>";
+        let cl: ConfidenceLevel = yaserde::de::from_str(xml).unwrap();
+        assert_eq!(cl, ConfidenceLevel::Custom("this is a test".into()))
+    }
+
+    #[test]
+    fn serialize() {
+        let mut config = yaserde::ser::Config::default();
+        config.write_document_declaration = false;
+        let actual = yaserde::ser::to_string_with_config(&ConfidenceLevel::High, &config).unwrap();
+        let expected = "http://gedcomx.org/High";
+
+        assert_eq!(actual, expected)
+    }
+
+    #[test]
+    fn serialize_custom() {
+        let mut config = yaserde::ser::Config::default();
+        config.write_document_declaration = false;
+        let actual = yaserde::ser::to_string_with_config(
+            &ConfidenceLevel::Custom("this is a test".into()),
+            &config,
+        )
+        .unwrap();
+        let expected = "this is a test";
+
+        assert_eq!(actual, expected)
+    }
+}
