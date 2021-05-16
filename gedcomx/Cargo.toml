@@ -22,6 +22,7 @@ yaserde = {git = "https://github.com/ephraimkunz/yaserde.git", branch = "gedcomx
 yaserde_derive = {git = "https://github.com/ephraimkunz/yaserde.git", branch = "gedcomx-fixes"}
 log = "0.4"
 xml-rs = "0.8"
+gedcomx_date = {git = "https://github.com/ephraimkunz/gedcomx-date-rs.git", branch = "fix-duration"}
 
 [dev-dependencies]
 pretty_assertions = "0.6"

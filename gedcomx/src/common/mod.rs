@@ -4,6 +4,9 @@ pub use attribution::{Attribution, AttributionBuilder};
 mod evidencereference;
 pub use evidencereference::EvidenceReference;
 
+mod gedcomxdate;
+pub use gedcomxdate::GedcomxDate;
+
 mod id;
 pub use id::Id;
 

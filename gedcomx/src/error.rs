@@ -17,4 +17,11 @@ pub enum GedcomxError {
         expected: DocumentType,
         actual: DocumentType,
     },
+
+    /// Error while parsing a string as a Gedcomx date.
+    #[error("Error parsing {parsed_string} as date: {error}")]
+    DateParse {
+        parsed_string: String,
+        error: String,
+    },
 }

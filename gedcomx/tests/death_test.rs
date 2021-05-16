@@ -159,7 +159,7 @@ fn test_example() {
     let birth = Fact::builder(FactType::Birth)
         .date(Date::new(
             Some("former Qing 1848 year 11th month 22nd day 23-1 hour"),
-            Some("+1848-11-22"),
+            Some("+1848-11-22".parse().unwrap()),
         ))
         .place(
             PlaceReference::builder()
@@ -172,7 +172,7 @@ fn test_example() {
     let death = Fact::builder(FactType::Death)
         .date(Date::new(
             Some("Republic of China year 1920 year 7th mo. 12th day 11-13 hour"),
-            Some("+1920-08-03"),
+            Some("+1920-08-03".parse().unwrap()),
         ))
         .build();
 

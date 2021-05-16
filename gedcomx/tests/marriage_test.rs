@@ -110,7 +110,10 @@ fn test_example() {
 
     //the marriage fact.
     let marriage = Fact::builder(FactType::Marriage)
-        .date(Date::new(Some("3 November 1828"), Some("+1828-11-03")))
+        .date(Date::new(
+            Some("3 November 1828"),
+            Some("+1828-11-03".parse().unwrap()),
+        ))
         .place(
             PlaceReference::builder()
                 .original("Wilton St George, Wilton, Somerset, England")
@@ -120,7 +123,10 @@ fn test_example() {
 
     //the spouse1's residence.
     let sams_residence = Fact::builder(FactType::Residence)
-        .date(Date::new(Some("3 November 1828"), Some("+1828-11-03")))
+        .date(Date::new(
+            Some("3 November 1828"),
+            Some("+1828-11-03".parse().unwrap()),
+        ))
         .place(
             PlaceReference::builder()
                 .original("parish of Honiton, Devon, England")
@@ -130,7 +136,10 @@ fn test_example() {
 
     //the spouse1's residence.
     let lizs_residence = Fact::builder(FactType::Residence)
-        .date(Date::new(Some("3 November 1828"), Some("+1828-11-03")))
+        .date(Date::new(
+            Some("3 November 1828"),
+            Some("+1828-11-03".parse().unwrap()),
+        ))
         .place(
             PlaceReference::builder()
                 .original("parish of Wilton, Somerset, England")
@@ -205,7 +214,10 @@ fn test_example() {
         .event_type(EventType::Marriage)
         .id("E-1")
         .extracted(true)
-        .date(Date::new(Some("3 November 1828"), Some("+1828-11-03")))
+        .date(Date::new(
+            Some("3 November 1828"),
+            Some("+1828-11-03".parse().unwrap()),
+        ))
         .place(
             PlaceReference::builder()
                 .original("Wilton St George, Wilton, Somerset, England")

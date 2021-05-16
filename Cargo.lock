@@ -144,6 +144,7 @@ dependencies = [
  "assert-json-diff",
  "chrono",
  "env_logger",
+ "gedcomx_date",
  "log",
  "pretty_assertions",
  "serde",
@@ -167,6 +168,14 @@ dependencies = [
  "xml-rs",
  "yaserde 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "yaserde_derive 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "gedcomx_date"
+version = "0.0.1"
+source = "git+https://github.com/ephraimkunz/gedcomx-date-rs.git?branch=fix-duration#c29b3cb4f50d576ad75e2387f2fd631db3bedc39"
+dependencies = [
+ "nom",
 ]
 
 [[package]]
@@ -225,6 +234,12 @@ name = "memchr"
 version = "2.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ee1c47aaa256ecabcaea351eae4a9b01ef39ed810004e298d2511ed284b1525"
+
+[[package]]
+name = "nom"
+version = "1.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5b8c256fd9471521bcb84c3cdba98921497f1a331cbc15b8030fc63b82050ce"
 
 [[package]]
 name = "num-integer"
