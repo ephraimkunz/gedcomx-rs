@@ -51,6 +51,7 @@ impl<T: fmt::Display> From<T> for EnumAsString {
     }
 }
 
+#[cfg(test)]
 struct TestConclusionData {
     pub id: Option<Id>,
     pub lang: Option<Lang>,
@@ -61,7 +62,7 @@ struct TestConclusionData {
     pub attribution: Option<Attribution>,
 }
 
-#[allow(dead_code)]
+#[cfg(test)]
 struct TestData {
     attribution: Attribution,
     source_reference: SourceReference,
@@ -70,6 +71,7 @@ struct TestData {
     conclusion_data: TestConclusionData,
 }
 
+#[cfg(test)]
 impl TestData {
     #[allow(dead_code)]
     fn new() -> Self {
