@@ -172,8 +172,9 @@ dependencies = [
 
 [[package]]
 name = "gedcomx_date"
-version = "0.0.1"
-source = "git+https://github.com/ephraimkunz/gedcomx-date-rs.git?branch=fix-duration#c29b3cb4f50d576ad75e2387f2fd631db3bedc39"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f76aa7fd4b387d599451903f88b0f307797d7f6d8deee06311a8dbefc0a551e3"
 dependencies = [
  "nom",
 ]
