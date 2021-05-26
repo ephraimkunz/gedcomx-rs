@@ -11,6 +11,8 @@
 #![allow(clippy::must_use_candidate)]
 #![allow(clippy::missing_const_for_fn)]
 
+pub extern crate gedcomx_date;
+
 #[macro_use]
 mod macros;
 

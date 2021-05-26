@@ -4,14 +4,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::GedcomxError;
 
-// TODO: Figure out how to document this, maybe we should expose the underlying
-// date so clients can manipulate it / check which type it is.
-
-// Wrapping GedcomxDate from the gedcomx_date crate, and adding ability to
-// generate a formal string and serialize and deseserialize into JSON and XML.
+/// Newtype wrapping `GedcomxDate` from the `gedcomx_date` crate and adding the
+/// ability to generate a formal string (via the Display trait), failably parse
+/// from a string (via the FromStr trait), and serialize and deseserialize into
+/// JSON and XML.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[serde(try_from = "String", into = "String")]
-pub struct GedcomxDate(gedcomx_date::GedcomxDate);
+pub struct GedcomxDate(pub gedcomx_date::GedcomxDate);
 
 impl yaserde::YaSerialize for GedcomxDate {
     fn serialize<W: std::io::Write>(
