@@ -5,8 +5,8 @@ use serde::{Deserialize, Serialize};
 use crate::GedcomxError;
 
 /// Newtype wrapping `GedcomxDate` from the `gedcomx_date` crate and adding the
-/// ability to generate a formal string (via the Display trait), failably parse
-/// from a string (via the FromStr trait), and serialize and deseserialize into
+/// ability to generate a formal string (via the `Display` trait), failably parse
+/// from a string (via the `FromStr` trait), and serialize and deseserialize into
 /// JSON and XML.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[serde(try_from = "String", into = "String")]
