@@ -99,8 +99,8 @@ mod test {
     fn from_agent_no_id() {
         let agent = Agent::default();
         let rr: Result<ResourceReference, GedcomxError> = (&agent).try_into();
-        let expected = Err(GedcomxError::NoId("Agent".to_string()));
-        assert_eq!(rr, expected)
+        let expected = GedcomxError::NoId("Agent".to_string()).to_string();
+        assert_eq!(rr.unwrap_err().to_string(), expected)
     }
 
     #[test]
@@ -115,8 +115,8 @@ mod test {
     fn from_person_no_id() {
         let person = Person::default();
         let rr: Result<ResourceReference, GedcomxError> = (&person).try_into();
-        let expected = Err(GedcomxError::NoId("Person".to_string()));
-        assert_eq!(rr, expected)
+        let expected = GedcomxError::NoId("Person".to_string()).to_string();
+        assert_eq!(rr.unwrap_err().to_string(), expected)
     }
 
     #[test]
@@ -144,8 +144,8 @@ mod test {
             .document_type(DocumentType::Analysis)
             .build();
         let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
-        let expected = Err(GedcomxError::NoId("Document".to_string()));
-        assert_eq!(rr, expected)
+        let expected = GedcomxError::NoId("Document".to_string()).to_string();
+        assert_eq!(rr.unwrap_err().to_string(), expected)
     }
 
     #[test]
@@ -155,18 +155,19 @@ mod test {
             .document_type(DocumentType::Abstract)
             .build();
         let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
-        let expected = Err(GedcomxError::WrongDocumentType {
+        let expected = GedcomxError::WrongDocumentType {
             expected: DocumentType::Analysis,
             actual: DocumentType::Abstract,
-        });
-        assert_eq!(rr, expected)
+        }
+        .to_string();
+        assert_eq!(rr.unwrap_err().to_string(), expected)
     }
 
     #[test]
     fn from_document_wrong_type_no_id() {
         let document = Document::default();
         let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
-        let expected = Err(GedcomxError::NoId("Document".to_string()));
-        assert_eq!(rr, expected)
+        let expected = GedcomxError::NoId("Document".to_string()).to_string();
+        assert_eq!(rr.unwrap_err().to_string(), expected)
     }
 }

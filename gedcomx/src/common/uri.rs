@@ -97,7 +97,7 @@ mod test {
     fn from_source_description() {
         let source_description = SourceDescription::builder().id("test").build();
         let uri = Uri::try_from(&source_description);
-        assert_eq!(uri, Ok(Uri::from("#test")))
+        assert_eq!(uri.unwrap(), Uri::from("#test"))
     }
 
     #[test]
@@ -105,8 +105,8 @@ mod test {
         let source_description = SourceDescription::builder().build();
         let uri = Uri::try_from(&source_description);
         assert_eq!(
-            uri,
-            Err(GedcomxError::NoId("SourceDescription".to_string()))
+            uri.unwrap_err().to_string(),
+            GedcomxError::NoId("SourceDescription".to_string()).to_string()
         )
     }
 
@@ -114,14 +114,17 @@ mod test {
     fn from_place_description() {
         let place_description = PlaceDescription::builder().id("test").build();
         let uri = Uri::try_from(&place_description);
-        assert_eq!(uri, Ok(Uri::from("#test")))
+        assert_eq!(uri.unwrap(), Uri::from("#test"))
     }
 
     #[test]
     fn from_place_description_no_id() {
         let place_description = PlaceDescription::builder().build();
         let uri = Uri::try_from(&place_description);
-        assert_eq!(uri, Err(GedcomxError::NoId("PlaceDescription".to_string())))
+        assert_eq!(
+            uri.unwrap_err().to_string(),
+            GedcomxError::NoId("PlaceDescription".to_string()).to_string()
+        )
     }
 
     #[test]

@@ -3,7 +3,7 @@ use thiserror::Error;
 use crate::DocumentType;
 
 /// An error returned by the library.
-#[derive(Error, Debug, PartialEq)]
+#[derive(Error, Debug)]
 pub enum GedcomxError {
     /// An object with an `Id` was needed for an operation, but the object had
     /// no id.
@@ -24,4 +24,12 @@ pub enum GedcomxError {
         parsed_string: String,
         error: String,
     },
+
+    /// Error returned while attempting to serialize / deserialize as JSON.
+    #[error("Error serializing or deserializing JSON")]
+    JSONError(#[from] serde_json::Error),
+
+    /// Error returned while attempting to serialize / deserialize as XML.
+    #[error("Error serializing or deserializing XML")]
+    XMLError(String),
 }

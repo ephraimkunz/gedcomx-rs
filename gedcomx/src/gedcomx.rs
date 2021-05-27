@@ -3,8 +3,8 @@ use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
-    Agent, Attribution, Document, Event, Group, Id, Lang, Person, PlaceDescription, Relationship,
-    SourceDescription, Uri,
+    Agent, Attribution, Document, Event, GedcomxError, Group, Id, Lang, Person, PlaceDescription,
+    Relationship, Result, SourceDescription, Uri,
 };
 
 /// A container for a set of GEDCOM X data.
@@ -200,5 +200,116 @@ impl GedcomxBuilder {
             self.0.groups.clone(),
             self.0.description.clone(),
         )
+    }
+}
+
+// Convenience methods for serializing / deserializing to JSON / XML.
+impl Gedcomx {
+    /// Serialize the instance as a string of JSON.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::JSONError` if serialization fails.
+    pub fn to_json_string(&self) -> Result<String> {
+        serde_json::to_string(self).map_err(GedcomxError::JSONError)
+    }
+
+    /// Serialize the instance as a string of pretty-printed JSON.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::JSONError` if serialization fails.
+    pub fn to_json_string_pretty(&self) -> Result<String> {
+        serde_json::to_string_pretty(self).map_err(GedcomxError::JSONError)
+    }
+
+    /// Serialize the instance as JSON into the IO stream.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::JSONError` if serialization fails.
+    pub fn to_writer_as_json<W: std::io::Write>(&self, writer: W) -> Result<()> {
+        serde_json::to_writer(writer, self).map_err(GedcomxError::JSONError)
+    }
+
+    /// Serialize the instance as pretty-printed JSON into the IO stream.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::JSONError` if serialization fails.
+    pub fn to_writer_as_json_pretty<W: std::io::Write>(&self, writer: W) -> Result<()> {
+        serde_json::to_writer_pretty(writer, self).map_err(GedcomxError::JSONError)
+    }
+
+    /// Deserialize an instance of the type from a string of JSON text.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::JSONError` if deserialization fails.    
+    pub fn from_json_str(s: &str) -> Result<Self> {
+        serde_json::from_str(s).map_err(GedcomxError::JSONError)
+    }
+
+    /// Deserialize an instance of the type from an IO stream of JSON.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::JSONError` if deserialization fails.
+    pub fn from_json_reader<R: std::io::Read>(rdr: R) -> Result<Self> {
+        serde_json::from_reader(rdr).map_err(GedcomxError::JSONError)
+    }
+
+    /// Serialize the instance as a string of XML.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::XMLError` if serialization fails.
+    pub fn to_xml_string(&self) -> Result<String> {
+        yaserde::ser::to_string(self).map_err(GedcomxError::XMLError)
+    }
+
+    /// Serialize the instance as a string of pretty-printed XML.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::XMLError` if serialization fails.
+    pub fn to_xml_string_pretty(&self) -> Result<String> {
+        let config = yaserde::ser::Config {
+            perform_indent: true,
+            ..yaserde::ser::Config::default()
+        };
+        yaserde::ser::to_string_with_config(self, &config).map_err(GedcomxError::XMLError)
+    }
+
+    /// Serialize the instance as XML into the IO stream.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::XMLError` if serialization fails.
+    pub fn to_writer_as_xml<W: std::io::Write>(&self, writer: W) -> Result<()> {
+        yaserde::ser::serialize_with_writer(self, writer, &yaserde::ser::Config::default())
+            .map(|_| ())
+            .map_err(GedcomxError::XMLError)
+    }
+
+    /// Serialize the instance as pretty-printed XML into the IO stream.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::XMLError` if serialization fails.
+    pub fn to_writer_as_xml_pretty<W: std::io::Write>(&self, writer: W) -> Result<()> {
+        let config = yaserde::ser::Config {
+            perform_indent: true,
+            ..yaserde::ser::Config::default()
+        };
+        yaserde::ser::serialize_with_writer(self, writer, &config)
+            .map(|_| ())
+            .map_err(GedcomxError::XMLError)
+    }
+
+    /// Deserialize an instance of the type from a string of XML text.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::XMLError` if deserialization fails.
+    pub fn from_xml_str(s: &str) -> Result<Self> {
+        yaserde::de::from_str(s).map_err(GedcomxError::XMLError)
+    }
+
+    /// Deserialize an instance of the type from an IO stream of XML.
+    /// # Errors
+    ///
+    /// Returns `GedcomxError::XMLError` if deserialization fails.
+    pub fn from_xml_reader<R: std::io::Read>(rdr: R) -> Result<Self> {
+        yaserde::de::from_reader(rdr).map_err(GedcomxError::XMLError)
     }
 }

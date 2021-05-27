@@ -161,15 +161,15 @@ mod test {
     fn builder_fails_correctly() {
         let creator = Agent::default();
         let contributor = Agent::default();
-        let expected = Err(GedcomxError::NoId(String::from("Agent")));
+        let expected = GedcomxError::NoId(String::from("Agent")).to_string();
 
         let actual = Attribution::builder()
             .contributor(&contributor)
             .map(|b| b.build());
-        assert_eq!(actual, expected);
+        assert_eq!(actual.unwrap_err().to_string(), expected);
 
         let actual = Attribution::builder().creator(&creator).map(|b| b.build());
-        assert_eq!(actual, expected)
+        assert_eq!(actual.unwrap_err().to_string(), expected)
     }
 
     #[test]
