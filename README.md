@@ -11,6 +11,7 @@ A Rust library for working with GEDCOMX.
 - [x] [GEDCOM X Fact Types 1.0](https://github.com/FamilySearch/gedcomx/blob/master/specifications/fact-types-specification.md) fully implemented. 
 - [x] [GEDCOM X Name Part Qualifiers 1.0](https://github.com/FamilySearch/gedcomx/blob/master/specifications/name-part-qualifiers-specification.md) fully implemented.
 - [x] [GEDCOM X Relationship Types 1.0](https://github.com/FamilySearch/gedcomx/blob/master/specifications/relationship-types-specification.md) fully implemented.
+- [x] [GEDCOM X Date 1.0](https://github.com/FamilySearch/gedcomx/blob/master/specifications/date-format-specification.md) compliant via the [gedcomx_date](https://github.com/nicompte/gedcomx-date-rs) crate.
 - [ ] [GEDCOM X File Format 1.0](https://github.com/FamilySearch/gedcomx/blob/master/specifications/file-format-specification.md)
 - [ ] [GEDCOM X Standard Header Set 1.0](https://github.com/FamilySearch/gedcomx/blob/master/specifications/standard-header-set-specification.md)
 - [ ] [GEDCOM X Field Types 1.0](https://github.com/FamilySearch/gedcomx-record/blob/master/specifications/field-types-specification.md)
@@ -21,6 +22,6 @@ A Rust library for working with GEDCOMX.
 
 ## Features
 - Fully documented:
-- Well tested: 
-- Use builder pattern safely build Gedcomx data models.
+- Well tested: hundreds of unit tests and some large integration tests. Integration tests test parsing of all the recipes in the [Recipe Book](http://www.gedcomx.org/Recipe-Book.html) as well as other test data from the [Java Gedcomx implementation](https://github.com/FamilySearch/gedcomx-java).
+- Use the builder pattern to safely build Gedcomx data models.
 - Use with stable Rust.
