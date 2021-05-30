@@ -152,8 +152,8 @@ dependencies = [
  "serde_with",
  "thiserror",
  "xml-rs",
- "yaserde 0.6.0 (git+https://github.com/ephraimkunz/yaserde.git?branch=gedcomx-fixes)",
- "yaserde_derive 0.6.0 (git+https://github.com/ephraimkunz/yaserde.git?branch=gedcomx-fixes)",
+ "yaserde 0.6.0 (git+https://github.com/media-io/yaserde.git)",
+ "yaserde_derive 0.6.0 (git+https://github.com/media-io/yaserde.git)",
 ]
 
 [[package]]
@@ -163,8 +163,6 @@ dependencies = [
  "env_logger",
  "gedcomx",
  "log",
- "serde",
- "serde_json",
  "xml-rs",
  "yaserde 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "yaserde_derive 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -508,7 +506,7 @@ dependencies = [
 [[package]]
 name = "yaserde"
 version = "0.6.0"
-source = "git+https://github.com/ephraimkunz/yaserde.git?branch=gedcomx-fixes#370a04fbbe8943fb5ee2b2b2a9f5bbab5caa89c7"
+source = "git+https://github.com/media-io/yaserde.git#a8ef1358a917c8348eb693758865cf62e9fc892a"
 dependencies = [
  "log",
  "xml-rs",
@@ -529,7 +527,7 @@ dependencies = [
 [[package]]
 name = "yaserde_derive"
 version = "0.6.0"
-source = "git+https://github.com/ephraimkunz/yaserde.git?branch=gedcomx-fixes#370a04fbbe8943fb5ee2b2b2a9f5bbab5caa89c7"
+source = "git+https://github.com/media-io/yaserde.git#a8ef1358a917c8348eb693758865cf62e9fc892a"
 dependencies = [
  "heck",
  "log",
