@@ -3,7 +3,6 @@ A collection of Rust crates for working with GEDCOM X.
 
 ![CI](https://github.com/ephraimkunz/gedcomx-rs/workflows/CI/badge.svg)
 [![codecov](https://codecov.io/gh/ephraimkunz/gedcomx-rs/branch/main/graph/badge.svg)](https://codecov.io/gh/ephraimkunz/gedcomx-rs)
-[![](https://img.shields.io/crates/v/gedcomx.svg)](https://crates.io/crates/gedcomx)
 
 ## Crates
 * [gedcomx](./gedcomx) - Core data structures and serialization / deserialization in XML and JSON.

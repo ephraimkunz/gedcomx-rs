@@ -3,6 +3,7 @@ The core data structures and serialization / deserialization of the GEDCOM X for
 
 ![CI](https://github.com/ephraimkunz/gedcomx-rs/workflows/CI/badge.svg)
 [![codecov](https://codecov.io/gh/ephraimkunz/gedcomx-rs/branch/main/graph/badge.svg)](https://codecov.io/gh/ephraimkunz/gedcomx-rs)
+[![](https://img.shields.io/crates/v/gedcomx.svg)](https://crates.io/crates/gedcomx)
 
 ## Specification Compliance
 This crate provides conformance to the following GEDCOM X specs:
