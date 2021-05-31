@@ -18,8 +18,8 @@ serde = { version = "1", features = ["derive"] }
 serde_with = "1"
 chrono = { version = "0.4", features = ["serde"] }
 thiserror = "1"
-yaserde = {git = "https://github.com/media-io/yaserde.git"}
-yaserde_derive = {git = "https://github.com/media-io/yaserde.git"}
+yaserde = "0.7"
+yaserde_derive = "0.7"
 log = "0.4"
 xml-rs = "0.8"
 gedcomx_date = "0.0.2"
