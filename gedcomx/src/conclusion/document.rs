@@ -42,7 +42,6 @@ pub struct Document {
     /// into this conclusion. If provided, MUST resolve to an instance of
     /// [Document](crate::Document) of type
     /// [Analysis](crate::DocumentType::Analysis).
-    // TODO: Validate this at compile time somehow?
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
@@ -66,17 +65,16 @@ pub struct Document {
     #[serde(rename = "type")]
     pub document_type: Option<DocumentType>,
 
-    /// Whether this document is to be constrained as an *xtracted conclusion,
+    /// Whether this document is to be constrained as an extracted conclusion,
     /// meaning it captures information extracted from a single source.
     #[yaserde(attribute)]
     pub extracted: Option<bool>,
 
     /// The type of text in the `text` property.
     ///
-    /// If provided, the value MUST be a [valid text type](https://github.com/FamilySearch/gedcomx/blob/master/specifications/conceptual-model-specification.md#text-types). If no value is provided, "plain" is assumed
-    // TODO: Newtype for this?
+    /// If no value is provided, "plain" is assumed.
     #[yaserde(rename = "textType", attribute)]
-    pub text_type: Option<String>,
+    pub text_type: Option<TextType>,
 
     /// The text of the document.
     #[yaserde(prefix = "gx")]
@@ -94,7 +92,7 @@ impl Document {
         attribution: Option<Attribution>,
         document_type: Option<DocumentType>,
         extracted: Option<bool>,
-        text_type: Option<String>,
+        text_type: Option<TextType>,
         text: String,
     ) -> Self {
         Self {
@@ -139,8 +137,8 @@ impl DocumentBuilder {
         self
     }
 
-    pub fn text_type<I: Into<String>>(&mut self, text_type: I) -> &mut Self {
-        self.0.text_type = Some(text_type.into());
+    pub fn text_type(&mut self, text_type: TextType) -> &mut Self {
+        self.0.text_type = Some(text_type);
         self
     }
 
@@ -210,5 +208,129 @@ impl fmt::Display for DocumentType {
 impl Default for DocumentType {
     fn default() -> Self {
         Self::Custom(Uri::default())
+    }
+}
+
+/// In some cases, a text value must include styling or layout to fully convey
+/// its intended meaning. Where such a requirement has been identified,
+/// implementers can designate that a text value may include such styling or
+/// layout by specifying an alternate text type.
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[non_exhaustive]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
+pub enum TextType {
+    /// The `Plain` text type identifies plain text. `Plain is the default text
+    /// type for text without an explicitly specified type.
+    Plain,
+
+    /// The "xhtml" text type identifies XHTML text complying with the [XHTML 1.0 W3C Recommendation](http://www.w3.org/TR/xhtml1/).
+    XHTML,
+}
+
+impl_enumasstring_yaserialize_yadeserialize!(TextType, "TextType");
+
+impl From<EnumAsString> for TextType {
+    fn from(f: EnumAsString) -> Self {
+        match f.0.as_ref() {
+            "xhtml" => Self::XHTML,
+            "plain" => Self::Plain,
+            _ => Self::default(),
+        }
+    }
+}
+
+impl fmt::Display for TextType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::Plain => write!(f, "plain"),
+            Self::XHTML => write!(f, "xhtml"),
+        }
+    }
+}
+
+impl Default for TextType {
+    fn default() -> Self {
+        Self::Plain
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn json_deserialize() {
+        let json = r#"{          
+            "extracted" : false,
+            "type" : "http://gedcomx.org/Analysis",
+            "textType" : "plain",
+            "text" : "...text of the document..."
+          }"#;
+
+        let document: Document = serde_json::from_str(json).unwrap();
+
+        assert_eq!(
+            document,
+            Document::builder("...text of the document...")
+                .document_type(DocumentType::Analysis)
+                .extracted(false)
+                .text_type(TextType::Plain)
+                .build()
+        )
+    }
+
+    #[test]
+    fn json_serialize() {
+        let document = Document::builder("...text of the document...")
+            .document_type(DocumentType::Analysis)
+            .extracted(false)
+            .text_type(TextType::Plain)
+            .build();
+
+        let json = serde_json::to_string(&document).unwrap();
+
+        assert_eq!(
+            json,
+            r#"{"type":"http://gedcomx.org/Analysis","extracted":false,"textType":"plain","text":"...text of the document..."}"#
+        )
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r#"
+        <Document xmlns="http://gedcomx.org/v1/" type="http://gedcomx.org/Analysis" extracted="false" textType="plain">    
+        <text>...text of the document...</text>
+        </Document>"#;
+
+        let document: Document = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(
+            document,
+            Document::builder("...text of the document...")
+                .document_type(DocumentType::Analysis)
+                .extracted(false)
+                .text_type(TextType::Plain)
+                .build()
+        )
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let document = Document::builder("...text of the document...")
+            .document_type(DocumentType::Analysis)
+            .extracted(false)
+            .text_type(TextType::Plain)
+            .build();
+
+        let mut config = yaserde::ser::Config::default();
+        config.write_document_declaration = false;
+        let xml = yaserde::ser::to_string_with_config(&document, &config).unwrap();
+
+        assert_eq!(
+            xml,
+            r#"<Document xmlns="http://gedcomx.org/v1/" type="http://gedcomx.org/Analysis" extracted="false" textType="plain"><text>...text of the document...</text></Document>"#
+        )
     }
 }

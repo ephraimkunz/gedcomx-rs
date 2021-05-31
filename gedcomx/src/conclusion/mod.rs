@@ -5,7 +5,7 @@ mod date;
 pub use date::Date;
 
 mod document;
-pub use document::{Document, DocumentBuilder, DocumentType};
+pub use document::{Document, DocumentBuilder, DocumentType, TextType};
 
 mod eventrole;
 pub use eventrole::{EventRole, EventRoleBuilder, EventRoleType};
