@@ -223,8 +223,8 @@ pub enum TextType {
     /// type for text without an explicitly specified type.
     Plain,
 
-    /// The `XHTML` text type identifies XHTML text complying with the [XHTML 1.0 W3C Recommendation](http://www.w3.org/TR/xhtml1/).
-    XHTML,
+    /// The `Xhtml` text type identifies XHTML text complying with the [XHTML 1.0 W3C Recommendation](http://www.w3.org/TR/xhtml1/).
+    Xhtml,
 }
 
 impl_enumasstring_yaserialize_yadeserialize!(TextType, "TextType");
@@ -232,7 +232,7 @@ impl_enumasstring_yaserialize_yadeserialize!(TextType, "TextType");
 impl From<EnumAsString> for TextType {
     fn from(f: EnumAsString) -> Self {
         match f.0.as_ref() {
-            "xhtml" => Self::XHTML,
+            "xhtml" => Self::Xhtml,
             "plain" => Self::Plain,
             _ => Self::default(),
         }
@@ -243,7 +243,7 @@ impl fmt::Display for TextType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         match self {
             Self::Plain => write!(f, "plain"),
-            Self::XHTML => write!(f, "xhtml"),
+            Self::Xhtml => write!(f, "xhtml"),
         }
     }
 }

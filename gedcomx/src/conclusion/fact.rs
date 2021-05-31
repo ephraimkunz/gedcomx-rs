@@ -12,7 +12,42 @@ use crate::{
 /// A data item that is presumed to be true about a specific subject, such as a
 /// person or relationship.
 ///
-/// To distinguish the concept of "fact" from "event", refer to [Events Versus Facts](https://github.com/FamilySearch/gedcomx/blob/master/specifications/conceptual-model-specification.md#events-vs-facts).
+/// # Events Versus Facts
+///
+/// GEDCOM X implementations need to be able to recognize the difference between
+/// the concept of an "event" and the concept of a "fact" as defined by this
+/// specification in order to correctly use the data types associated with these
+/// concepts. This section is provided for the purpose of explicitly defining
+/// and distinguishing the two concepts.
+///
+/// An "event" is an occurrence that happened at a specific time or period of
+/// time, often at a specific place or set of places. Genealogically relevant
+/// events are often described by referencing the persons that played a role in
+/// that event. Hence events often refer to persons and might infer
+/// relationships, but events are described independently of those persons and
+/// relationships.
+///
+/// A "fact" is a data item that is presumed to be true about a specific
+/// subject, such as a person or relationship. A time or place is often, but not
+/// always, applicable to a fact. Facts do not exist outside the scope of the
+/// subject to which they apply.
+///
+/// Events are often used to infer facts. A marriage event, for example, infers
+/// the fact that two persons were married, and birth event infers the fact that
+/// a person was born. Facts also sometimes infer events, but the existence of a
+/// fact might not always justify a description of an event. For example, a
+/// birth fact provided by a census record might not warrant a description of a
+/// birth event, even though the existence of such an event is implied. On the
+/// other hand, a birth record that provides information about biological
+/// parents, adoptive parents, additional witnesses, etc. might justify a
+/// description of the event in addition to descriptions of any facts provided
+/// by the record.
+///
+/// Despite the occasional inference of facts from events and vice versa, this
+/// specification dictates that the two concepts are described independently.
+/// This version of the specification does not provide a direct association
+/// between instances of the two data types, although an indirect association
+/// can be found via the event role.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
 #[yaserde(
@@ -43,7 +78,6 @@ pub struct Fact {
     /// into this conclusion. If provided, MUST resolve to an instance of
     /// [Document](crate::Document) of type
     /// [Analysis](crate::DocumentType::Analysis).
-    // TODO: Validate this at compile time somehow?
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
