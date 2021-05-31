@@ -40,7 +40,6 @@ pub struct EventRole {
     /// into this conclusion. If provided, MUST resolve to an instance of
     /// [Document](crate::Document) of type
     /// [Analysis](crate::DocumentType::Analysis).
-    // TODO: Validate this at compile time somehow?
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
@@ -62,7 +61,6 @@ pub struct EventRole {
     /// Reference to the event participant.
     ///
     /// MUST resolve to an instance of [`Person`](crate::Person).
-    // TODO: Enforce this with type system?
     #[yaserde(prefix = "gx")]
     pub person: ResourceReference,
 
@@ -211,6 +209,8 @@ impl Default for EventRoleType {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::TestData;
 
@@ -391,6 +391,59 @@ mod test {
         assert_eq!(
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"person":{"resource":"http://identifier/for/person/1"}}"#
+        )
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r#"
+        <EventRole xmlns="http://gedcomx.org/v1/">
+            <person resource="http://identifier/for/person/1" />
+        </EventRole>"#;
+
+        let event_role: EventRole = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(
+            event_role,
+            EventRole {
+                id: None,
+                lang: None,
+                sources: vec![],
+                analysis: None,
+                notes: vec![],
+                confidence: None,
+                attribution: None,
+                event_role_type: None,
+                details: None,
+                person: ResourceReference::from("http://identifier/for/person/1")
+            }
+        )
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let event_role = EventRole {
+            id: None,
+            lang: None,
+            sources: vec![],
+            analysis: None,
+            notes: vec![],
+            confidence: None,
+            attribution: None,
+            event_role_type: None,
+            details: None,
+            person: ResourceReference::from("http://identifier/for/person/1"),
+        };
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+        let xml = yaserde::ser::to_string_with_config(&event_role, &config).unwrap();
+
+        assert_eq!(
+            xml,
+            r#"<EventRole xmlns="http://gedcomx.org/v1/"><person resource="http://identifier/for/person/1" /></EventRole>"#
         )
     }
 }
