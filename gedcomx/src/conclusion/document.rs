@@ -219,11 +219,11 @@ impl Default for DocumentType {
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum TextType {
-    /// The `Plain` text type identifies plain text. `Plain is the default text
+    /// The `Plain` text type identifies plain text. `Plain` is the default text
     /// type for text without an explicitly specified type.
     Plain,
 
-    /// The "xhtml" text type identifies XHTML text complying with the [XHTML 1.0 W3C Recommendation](http://www.w3.org/TR/xhtml1/).
+    /// The `XHTML` text type identifies XHTML text complying with the [XHTML 1.0 W3C Recommendation](http://www.w3.org/TR/xhtml1/).
     XHTML,
 }
 
