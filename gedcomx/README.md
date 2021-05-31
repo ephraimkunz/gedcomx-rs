@@ -1,5 +1,5 @@
 # gedcomx
-The core data structures and serialization / deserialization of the GEDCOMX X format.
+The core data structures and serialization / deserialization of the GEDCOM X format.
 
 ![CI](https://github.com/ephraimkunz/gedcomx-rs/workflows/CI/badge.svg)
 [![codecov](https://codecov.io/gh/ephraimkunz/gedcomx-rs/branch/main/graph/badge.svg)](https://codecov.io/gh/ephraimkunz/gedcomx-rs)
