@@ -25,6 +25,11 @@ pub enum GedcomxError {
         error: String,
     },
 
+    /// Error while parsing a string as a qualifier name (`FactQualifier`,
+    /// `SourceReferenceQualifier`, or `NamePartQualifier`).
+    #[error("Error parsing {parsed_string} as qualifier name")]
+    QualifierParse { parsed_string: String },
+
     /// Error returned while attempting to serialize / deserialize as JSON.
     #[error("Error serializing or deserializing JSON")]
     JSONError(#[from] serde_json::Error),

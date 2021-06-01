@@ -1,12 +1,12 @@
-use std::fmt;
+use std::{fmt, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
-    Attribution, ConfidenceLevel, Date, EnumAsString, Id, Lang, Note, PlaceReference, Qualifier,
-    ResourceReference, SourceReference, Uri,
+    Attribution, ConfidenceLevel, Date, EnumAsString, GedcomxError, Id, Lang, Note, PlaceReference,
+    Qualifier, ResourceReference, Result, SourceReference, Uri,
 };
 
 /// A data item that is presumed to be true about a specific subject, such as a
@@ -114,7 +114,10 @@ pub struct Fact {
     pub value: Option<String>,
 
     /// Qualifiers to add additional details about the fact.
-    // TODO: Should we enforce these as FactQualifiers?
+    ///
+    /// If present, use of a
+    /// [`FactQualifier`](crate::FactQualifier) is
+    /// RECOMMENDED.
     #[yaserde(rename = "qualifier", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
@@ -714,9 +717,8 @@ impl Default for FactType {
 }
 
 /// Fact qualifiers.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 #[non_exhaustive]
-#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum FactQualifier {
     /// The age of a person at the event described by the fact.
     Age,
@@ -735,20 +737,21 @@ pub enum FactQualifier {
     /// An indicator that the event occurred non-consensually, e.g. under
     /// enslavement.
     NonConsensual,
-    Custom(Uri),
 }
 
-impl_enumasstring_yaserialize_yadeserialize!(FactQualifier, "FactQualifier");
+impl FromStr for FactQualifier {
+    type Err = GedcomxError;
 
-impl From<EnumAsString> for FactQualifier {
-    fn from(f: EnumAsString) -> Self {
-        match f.0.as_ref() {
-            "http://gedcomx.org/Age" => Self::Age,
-            "http://gedcomx.org/Cause" => Self::Cause,
-            "http://gedcomx.org/Religion" => Self::Religion,
-            "http://gedcomx.org/Transport" => Self::Transport,
-            "http://gedcomx.org/NonConsensual" => Self::NonConsensual,
-            _ => Self::Custom(f.0.into()),
+    fn from_str(s: &str) -> Result<Self> {
+        match s {
+            "http://gedcomx.org/Age" => Ok(Self::Age),
+            "http://gedcomx.org/Cause" => Ok(Self::Cause),
+            "http://gedcomx.org/Religion" => Ok(Self::Religion),
+            "http://gedcomx.org/Transport" => Ok(Self::Transport),
+            "http://gedcomx.org/NonConsensual" => Ok(Self::NonConsensual),
+            _ => Err(GedcomxError::QualifierParse {
+                parsed_string: s.to_string(),
+            }),
         }
     }
 }
@@ -761,7 +764,6 @@ impl fmt::Display for FactQualifier {
             Self::Religion => write!(f, "http://gedcomx.org/Religion"),
             Self::Transport => write!(f, "http://gedcomx.org/Transport"),
             Self::NonConsensual => write!(f, "http://gedcomx.org/NonConsensual"),
-            Self::Custom(c) => write!(f, "{}", c),
         }
     }
 }

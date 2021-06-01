@@ -1,15 +1,14 @@
 use std::{
     convert::{TryFrom, TryInto},
     fmt,
+    str::FromStr,
 };
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-use crate::{
-    Attribution, EnumAsString, GedcomxError, Id, Qualifier, Result, SourceDescription, Uri,
-};
+use crate::{Attribution, GedcomxError, Id, Qualifier, Result, SourceDescription, Uri};
 
 /// A reference to a source description.
 #[skip_serializing_none]
@@ -20,7 +19,6 @@ pub struct SourceReference {
     /// Reference to a description of the target source.
     ///
     /// MUST resolve to an instance of http://gedcomx.org/v1/SourceDescription.
-    // TODO: Enforce
     #[yaserde(attribute)]
     pub description: Uri,
 
@@ -36,6 +34,10 @@ pub struct SourceReference {
 
     /// Qualifiers for the reference, used to identify specific fragments of the
     /// source that are being referenced.
+    ///
+    /// If present, use of a
+    /// [`SourceReferenceQualifier`](crate::SourceReferenceQualifier) is
+    /// RECOMMENDED.
     #[yaserde(rename = "qualifier")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
@@ -107,9 +109,8 @@ impl TryFrom<&SourceDescription> for SourceReference {
 }
 
 /// Source reference qualifiers.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 #[non_exhaustive]
-#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum SourceReferenceQualifier {
     /// A region of text in a digital document, in the form of a,b where a is
     /// the index of the start character and b is the index of the end
@@ -135,19 +136,19 @@ pub enum SourceReferenceQualifier {
     /// point in milliseconds. The meaning of this qualifier is undefined if the
     /// source being referenced is not a digital audio or video recording.
     TimeRegion,
-
-    Custom(Uri),
 }
 
-impl_enumasstring_yaserialize_yadeserialize!(SourceReferenceQualifier, "SourceReferenceQualifier");
+impl FromStr for SourceReferenceQualifier {
+    type Err = GedcomxError;
 
-impl From<EnumAsString> for SourceReferenceQualifier {
-    fn from(f: EnumAsString) -> Self {
-        match f.0.as_ref() {
-            "http://gedcomx.org/CharacterRegion" => Self::CharacterRegion,
-            "http://gedcomx.org/RectangleRegion" => Self::RectangleRegion,
-            "http://gedcomx.org/TimeRegion" => Self::TimeRegion,
-            _ => Self::Custom(f.0.into()),
+    fn from_str(s: &str) -> Result<Self> {
+        match s {
+            "http://gedcomx.org/CharacterRegion" => Ok(Self::CharacterRegion),
+            "http://gedcomx.org/RectangleRegion" => Ok(Self::RectangleRegion),
+            "http://gedcomx.org/TimeRegion" => Ok(Self::TimeRegion),
+            _ => Err(GedcomxError::QualifierParse {
+                parsed_string: s.to_string(),
+            }),
         }
     }
 }
@@ -158,7 +159,6 @@ impl fmt::Display for SourceReferenceQualifier {
             Self::CharacterRegion => write!(f, "http://gedcomx.org/CharacterRegion"),
             Self::RectangleRegion => write!(f, "http://gedcomx.org/RectangleRegion"),
             Self::TimeRegion => write!(f, "http://gedcomx.org/TimeRegion"),
-            Self::Custom(c) => write!(f, "{}", c),
         }
     }
 }

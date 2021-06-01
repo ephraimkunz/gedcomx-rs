@@ -1,12 +1,12 @@
-use std::fmt;
+use std::{fmt, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
-    Attribution, ConfidenceLevel, Date, EnumAsString, Id, Lang, Note, Qualifier, ResourceReference,
-    SourceReference, Uri,
+    Attribution, ConfidenceLevel, Date, EnumAsString, GedcomxError, Id, Lang, Note, Qualifier,
+    ResourceReference, Result, SourceReference, Uri,
 };
 
 /// A name of a person.
@@ -445,6 +445,10 @@ pub struct NamePart {
     pub value: String,
 
     /// Qualifiers to add additional semantic meaning to the name part.
+    ///
+    /// If present, use of a
+    /// [`NamePartQualifier`](crate::NamePartQualifier) is
+    /// RECOMMENDED.
     #[yaserde(rename = "qualifier")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
@@ -550,9 +554,8 @@ impl Default for NamePartType {
 /// For example, a name part qualifier may specify that a given name part was
 /// used by the person as a Title.
 // TODO: How to include the optional value parameter (or prevent it)? Maybe Into<Qualifier>? https://github.com/FamilySearch/gedcomx/blob/master/specifications/name-part-qualifiers-specification.md#2-name-part-qualifiers
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 #[non_exhaustive]
-#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NamePartQualifier {
     /// A designation for honorifics (e.g. Dr., Rev., His Majesty, Haji), ranks
     /// (e.g. Colonel, General, Knight, Esquire), positions (e.g. Count, Chief,
@@ -617,31 +620,32 @@ pub enum NamePartQualifier {
     /// RootName qualifier MUST provide a value property. TODO: Provide
     /// value as associated data?
     RootName,
-    Custom(Uri),
 }
 
-impl_enumasstring_yaserialize_yadeserialize!(NamePartQualifier, "NamePartQualifier");
+impl FromStr for NamePartQualifier {
+    type Err = GedcomxError;
 
-impl From<EnumAsString> for NamePartQualifier {
-    fn from(f: EnumAsString) -> Self {
-        match f.0.as_ref() {
-            "http://gedcomx.org/Title" => Self::Title,
-            "http://gedcomx.org/Primary" => Self::Primary,
-            "http://gedcomx.org/Secondary" => Self::Secondary,
-            "http://gedcomx.org/Middle" => Self::Middle,
-            "http://gedcomx.org/Familiar" => Self::Familiar,
-            "http://gedcomx.org/Religious" => Self::Religious,
-            "http://gedcomx.org/Family" => Self::Family,
-            "http://gedcomx.org/Maiden" => Self::Maiden,
-            "http://gedcomx.org/Patronymic" => Self::Patronymic,
-            "http://gedcomx.org/Matronymic" => Self::Matronymic,
-            "http://gedcomx.org/Geographic" => Self::Geographic,
-            "http://gedcomx.org/Occupational" => Self::Occupational,
-            "http://gedcomx.org/Characteristic" => Self::Characteristic,
-            "http://gedcomx.org/Postnom" => Self::Postnom,
-            "http://gedcomx.org/Particle" => Self::Particle,
-            "http://gedcomx.org/RootName" => Self::RootName,
-            _ => Self::Custom(f.0.into()),
+    fn from_str(s: &str) -> Result<Self> {
+        match s {
+            "http://gedcomx.org/Title" => Ok(Self::Title),
+            "http://gedcomx.org/Primary" => Ok(Self::Primary),
+            "http://gedcomx.org/Secondary" => Ok(Self::Secondary),
+            "http://gedcomx.org/Middle" => Ok(Self::Middle),
+            "http://gedcomx.org/Familiar" => Ok(Self::Familiar),
+            "http://gedcomx.org/Religious" => Ok(Self::Religious),
+            "http://gedcomx.org/Family" => Ok(Self::Family),
+            "http://gedcomx.org/Maiden" => Ok(Self::Maiden),
+            "http://gedcomx.org/Patronymic" => Ok(Self::Patronymic),
+            "http://gedcomx.org/Matronymic" => Ok(Self::Matronymic),
+            "http://gedcomx.org/Geographic" => Ok(Self::Geographic),
+            "http://gedcomx.org/Occupational" => Ok(Self::Occupational),
+            "http://gedcomx.org/Characteristic" => Ok(Self::Characteristic),
+            "http://gedcomx.org/Postnom" => Ok(Self::Postnom),
+            "http://gedcomx.org/Particle" => Ok(Self::Particle),
+            "http://gedcomx.org/RootName" => Ok(Self::RootName),
+            _ => Err(GedcomxError::QualifierParse {
+                parsed_string: s.to_string(),
+            }),
         }
     }
 }
@@ -665,7 +669,6 @@ impl fmt::Display for NamePartQualifier {
             Self::Postnom => write!(f, "http://gedcomx.org/Postnom"),
             Self::Particle => write!(f, "http://gedcomx.org/Particle"),
             Self::RootName => write!(f, "http://gedcomx.org/RootName"),
-            Self::Custom(c) => write!(f, "{}", c),
         }
     }
 }
