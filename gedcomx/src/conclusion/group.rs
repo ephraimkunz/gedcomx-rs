@@ -1,3 +1,5 @@
+use std::vec;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -15,6 +17,11 @@ use crate::{
 /// units.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct Group {
     /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
@@ -38,7 +45,6 @@ pub struct Group {
     /// into this conclusion. If provided, MUST resolve to an instance of
     /// [Document](crate::Document) of type
     /// [Analysis](crate::DocumentType::Analysis).
-    // TODO: Validate this at compile time somehow?
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
@@ -96,18 +102,201 @@ pub struct Group {
     pub identifiers: Vec<Identifier>,
 
     /// A list of names of the group. The list must contain at least 1 name.
-    // TODO: Enforce in type system?
-    #[yaserde(rename = "name")]
+    #[yaserde(rename = "name", prefix = "gx")]
     pub names: Vec<TextValue>,
 
     /// The date of applicability of the group.
+    #[yaserde(prefix = "gx")]
     pub date: Option<Date>,
 
     /// A reference to the place applicable to this group.
+    #[yaserde(prefix = "gx")]
     pub place: Option<PlaceReference>,
 
     /// Information about how persons were associated with the group.
-    #[yaserde(rename = "role")]
+    #[yaserde(rename = "role", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub roles: Vec<GroupRole>,
+}
+
+impl Group {
+    pub fn new(
+        id: Option<Id>,
+        lang: Option<Lang>,
+        sources: Vec<SourceReference>,
+        analysis: Option<ResourceReference>,
+        notes: Vec<Note>,
+        confidence: Option<ConfidenceLevel>,
+        attribution: Option<Attribution>,
+        extracted: Option<bool>,
+        evidence: Vec<EvidenceReference>,
+        media: Vec<SourceReference>,
+        identifiers: Vec<Identifier>,
+        names: Vec<TextValue>,
+        date: Option<Date>,
+        place: Option<PlaceReference>,
+        roles: Vec<GroupRole>,
+    ) -> Self {
+        Self {
+            id,
+            lang,
+            sources,
+            analysis,
+            notes,
+            confidence,
+            attribution,
+            extracted,
+            evidence,
+            media,
+            identifiers,
+            names,
+            date,
+            place,
+            roles,
+        }
+    }
+
+    pub fn builder<I: Into<TextValue>>(name: I) -> GroupBuilder {
+        GroupBuilder::new(name)
+    }
+}
+
+pub struct GroupBuilder(Group);
+
+impl GroupBuilder {
+    subject_builder_functions!(Group);
+
+    pub(crate) fn new<I: Into<TextValue>>(name: I) -> Self {
+        Self(Group {
+            names: vec![name.into()],
+            ..Group::default()
+        })
+    }
+
+    pub fn name<I: Into<TextValue>>(&mut self, name: I) -> &mut Self {
+        self.0.names.push(name.into());
+        self
+    }
+
+    pub fn date(&mut self, date: Date) -> &mut Self {
+        self.0.date = Some(date);
+        self
+    }
+
+    pub fn place(&mut self, place_reference: PlaceReference) -> &mut Self {
+        self.0.place = Some(place_reference);
+        self
+    }
+
+    pub fn role(&mut self, role: GroupRole) -> &mut Self {
+        self.0.roles.push(role);
+        self
+    }
+
+    pub fn build(&self) -> Group {
+        Group::new(
+            self.0.id.clone(),
+            self.0.lang.clone(),
+            self.0.sources.clone(),
+            self.0.analysis.clone(),
+            self.0.notes.clone(),
+            self.0.confidence.clone(),
+            self.0.attribution.clone(),
+            self.0.extracted,
+            self.0.evidence.clone(),
+            self.0.media.clone(),
+            self.0.identifiers.clone(),
+            self.0.names.clone(),
+            self.0.date.clone(),
+            self.0.place.clone(),
+            self.0.roles.clone(),
+        )
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn json_deserialize() {
+        let json = r#"{
+            "names" : [ {
+                "lang" : "en",
+                "value" : "Monticello Plantation"
+              } ,
+              {
+                "lang" : "zh",
+                "value" : "monticello种植园"
+              } ],
+            "date" : { "original": "date" },
+            "place" : { "original": "place" },
+            "roles" : [ ]
+        }"#;
+
+        let group: Group = serde_json::from_str(json).unwrap();
+
+        assert_eq!(
+            group,
+            Group::builder(TextValue::new("Monticello Plantation", Some("en")))
+                .name(TextValue::new("monticello种植园", Some("zh")))
+                .date(Date::new(Some("date"), None))
+                .place(PlaceReference::new(Some("place"), None))
+                .build()
+        )
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r#"<Group><name lang="en">Monticello Plantation</name><name lang="zh">monticello种植园</name><date><original>date</original></date><place><original>place</original></place></Group>"#;
+
+        let group: Group = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(
+            group,
+            Group::builder(TextValue::new("Monticello Plantation", Some("en")))
+                .name(TextValue::new("monticello种植园", Some("zh")))
+                .date(Date::new(Some("date"), None))
+                .place(PlaceReference::new(Some("place"), None))
+                .build()
+        )
+    }
+
+    #[test]
+    fn json_serialize() {
+        let group = Group::builder(TextValue::new("Monticello Plantation", Some("en")))
+            .name(TextValue::new("monticello种植园", Some("zh")))
+            .date(Date::new(Some("date"), None))
+            .place(PlaceReference::new(Some("place"), None))
+            .build();
+
+        let json = serde_json::to_string(&group).unwrap();
+
+        assert_eq!(
+            json,
+            r#"{"names":[{"lang":"en","value":"Monticello Plantation"},{"lang":"zh","value":"monticello种植园"}],"date":{"original":"date"},"place":{"original":"place"}}"#
+        )
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let group = Group::builder(TextValue::new("Monticello Plantation", Some("en")))
+            .name(TextValue::new("monticello种植园", Some("zh")))
+            .date(Date::new(Some("date"), None))
+            .place(PlaceReference::new(Some("place"), None))
+            .build();
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+        let xml = yaserde::ser::to_string_with_config(&group, &config).unwrap();
+
+        assert_eq!(
+            xml,
+            r#"<Group xmlns="http://gedcomx.org/v1/"><name xml:lang="en">Monticello Plantation</name><name xml:lang="zh">monticello种植园</name><date><original>date</original></date><place><original>place</original></place></Group>"#
+        )
+    }
 }

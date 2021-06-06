@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-use crate::{Attribution, Event, GedcomxError, Person, PlaceDescription, Relationship, Uri};
+use crate::{Attribution, Event, GedcomxError, Group, Person, PlaceDescription, Relationship, Uri};
 
 /// A reference to data being used to derive the given instance of Subject.
 ///
@@ -60,6 +60,7 @@ try_from_evidencereference!(Person);
 try_from_evidencereference!(Event);
 try_from_evidencereference!(PlaceDescription);
 try_from_evidencereference!(Relationship);
+try_from_evidencereference!(Group);
 
 #[cfg(test)]
 mod test {

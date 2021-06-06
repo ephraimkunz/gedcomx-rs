@@ -1,14 +1,22 @@
+use std::{convert::TryInto, fmt};
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
-    Attribution, ConfidenceLevel, Date, Id, Lang, Note, ResourceReference, SourceReference, Uri,
+    Attribution, ConfidenceLevel, Date, EnumAsString, Id, Lang, Note, Person, ResourceReference,
+    Result, SourceReference, Uri,
 };
 
 /// A role of a person in a group.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct GroupRole {
     /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
@@ -32,7 +40,6 @@ pub struct GroupRole {
     /// into this conclusion. If provided, MUST resolve to an instance of
     /// [Document](crate::Document) of type
     /// [Analysis](crate::DocumentType::Analysis).
-    // TODO: Validate this at compile time somehow?
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
@@ -53,13 +60,15 @@ pub struct GroupRole {
 
     /// Reference to the group participant.	MUST resolve to an instance of
     /// [`Person`](crate::Person).
-    // TODO: Enforce in type system?
+    #[yaserde(prefix = "gx")]
     pub person: ResourceReference,
 
     /// The date of applicability of the role.
+    #[yaserde(prefix = "gx")]
     pub date: Option<Date>,
 
     /// Details about the role of the participant in the group.
+    #[yaserde(prefix = "gx")]
     pub details: Option<String>,
 
     /// The participant's role.
@@ -78,6 +87,9 @@ impl GroupRole {
         confidence: Option<ConfidenceLevel>,
         attribution: Option<Attribution>,
         person: ResourceReference,
+        date: Option<Date>,
+        details: Option<String>,
+        group_role_type: Option<GroupRoleType>,
     ) -> Self {
         Self {
             id,
@@ -88,19 +100,88 @@ impl GroupRole {
             confidence,
             attribution,
             person,
-            date: None,
-            details: None,
-            group_role_type: None,
+            date,
+            details,
+            group_role_type,
         }
+    }
+
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if `person` has no `id` set.
+    pub fn builder(person: &Person) -> Result<GroupRoleBuilder> {
+        GroupRoleBuilder::new(person)
+    }
+}
+
+pub struct GroupRoleBuilder(GroupRole);
+
+impl GroupRoleBuilder {
+    conclusion_builder_functions!(GroupRole);
+
+    pub(crate) fn new(person: &Person) -> Result<Self> {
+        Ok(Self(GroupRole {
+            person: person.try_into()?,
+            ..GroupRole::default()
+        }))
+    }
+
+    pub fn date(&mut self, date: Date) -> &mut Self {
+        self.0.date = Some(date);
+        self
+    }
+
+    pub fn details<I: Into<String>>(&mut self, details: I) -> &mut Self {
+        self.0.details = Some(details.into());
+        self
+    }
+
+    pub fn group_role_type(&mut self, role_type: GroupRoleType) -> &mut Self {
+        self.0.group_role_type = Some(role_type);
+        self
+    }
+
+    pub fn build(&self) -> GroupRole {
+        GroupRole::new(
+            self.0.id.clone(),
+            self.0.lang.clone(),
+            self.0.sources.clone(),
+            self.0.analysis.clone(),
+            self.0.notes.clone(),
+            self.0.confidence.clone(),
+            self.0.attribution.clone(),
+            self.0.person.clone(),
+            self.0.date.clone(),
+            self.0.details.clone(),
+            self.0.group_role_type.clone(),
+        )
     }
 }
 
 /// Group role types.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
-#[serde(untagged)]
+#[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum GroupRoleType {
     Custom(Uri),
+}
+
+impl_enumasstring_yaserialize_yadeserialize!(GroupRoleType, "GroupRoleType");
+
+impl From<EnumAsString> for GroupRoleType {
+    fn from(f: EnumAsString) -> Self {
+        Self::Custom(f.0.into())
+    }
+}
+
+impl fmt::Display for GroupRoleType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
 }
 
 impl Default for GroupRoleType {
@@ -111,6 +192,8 @@ impl Default for GroupRoleType {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::TestData;
 
@@ -184,6 +267,24 @@ mod test {
                 details: Some("details".to_string()),
                 person: ResourceReference::from("http://identifier/for/person/1")
             }
+        )
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r##"<GroupRole type="hello"><person resource="#pid" /><date><original>date</original></date><details>details</details></GroupRole>"##;
+        let group_role: GroupRole = yaserde::de::from_str(xml).unwrap();
+
+        let person = Person::builder().id("pid").build();
+
+        assert_eq!(
+            group_role,
+            GroupRole::builder(&person)
+                .unwrap()
+                .details("details")
+                .date(Date::new(Some("date"), None))
+                .group_role_type(GroupRoleType::Custom("hello".into()))
+                .build()
         )
     }
 
@@ -278,6 +379,29 @@ mod test {
         assert_eq!(
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"person":{"resource":"http://identifier/for/person/1"},"date":{"original":"the original text"},"details":"details","type":"testType"}"#
+        )
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let person = Person::builder().id("pid").build();
+
+        let group_role = GroupRole::builder(&person)
+            .unwrap()
+            .details("details")
+            .date(Date::new(Some("date"), None))
+            .group_role_type(GroupRoleType::Custom("hello".into()))
+            .build();
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+        let xml = yaserde::ser::to_string_with_config(&group_role, &config).unwrap();
+
+        assert_eq!(
+            xml,
+            r##"<GroupRole xmlns="http://gedcomx.org/v1/" type="hello"><person resource="#pid" /><date><original>date</original></date><details>details</details></GroupRole>"##
         )
     }
 

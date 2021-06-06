@@ -30,9 +30,9 @@ pub struct PlaceReference {
 }
 
 impl PlaceReference {
-    pub fn new(original: Option<String>, description_ref: Option<Uri>) -> Self {
+    pub fn new<I: Into<String>>(original: Option<I>, description_ref: Option<Uri>) -> Self {
         Self {
-            original,
+            original: original.map(std::convert::Into::into),
             description_ref,
         }
     }

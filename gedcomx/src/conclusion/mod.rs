@@ -20,10 +20,10 @@ mod gender;
 pub use gender::{Gender, GenderBuilder, GenderType};
 
 mod group;
-pub use group::Group;
+pub use group::{Group, GroupBuilder};
 
 mod grouprole;
-pub use grouprole::{GroupRole, GroupRoleType};
+pub use grouprole::{GroupRole, GroupRoleBuilder, GroupRoleType};
 
 mod identifier;
 pub(in crate) use identifier::serde_vec_identifier_to_map;
