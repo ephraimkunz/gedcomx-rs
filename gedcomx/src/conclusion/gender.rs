@@ -12,12 +12,12 @@ use crate::{
 /// A gender of a person.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
-#[non_exhaustive]
 #[yaserde(
     prefix = "gx",
     default_namespace = "gx",
     namespace = "gx: http://gedcomx.org/v1/"
 )]
+#[non_exhaustive]
 pub struct Gender {
     /// An identifier for the conclusion data. The id is to be used as a "fragment identifier" as defined by [RFC 3986, Section 3.5](https://tools.ietf.org/html/rfc3986#section-3.5).
     #[yaserde(attribute)]
@@ -40,7 +40,6 @@ pub struct Gender {
     /// into this conclusion. If provided, MUST resolve to an instance of
     /// [Document](crate::Document) of type
     /// [Analysis](crate::DocumentType::Analysis).
-    // TODO: Validate this at compile time somehow?
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
@@ -105,7 +104,6 @@ impl GenderBuilder {
         })
     }
 
-    #[allow(dead_code)] // Nothing in the crate currently uses it, but clients of the crate may want it.
     fn build(&self) -> Gender {
         Gender::new(
             self.0.id.clone(),
@@ -248,6 +246,15 @@ mod test {
     }
 
     #[test]
+    fn xml_deserialize() {
+        let xml = "<Gender xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/Male\" />";
+
+        let gender: Gender = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(gender, Gender::builder(GenderType::Male).build());
+    }
+
+    #[test]
     fn json_serialize() {
         let data = TestData::new();
 
@@ -268,5 +275,21 @@ mod test {
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"type":"http://gedcomx.org/Male"}"#
         )
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let gender = Gender::builder(GenderType::Male).build();
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+        let xml = yaserde::ser::to_string_with_config(&gender, &config).unwrap();
+
+        assert_eq!(
+            xml,
+            "<Gender xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/Male\" />"
+        );
     }
 }

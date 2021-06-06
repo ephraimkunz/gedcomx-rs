@@ -835,7 +835,8 @@ mod test {
                 "resource" : "A-1"
                 },
                 "modified" : 1394175600000
-            }  
+            },
+            "date" : { "original": "date" }
         }"#;
 
         let fact: Fact = serde_json::from_str(json).unwrap();
@@ -860,8 +861,22 @@ mod test {
                     name: FactQualifier::Age.into(),
                     value: Some("val".into())
                 }],
-                date: None, // TODO: Add in once we get the date type working
+                date: Some(Date::new(Some("date"), None))
             }
+        )
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = "<Fact xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/Award\"><value>Fact value</value><qualifier name=\"http://gedcomx.org/Cause\">Just because</qualifier></Fact>";
+        let fact: Fact = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(
+            fact,
+            Fact::builder(FactType::Award)
+                .value("Fact value")
+                .qualifier(Qualifier::new(FactQualifier::Cause, Some("Just because")))
+                .build()
         )
     }
 
@@ -951,15 +966,29 @@ mod test {
                 name: FactQualifier::Age.into(),
                 value: Some("val".into()),
             }],
-            date: None, // TODO: Add in once we get the date type working
+            date: Some(Date::new(Some("date"), None)),
         };
 
         let json = serde_json::to_string(&fact).unwrap();
 
         assert_eq!(
             json,
-            r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"type":"http://gedcomx.org/Birth","place":{"original":"This is a place reference","description":"D-1"},"value":"the original value of the fact","qualifiers":[{"name":"http://gedcomx.org/Age","value":"val"}]}"#
+            r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"type":"http://gedcomx.org/Birth","date":{"original":"date"},"place":{"original":"This is a place reference","description":"D-1"},"value":"the original value of the fact","qualifiers":[{"name":"http://gedcomx.org/Age","value":"val"}]}"#
         );
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let fact = Fact::builder(FactType::Award)
+            .value("Fact value")
+            .qualifier(Qualifier::new(FactQualifier::Cause, Some("Just because")))
+            .build();
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+        let xml = yaserde::ser::to_string_with_config(&fact, &config).unwrap();
+        assert_eq!(xml, "<Fact xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/Award\"><value>Fact value</value><qualifier name=\"http://gedcomx.org/Cause\">Just because</qualifier></Fact>")
     }
 
     #[test]
