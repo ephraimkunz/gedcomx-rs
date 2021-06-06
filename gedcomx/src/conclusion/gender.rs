@@ -104,7 +104,7 @@ impl GenderBuilder {
         })
     }
 
-    fn build(&self) -> Gender {
+    pub fn build(&self) -> Gender {
         Gender::new(
             self.0.id.clone(),
             self.0.lang.clone(),
