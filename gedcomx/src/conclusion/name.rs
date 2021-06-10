@@ -87,7 +87,6 @@ pub struct Name {
     /// into this conclusion. If provided, MUST resolve to an instance of
     /// [Document](crate::Document) of type
     /// [Analysis](crate::DocumentType::Analysis).
-    // TODO: Validate this at compile time somehow?
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
@@ -118,7 +117,6 @@ pub struct Name {
     /// At least one name form MUST be provided. All included name forms SHOULD
     /// be representations of the same name, and NOT variants of
     /// the name (i.e., not nicknames or spelling variations).
-    // TODO: Must be non-empty. Enforce with type system? Vec1<>? Or just error from build method?
     #[yaserde(rename = "nameForm")]
     pub name_forms: Vec<NameForm>,
 
@@ -163,8 +161,8 @@ impl Name {
         })
     }
 
-    pub fn builder() -> NameBuilder {
-        NameBuilder::new()
+    pub fn builder(name_form: NameForm) -> NameBuilder {
+        NameBuilder::new(name_form)
     }
 }
 
@@ -173,8 +171,11 @@ pub struct NameBuilder(Name);
 impl NameBuilder {
     conclusion_builder_functions!(Name);
 
-    pub(crate) fn new() -> Self {
-        Self(Name::default())
+    pub(crate) fn new(name_form: NameForm) -> Self {
+        Self(Name {
+            name_forms: vec![name_form],
+            ..Name::default()
+        })
     }
 
     pub fn name_type(&mut self, name_type: NameType) -> &mut Self {
@@ -187,8 +188,8 @@ impl NameBuilder {
         self
     }
 
-    pub fn name_forms(&mut self, name_forms: Vec<NameForm>) -> &mut Self {
-        self.0.name_forms = name_forms;
+    pub fn date(&mut self, date: Date) -> &mut Self {
+        self.0.date = Some(date);
         self
     }
 
@@ -366,7 +367,7 @@ pub struct NameForm {
     pub full_text: Option<String>,
 
     /// Any identified name parts from the name.
-    #[yaserde(rename = "part")]
+    #[yaserde(rename = "part", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub parts: Vec<NamePart>,
 }
@@ -427,6 +428,11 @@ impl NameFormBuilder {
 /// to the name part (e.g., "given name" or "surname").
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 pub struct NamePart {
     /// The type of the name part.
@@ -449,7 +455,7 @@ pub struct NamePart {
     /// If present, use of a
     /// [`NamePartQualifier`](crate::NamePartQualifier) is
     /// RECOMMENDED.
-    #[yaserde(rename = "qualifier")]
+    #[yaserde(rename = "qualifier", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
 }
@@ -476,6 +482,11 @@ impl NamePartBuilder {
             value: value.into(),
             ..NamePart::default()
         })
+    }
+
+    pub fn value<I: Into<String>>(&mut self, value: I) -> &mut Self {
+        self.0.value = value.into();
+        self
     }
 
     pub fn part_type(&mut self, part_type: NamePartType) -> &mut Self {
@@ -553,7 +564,6 @@ impl Default for NamePartType {
 /// Identify how the name part was used by the person to which the name applies.
 /// For example, a name part qualifier may specify that a given name part was
 /// used by the person as a Title.
-// TODO: How to include the optional value parameter (or prevent it)? Maybe Into<Qualifier>? https://github.com/FamilySearch/gedcomx/blob/master/specifications/name-part-qualifiers-specification.md#2-name-part-qualifiers
 #[derive(Debug, PartialEq, Clone)]
 #[non_exhaustive]
 pub enum NamePartQualifier {
@@ -617,9 +627,19 @@ pub enum NamePartQualifier {
 
     /// The "root" of a name part as distinguished from prefixes or suffixes.
     /// For example, the root of the Polish name "Wilkówna" is "Wilk". A
-    /// RootName qualifier MUST provide a value property. TODO: Provide
-    /// value as associated data?
-    RootName,
+    /// RootName qualifier MUST provide a value property.
+    RootName { value: String },
+}
+
+impl From<NamePartQualifier> for Qualifier {
+    fn from(name_part_qualifier: NamePartQualifier) -> Self {
+        match name_part_qualifier {
+            NamePartQualifier::RootName { ref value } => {
+                Self::new(name_part_qualifier.clone(), Some(value))
+            }
+            _ => Self::new(name_part_qualifier, None::<String>),
+        }
+    }
 }
 
 impl FromStr for NamePartQualifier {
@@ -642,7 +662,9 @@ impl FromStr for NamePartQualifier {
             "http://gedcomx.org/Characteristic" => Ok(Self::Characteristic),
             "http://gedcomx.org/Postnom" => Ok(Self::Postnom),
             "http://gedcomx.org/Particle" => Ok(Self::Particle),
-            "http://gedcomx.org/RootName" => Ok(Self::RootName),
+            "http://gedcomx.org/RootName" => Ok(Self::RootName {
+                value: String::default(),
+            }),
             _ => Err(GedcomxError::QualifierParse {
                 parsed_string: s.to_string(),
             }),
@@ -668,7 +690,7 @@ impl fmt::Display for NamePartQualifier {
             Self::Characteristic => write!(f, "http://gedcomx.org/Characteristic"),
             Self::Postnom => write!(f, "http://gedcomx.org/Postnom"),
             Self::Particle => write!(f, "http://gedcomx.org/Particle"),
-            Self::RootName => write!(f, "http://gedcomx.org/RootName"),
+            Self::RootName { .. } => write!(f, "http://gedcomx.org/RootName"),
         }
     }
 }
@@ -764,6 +786,11 @@ mod test {
                 }]
             }
         )
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        todo!();
     }
 
     #[test]
@@ -902,5 +929,15 @@ mod test {
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"nameForms":[{}]}"#
         )
+    }
+
+    #[test]
+    fn xml_serialize() {
+        todo!();
+    }
+
+    #[test]
+    fn name_part_qualifier_to_qualifier() {
+        todo!();
     }
 }

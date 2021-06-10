@@ -260,15 +260,10 @@ mod test {
             .extracted(true)
             .id("P-2")
             .source_ref(SourceReference::new("#S-4".into(), None, None, vec![]))
+            .name(Name::builder(NameForm::builder().full_text("Lo Yau").build()).build())
             .name(
-                Name::builder()
-                    .name_form(NameForm::builder().full_text("Lo Yau").build())
-                    .build(),
-            )
-            .name(
-                Name::builder()
+                Name::builder(NameForm::builder().full_text("Young Hong Wong").build())
                     .name_type(NameType::AlsoKnownAs)
-                    .name_form(NameForm::builder().full_text("Young Hong Wong").build())
                     .build(),
             )
             .build();

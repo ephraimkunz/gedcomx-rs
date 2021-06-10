@@ -26,7 +26,7 @@ fn test_basic_western_name() {
         )
         .build();
 
-    let name = Name::builder().name_form(name_form).build();
+    let name = Name::builder(name_form).build();
 
     let gx = Gedcomx::builder()
         .person(Person::builder().name(name).build())
@@ -83,8 +83,7 @@ fn test_multiple_japanese_forms() {
         )
         .build();
 
-    let name = Name::builder()
-        .name_form(kanji)
+    let name = Name::builder(kanji)
         .name_form(katakana)
         .name_form(romanized)
         .build();
@@ -112,7 +111,7 @@ fn test_multiple_name_parts_one_part_per_type() {
                 .build(),
         )
         .build();
-    let name = Name::builder().name_form(name_form).build();
+    let name = Name::builder(name_form).build();
     let gx = Gedcomx::builder()
         .person(Person::builder().name(name).build())
         .build();
@@ -157,7 +156,7 @@ fn test_multiple_name_parts_multiple_parts_per_type() {
                 .build(),
         )
         .build();
-    let name = Name::builder().name_form(name_form).build();
+    let name = Name::builder(name_form).build();
 
     let gx = Gedcomx::builder()
         .person(Person::builder().name(name).build())
@@ -186,7 +185,7 @@ fn test_patronymic() {
                 .build(),
         )
         .build();
-    let name = Name::builder().name_form(name_form).build();
+    let name = Name::builder(name_form).build();
 
     let gx = Gedcomx::builder()
         .person(Person::builder().name(name).build())
@@ -218,7 +217,7 @@ fn test_get_part() {
         )
         .build();
 
-    let name = Name::builder().name_form(name_form).build();
+    let name = Name::builder(name_form).build();
 
     assert_eq!("John", name.part_for_type(&NamePartType::Given).unwrap());
     assert_eq!(
@@ -226,15 +225,11 @@ fn test_get_part() {
         name.part_for_type(&NamePartType::Surname).unwrap(),
     );
 
-    let name_no_forms = Name::builder().build();
-    assert_eq!(None, name_no_forms.part_for_type(&NamePartType::Given));
-    assert_eq!(None, name_no_forms.part_for_type(&NamePartType::Surname));
-
     let name_form_no_parts = NameForm::builder()
         .full_text("John Fitzgerald Kennedy")
         .lang("en")
         .build();
-    let name_no_parts = Name::builder().name_form(name_form_no_parts).build();
+    let name_no_parts = Name::builder(name_form_no_parts).build();
     assert_eq!(None, name_no_parts.part_for_type(&NamePartType::Given));
     assert_eq!(None, name_no_parts.part_for_type(&NamePartType::Surname));
 }

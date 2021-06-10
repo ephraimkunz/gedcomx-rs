@@ -93,7 +93,7 @@ dependencies = [
  "serde_with",
  "thiserror",
  "xml-rs",
- "yaserde 0.7.0",
+ "yaserde",
  "yaserde_derive",
 ]
 
@@ -103,8 +103,6 @@ version = "0.0.0"
 dependencies = [
  "gedcomx",
  "libfuzzer-sys",
- "serde_json",
- "yaserde 0.6.0",
 ]
 
 [[package]]
@@ -357,16 +355,6 @@ name = "xml-rs"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b07db065a5cf61a7e4ba64f29e67db906fb1787316516c4e6e5ff0fea1efcd8a"
-
-[[package]]
-name = "yaserde"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc096efbee9ec8fee0600a15bb4fd651ccc14570cb05b6d4dd66b0325e4a0b5e"
-dependencies = [
- "log",
- "xml-rs",
-]
 
 [[package]]
 name = "yaserde"

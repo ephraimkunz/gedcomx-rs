@@ -5,8 +5,6 @@ use serde::{Deserialize, Serialize};
 use crate::{EnumAsString, Uri};
 
 /// An identifier of a genealogical resource.
-// I think this will need custom JSON serialization / deserialization. Needs to be a map of
-// identifier_type -> [uri].
 ///
 /// # Examples
 /// An instance of Person with an identifier of type
@@ -24,6 +22,7 @@ use crate::{EnumAsString, Uri};
 /// maintained in the Geographic Names Information System (GNIS), an external
 /// place authority. The description of Salt Lake City might identify the associated GNIS resource using an identifier of type [`Authority`](crate::IdentifierType::Authority) with value "<http://geonames.usgs.gov/pls/gnispublic/f?p=gnispq:3:::NO::P3_FID:2411771>".
 #[derive(Debug, PartialEq, Clone)]
+#[non_exhaustive]
 pub struct Identifier {
     /// The value of the identifier.
     pub value: Uri,
@@ -61,7 +60,7 @@ impl yaserde::YaSerialize for Identifier {
         let identifier_type_value;
         if let Some(t) = &self.identifier_type {
             identifier_type_value = t.to_string();
-            start_builder = start_builder.attr("type", &identifier_type_value); // TODO: Should I use the pattern from https://docs.rs/xml-rs/0.8.3/xml/writer/events/struct.StartElementBuilder.html to avoid all the build() calls for users of this library?
+            start_builder = start_builder.attr("type", &identifier_type_value);
         }
 
         writer.write(start_builder).map_err(|e| e.to_string())?;
@@ -187,7 +186,7 @@ pub(in crate) mod serde_vec_identifier_to_map {
                 VecOrUri::Uri(u) => *u = id.value.clone(),
                 VecOrUri::Vec(v) => {
                     v.push(id.value.clone());
-                    v.sort_by_key(std::string::ToString::to_string)
+                    v.sort_by_key(std::string::ToString::to_string);
                 }
             }
         }

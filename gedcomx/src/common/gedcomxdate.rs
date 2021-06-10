@@ -122,7 +122,7 @@ impl fmt::Display for GedcomxDate {
                     range_into_string(&Some(recurring.start), &Some(recurring.end), false, &mut s);
                 } else {
                     s.push_str("R/");
-                    range_into_string(&Some(recurring.start), &Some(recurring.end), false, &mut s)
+                    range_into_string(&Some(recurring.start), &Some(recurring.end), false, &mut s);
                 }
             }
         };
@@ -140,11 +140,11 @@ fn date_time_into_string(
     s.push_str(&format!("{:04}", date.year.abs()));
 
     if let Some(month) = date.month {
-        s.push_str(&format!("-{:02}", month))
+        s.push_str(&format!("-{:02}", month));
     }
 
     if let Some(day) = date.day {
-        s.push_str(&format!("-{:02}", day))
+        s.push_str(&format!("-{:02}", day));
     }
 
     if let Some(time) = time {
@@ -198,7 +198,7 @@ fn range_into_string(
     }
 
     if let Some(start) = start {
-        date_time_into_string(&start.date, &start.time, s)
+        date_time_into_string(&start.date, &start.time, s);
     }
 
     s.push('/');

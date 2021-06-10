@@ -99,7 +99,6 @@ fn create_george(birth_place: &PlaceDescription, death_place: &PlaceDescription)
 
     person.fact(fact);
 
-    let mut name = Name::builder();
     let mut name_form = NameForm::builder();
     name_form.full_text("George Washington");
     let mut parts = vec![];
@@ -115,7 +114,8 @@ fn create_george(birth_place: &PlaceDescription, death_place: &PlaceDescription)
     parts.push(part);
 
     name_form.parts(parts);
-    name.name_form(name_form.build());
+
+    let mut name = Name::builder(name_form.build());
     name.id("789");
     let names = vec![name.build()];
     person.names(names);
@@ -156,7 +156,6 @@ fn create_martha(birth_place: &PlaceDescription, death_place: &PlaceDescription)
 
     person.fact(fact);
 
-    let mut name = Name::builder();
     let mut name_form = NameForm::builder();
     name_form.full_text("Martha Dandridge Custis");
     let mut parts = vec![];
@@ -171,7 +170,8 @@ fn create_martha(birth_place: &PlaceDescription, death_place: &PlaceDescription)
     parts.push(part);
 
     name_form.parts(parts);
-    name.name_forms(vec![name_form.build()]);
+
+    let mut name = Name::builder(name_form.build());
     name.id("987");
     person.names(vec![name.build()]);
 

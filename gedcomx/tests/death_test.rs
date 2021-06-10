@@ -206,9 +206,8 @@ fn test_example() {
         .unwrap()
         .name("Lo Yau")
         .name(
-            Name::builder()
+            Name::builder(NameForm::builder().full_text("Young Hong Wong").build())
                 .name_type(NameType::AlsoKnownAs)
-                .name_form(NameForm::builder().full_text("Young Hong Wong").build())
                 .build(),
         )
         .build();

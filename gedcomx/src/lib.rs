@@ -7,7 +7,6 @@
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::new_without_default)]
-#![allow(clippy::pub_enum_variant_names)]
 #![allow(clippy::must_use_candidate)]
 #![allow(clippy::missing_const_for_fn)]
 

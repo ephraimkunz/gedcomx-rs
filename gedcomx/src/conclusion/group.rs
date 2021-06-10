@@ -101,7 +101,7 @@ pub struct Group {
     )]
     pub identifiers: Vec<Identifier>,
 
-    /// A list of names of the group. The list must contain at least 1 name.
+    /// A list of names of the group. The list must contain at least one name.
     #[yaserde(rename = "name", prefix = "gx")]
     pub names: Vec<TextValue>,
 
