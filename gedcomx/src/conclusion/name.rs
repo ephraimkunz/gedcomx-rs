@@ -938,6 +938,23 @@ mod test {
 
     #[test]
     fn name_part_qualifier_to_qualifier() {
-        todo!();
+        {
+            let qualifier: Qualifier = NamePartQualifier::Family.into();
+            assert_eq!(
+                qualifier,
+                Qualifier::new(NamePartQualifier::Family.to_string(), None::<String>)
+            );
+        }
+
+        {
+            let npq = NamePartQualifier::RootName {
+                value: "Kunz".to_string(),
+            };
+            let qualifier: Qualifier = npq.clone().into();
+            assert_eq!(
+                qualifier,
+                Qualifier::new(npq.to_string(), Some("Kunz".to_string()))
+            );
+        }
     }
 }

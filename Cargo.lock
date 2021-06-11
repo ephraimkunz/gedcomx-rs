@@ -157,16 +157,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gedcomx-cli"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "gedcomx",
- "log",
- "xml-rs",
-]
-
-[[package]]
 name = "gedcomx_date"
 version = "0.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -1,12 +1,11 @@
 #![deny(clippy::all)]
 #![deny(clippy::pedantic)]
 #![deny(clippy::nursery)]
-// #![deny(clippy::cargo)]
+#![deny(clippy::cargo)]
 // #![deny(missing_docs)]
 // #![deny(missing_doc_code_examples)]
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::module_name_repetitions)]
-#![allow(clippy::new_without_default)]
 #![allow(clippy::must_use_candidate)]
 #![allow(clippy::missing_const_for_fn)]
 
