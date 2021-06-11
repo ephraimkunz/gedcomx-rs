@@ -1,6 +1,6 @@
 [package]
 name = "gedcomx"
-version = "0.1.0-alpha.2"
+version = "0.1.0-alpha.3"
 authors = ["Ephraim Kunz <ephraimkunz@me.com>"]
 edition = "2018"
 description = "A library for working with GEDCOM X"
