@@ -494,8 +494,8 @@ impl NamePartBuilder {
         self
     }
 
-    pub fn qualifier(&mut self, qualifier: Qualifier) -> &mut Self {
-        self.0.qualifiers.push(qualifier);
+    pub fn qualifier<I: Into<Qualifier>>(&mut self, qualifier: I) -> &mut Self {
+        self.0.qualifiers.push(qualifier.into());
         self
     }
 
@@ -697,6 +697,8 @@ impl fmt::Display for NamePartQualifier {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::TestData;
 
@@ -715,6 +717,7 @@ mod test {
                     "qualifiers" : [ { "name" : "http://gedcomx.org/Family" }, { "name" : "http://gedcomx.org/Patronymic" } ]                  
                 }]                
             }],
+            "date":{"original":"date"},
 
             "id" : "local_id",
             "lang" : "en",
@@ -765,7 +768,7 @@ mod test {
                 confidence: data.conclusion_data.confidence,
                 attribution: data.conclusion_data.attribution,
                 name_type: Some(NameType::BirthName),
-                date: None, // TODO: Add in once we get the date type working
+                date: Some(Date::new(Some("date"), None)),
                 name_forms: vec![NameForm {
                     lang: Some("en".into()),
                     full_text: Some("full text of the name form".to_string()),
@@ -790,7 +793,38 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        todo!();
+        let xml = "<Name xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/BirthName\"><nameForm><fullText>Ephraim Howard Kunz</fullText><part type=\"http://gedcomx.org/Given\" value=\"Ephraim\"><qualifier name=\"http://gedcomx.org/Familiar\"></qualifier></part><part type=\"http://gedcomx.org/Given\" value=\"Howard\"><qualifier name=\"http://gedcomx.org/Middle\"></qualifier></part><part type=\"http://gedcomx.org/Surname\" value=\"Kunz\"><qualifier name=\"http://gedcomx.org/RootName\">Test value</qualifier></part></nameForm></Name>";
+
+        let name_form = NameForm::builder()
+            .full_text("Ephraim Howard Kunz")
+            .part(
+                NamePart::builder("Ephraim")
+                    .part_type(NamePartType::Given)
+                    .qualifier(NamePartQualifier::Familiar)
+                    .build(),
+            )
+            .part(
+                NamePart::builder("Howard")
+                    .part_type(NamePartType::Given)
+                    .qualifier(NamePartQualifier::Middle)
+                    .build(),
+            )
+            .part(
+                NamePart::builder("Kunz")
+                    .part_type(NamePartType::Surname)
+                    .qualifier(NamePartQualifier::RootName {
+                        value: "Test value".to_string(),
+                    })
+                    .build(),
+            )
+            .build();
+        let name = Name::builder(name_form)
+            .name_type(NameType::BirthName)
+            .build();
+
+        let deser: Name = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(deser, name)
     }
 
     #[test]
@@ -850,7 +884,7 @@ mod test {
                 confidence: data.conclusion_data.confidence,
                 attribution: data.conclusion_data.attribution,
                 name_type: None,
-                date: None, // TODO: Add in once we get the date type working
+                date: None,
                 name_forms: vec![NameForm {
                     lang: None,
                     full_text: None,
@@ -873,7 +907,7 @@ mod test {
             confidence: data.conclusion_data.confidence,
             attribution: data.conclusion_data.attribution,
             name_type: Some(NameType::BirthName),
-            date: None, // TODO: Add in once we get the date type working
+            date: Some(Date::new(Some("date"), None)),
             name_forms: vec![NameForm {
                 lang: Some("en".into()),
                 full_text: Some("full text of the name form".to_string()),
@@ -898,7 +932,7 @@ mod test {
 
         assert_eq!(
             json,
-            r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"type":"http://gedcomx.org/BirthName","nameForms":[{"lang":"en","fullText":"full text of the name form","parts":[{"type":"http://gedcomx.org/Surname","value":"value of the name part","qualifiers":[{"name":"http://gedcomx.org/Family"},{"name":"http://gedcomx.org/Patronymic"}]}]}]}"#
+            r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"type":"http://gedcomx.org/BirthName","nameForms":[{"lang":"en","fullText":"full text of the name form","parts":[{"type":"http://gedcomx.org/Surname","value":"value of the name part","qualifiers":[{"name":"http://gedcomx.org/Family"},{"name":"http://gedcomx.org/Patronymic"}]}]}],"date":{"original":"date"}}"#
         )
     }
 
@@ -933,7 +967,43 @@ mod test {
 
     #[test]
     fn xml_serialize() {
-        todo!();
+        let name_form = NameForm::builder()
+            .full_text("Ephraim Howard Kunz")
+            .part(
+                NamePart::builder("Ephraim")
+                    .part_type(NamePartType::Given)
+                    .qualifier(NamePartQualifier::Familiar)
+                    .build(),
+            )
+            .part(
+                NamePart::builder("Howard")
+                    .part_type(NamePartType::Given)
+                    .qualifier(NamePartQualifier::Middle)
+                    .build(),
+            )
+            .part(
+                NamePart::builder("Kunz")
+                    .part_type(NamePartType::Surname)
+                    .qualifier(NamePartQualifier::RootName {
+                        value: "Test value".to_string(),
+                    })
+                    .build(),
+            )
+            .build();
+        let name = Name::builder(name_form)
+            .name_type(NameType::BirthName)
+            .build();
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+        let xml = yaserde::ser::to_string_with_config(&name, &config).unwrap();
+
+        assert_eq!(
+            xml,
+            "<Name xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/BirthName\"><nameForm><fullText>Ephraim Howard Kunz</fullText><part type=\"http://gedcomx.org/Given\" value=\"Ephraim\"><qualifier name=\"http://gedcomx.org/Familiar\"></qualifier></part><part type=\"http://gedcomx.org/Given\" value=\"Howard\"><qualifier name=\"http://gedcomx.org/Middle\"></qualifier></part><part type=\"http://gedcomx.org/Surname\" value=\"Kunz\"><qualifier name=\"http://gedcomx.org/RootName\">Test value</qualifier></part></nameForm></Name>"
+        )
     }
 
     #[test]
