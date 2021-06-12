@@ -1,12 +1,10 @@
-use std::convert::TryInto;
-
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
-    Attribution, ConfidenceLevel, EvidenceReference, Fact, GedcomxError, Gender, Id, Identifier,
-    Lang, Name, Note, ResourceReference, Result, SourceReference,
+    Attribution, ConfidenceLevel, EvidenceReference, Fact, Gender, Id, Identifier, Lang, Name,
+    Note, ResourceReference, SourceReference,
 };
 
 /// A description of a person.
@@ -157,21 +155,6 @@ impl Person {
         }
     }
 
-    /// # Errors
-    ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
-    /// conversion into [`SourceReference`](crate::SourceReference) fails.
-    /// This happens if `source` has no `id` set.
-    // TODO: Do we want methods like this on the actual structs? If so, should this
-    // be a macro we an apply to all "subclasses"?
-    pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
-        &mut self,
-        source: I,
-    ) -> Result<&mut Self> {
-        self.sources.push(source.try_into()?);
-        Ok(self)
-    }
-
     pub fn builder() -> PersonBuilder {
         PersonBuilder::new()
     }
@@ -240,6 +223,46 @@ mod test {
     use crate::{NameForm, NameType};
 
     #[test]
+    fn json_deserialize() {
+        let json = r##"{
+            "id":"P-2",
+            "extracted":true,
+            "names":[
+               {
+                  "nameForms":[
+                     {
+                        "fullText":"Lo Yau"
+                     }
+                  ]
+               },
+               {
+                  "type":"http://gedcomx.org/AlsoKnownAs",
+                  "nameForms":[
+                     {
+                        "fullText":"Young Hong Wong"
+                     }
+                  ]
+               }
+            ]
+         }"##;
+
+        let expected_person = Person::builder()
+            .extracted(true)
+            .id("P-2")
+            .name(Name::builder(NameForm::builder().full_text("Lo Yau").build()).build())
+            .name(
+                Name::builder(NameForm::builder().full_text("Young Hong Wong").build())
+                    .name_type(NameType::AlsoKnownAs)
+                    .build(),
+            )
+            .build();
+
+        let person: Person = serde_json::from_str(json).unwrap();
+
+        assert_eq!(person, expected_person)
+    }
+
+    #[test]
     fn xml_deserialize() {
         let xml = r##"<person extracted="true" id="P-2">
         <source description="#S-4"/>
@@ -269,5 +292,50 @@ mod test {
         let person: Person = yaserde::de::from_str(xml).unwrap();
 
         assert_eq!(person, expected_person)
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let person = Person::builder()
+            .extracted(true)
+            .id("P-2")
+            .source_ref(SourceReference::new("#S-4".into(), None, None, vec![]))
+            .name(Name::builder(NameForm::builder().full_text("Lo Yau").build()).build())
+            .name(
+                Name::builder(NameForm::builder().full_text("Young Hong Wong").build())
+                    .name_type(NameType::AlsoKnownAs)
+                    .build(),
+            )
+            .build();
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+        let xml = yaserde::ser::to_string_with_config(&person, &config).unwrap();
+
+        let expected = r##"<Person xmlns="http://gedcomx.org/v1/" id="P-2" extracted="true"><source description="#S-4" /><name><nameForm><fullText>Lo Yau</fullText></nameForm></name><name type="http://gedcomx.org/AlsoKnownAs"><nameForm><fullText>Young Hong Wong</fullText></nameForm></name></Person>"##;
+
+        assert_eq!(xml, expected)
+    }
+
+    #[test]
+    fn json_serialize() {
+        let person = Person::builder()
+            .extracted(true)
+            .id("P-2")
+            .name(Name::builder(NameForm::builder().full_text("Lo Yau").build()).build())
+            .name(
+                Name::builder(NameForm::builder().full_text("Young Hong Wong").build())
+                    .name_type(NameType::AlsoKnownAs)
+                    .build(),
+            )
+            .build();
+
+        let json = serde_json::to_string(&person).unwrap();
+
+        let expected = r##"{"id":"P-2","extracted":true,"names":[{"nameForms":[{"fullText":"Lo Yau"}]},{"type":"http://gedcomx.org/AlsoKnownAs","nameForms":[{"fullText":"Young Hong Wong"}]}]}"##;
+
+        assert_eq!(json, expected)
     }
 }

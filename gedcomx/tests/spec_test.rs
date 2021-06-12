@@ -1,7 +1,7 @@
 use gedcomx::{
     Agent, Attribution, Date, Fact, FactType, Gedcomx, GenderType, Name, NameForm, NamePart,
-    NamePartType, Person, PlaceDescription, PlaceReference, Relationship, SourceCitation,
-    SourceDescription, Uri,
+    NamePartType, Person, PersonBuilder, PlaceDescription, PlaceReference, Relationship,
+    SourceCitation, SourceDescription, Uri,
 };
 
 mod common;
@@ -10,9 +10,9 @@ fn test_struct() -> Gedcomx {
     let popes_creek = create_popes_creek();
     let mount_vernon = create_mount_vernon();
     let chestnut_grove = create_chestnut_grove();
-    let mut george = create_george(&popes_creek, &mount_vernon);
-    let mut martha = create_martha(&chestnut_grove, &mount_vernon);
-    let mut marriage = create_marriage(&george, &martha);
+    let mut george = create_george_builder(&popes_creek, &mount_vernon);
+    let mut martha = create_martha_builder(&chestnut_grove, &mount_vernon);
+    let mut marriage = create_marriage(&george.build(), &martha.build());
     let sources = cite_george_martha_and_marriage(&mut george, &mut martha, &mut marriage);
     let contributor = create_contributor();
     let attribution = Attribution::builder()
@@ -21,7 +21,7 @@ fn test_struct() -> Gedcomx {
         .build();
 
     let mut gx = Gedcomx::builder();
-    gx.persons(vec![george, martha]);
+    gx.persons(vec![george.build(), martha.build()]);
     gx.relationships(vec![marriage]);
     gx.source_descriptions(sources);
     gx.agents(vec![contributor]);
@@ -61,7 +61,10 @@ fn create_contributor() -> Agent {
     Agent::builder().id("GGG-GGGG").name("Ryan Heaton").build()
 }
 
-fn create_george(birth_place: &PlaceDescription, death_place: &PlaceDescription) -> Person {
+fn create_george_builder(
+    birth_place: &PlaceDescription,
+    death_place: &PlaceDescription,
+) -> PersonBuilder {
     let mut person = Person::builder();
     person.gender(GenderType::Male);
 
@@ -121,10 +124,13 @@ fn create_george(birth_place: &PlaceDescription, death_place: &PlaceDescription)
     person.names(names);
 
     person.id("BBB-BBBB");
-    person.build()
+    person
 }
 
-fn create_martha(birth_place: &PlaceDescription, death_place: &PlaceDescription) -> Person {
+fn create_martha_builder(
+    birth_place: &PlaceDescription,
+    death_place: &PlaceDescription,
+) -> PersonBuilder {
     let mut person = Person::builder();
     person.gender(GenderType::Male);
 
@@ -177,7 +183,7 @@ fn create_martha(birth_place: &PlaceDescription, death_place: &PlaceDescription)
 
     person.id("CCC-CCCC");
 
-    person.build()
+    person
 }
 
 fn create_marriage(george: &Person, martha: &Person) -> Relationship {
@@ -201,8 +207,8 @@ fn create_marriage(george: &Person, martha: &Person) -> Relationship {
 }
 
 fn cite_george_martha_and_marriage(
-    george: &mut Person,
-    martha: &mut Person,
+    george: &mut PersonBuilder,
+    martha: &mut PersonBuilder,
     relationship: &mut Relationship,
 ) -> Vec<SourceDescription> {
     let mut george_source = SourceDescription::builder();
