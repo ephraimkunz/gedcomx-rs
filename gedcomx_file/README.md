@@ -1,5 +1,5 @@
 # gedcomx_file
-Implementation of the [GEDCOM X File Format specification)](https://github.com/FamilySearch/gedcomx/blob/master/specifications/file-format-specification.md).
+Implementation of the GEDCOM X File Format specification. Bundles up genealogical data and resources into a file and defines how the resources within the file can link to each other.
 
 ![CI](https://github.com/ephraimkunz/gedcomx-rs/workflows/CI/badge.svg)
 [![codecov](https://codecov.io/gh/ephraimkunz/gedcomx-rs/branch/main/graph/badge.svg)](https://codecov.io/gh/ephraimkunz/gedcomx-rs)
