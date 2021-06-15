@@ -44,7 +44,6 @@ pub struct PlaceDescription {
     /// into this conclusion. If provided, MUST resolve to an instance of
     /// [Document](crate::Document) of type
     /// [Analysis](crate::DocumentType::Analysis).
-    // TODO: Validate this at compile time somehow?
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
@@ -260,5 +259,32 @@ impl PlaceDescriptionBuilder {
             self.0.temporal_description.clone(),
             self.0.spatial_description.clone(),
         )
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn json_deserialize() {
+        todo!();
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        todo!();
+    }
+
+    #[test]
+    fn xml_serialize() {
+        todo!();
+    }
+
+    #[test]
+    fn json_serialize() {
+        todo!();
     }
 }

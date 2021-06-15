@@ -1,6 +1,6 @@
 [workspace]
 
-members = ["gedcomx"]
+members = ["gedcomx", "gedcomx_file"]
 
 [profile.release]
 lto = "fat"

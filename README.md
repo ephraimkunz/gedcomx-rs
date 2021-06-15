@@ -6,12 +6,7 @@ A collection of Rust crates for working with GEDCOM X.
 
 ## Crates
 * [gedcomx](./gedcomx) - Core data structures and serialization / deserialization in XML and JSON.
-* File format crate with spec compliance.
-
-## Specification Compliance
-
-- [ ] [GEDCOM X File Format 1.0](https://github.com/FamilySearch/gedcomx/blob/master/specifications/file-format-specification.md)
-- [ ] [GEDCOM X Standard Header Set 1.0](https://github.com/FamilySearch/gedcomx/blob/master/specifications/standard-header-set-specification.md)
+* [gedcomx_file](./gedcomx_file) Implementation of the GEDCOM X File Format specification. Bundles up genealogical data and resources into a file and defines how the resources within the file can link to each other.
 
 ## Features
 - Fully documented:
