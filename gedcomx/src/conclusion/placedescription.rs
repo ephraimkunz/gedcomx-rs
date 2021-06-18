@@ -1,10 +1,12 @@
+use std::convert::TryInto;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
     Attribution, ConfidenceLevel, Date, EvidenceReference, Id, Identifier, Lang, Note,
-    ResourceReference, SourceReference, TextValue, Uri,
+    ResourceReference, Result, SourceReference, TextValue, Uri,
 };
 
 /// Describes the details of a place in terms of its name and possibly its type,
@@ -16,7 +18,6 @@ use crate::{
     prefix = "gx",
     default_namespace = "gx",
     namespace = "gx: http://gedcomx.org/v1/",
-
     // Needed so nested deserialization with the same name works, see https://github.com/media-io/yaserde/issues/110.
     rename = "place"
 )]
@@ -104,7 +105,7 @@ pub struct PlaceDescription {
     /// what is known of the applicable jurisdictional hierarchy) names for this
     /// place that are applicable to this description of this place.
     #[yaserde(rename = "name", prefix = "gx")]
-    pub names: Vec<TextValue>, // TODO: Must contain at least 1 name.
+    pub names: Vec<TextValue>,
 
     /// An implementation-specific uniform resource identifier (URI) used to
     /// identify the type of a place (e.g., address, city, county, province,
@@ -115,12 +116,11 @@ pub struct PlaceDescription {
 
     /// An identifier for the place being described.
     ///
-    ///  Descriptions that provide the same value for place are interpreted as alternate descriptions of the same place. If provided, MUST NOT use a base URI of http://gedcomx.org/. If provided, the value MAY resolve to an external resource that is application-specific and outside the scope of this specification.
+    /// Descriptions that provide the same value for place are interpreted as alternate descriptions of the same place. If provided, MUST NOT use a base URI of http://gedcomx.org/. If provided, the value MAY resolve to an external resource that is application-specific and outside the scope of this specification.
     #[yaserde(prefix = "gx")]
     pub place: Option<ResourceReference>,
 
     /// A reference to a description of the jurisdiction of this place.	If provided, MUST resolve to an instance of http://gedcomx.org/v1/PlaceDescription.
-    // TODO: Enforce through type system?
     #[yaserde(prefix = "gx")]
     pub jurisdiction: Option<ResourceReference>,
 
@@ -130,8 +130,7 @@ pub struct PlaceDescription {
     /// If provided, MUST provide longitude also. Values range from −90.0
     /// degrees (south of the equator) to 90.0 degrees (north of the equator).
     /// It is assumed that descriptions that provide the same value for the
-    /// place property share identical longitude values.
-    // TODO: Enforce longitude also set.
+    /// place property share identical latitude values.
     #[yaserde(prefix = "gx")]
     pub latitude: Option<f64>,
 
@@ -141,8 +140,7 @@ pub struct PlaceDescription {
     ///  If provided, MUST provide latitude also. Values range from −180.0
     /// degrees (west of the Meridian) to 180.0 degrees (east of the Meridian).
     /// It is assumed that descriptions that provide the same value for the
-    /// place property share identical latitude values.
-    // TODO: enforce through type system.
+    /// place property share identical longitude values.
     #[yaserde(prefix = "gx")]
     pub longitude: Option<f64>,
 
@@ -155,7 +153,6 @@ pub struct PlaceDescription {
     ///
     /// It is RECOMMENDED that this geospatial description resolve to a KML
     /// document.
-    // TODO: Enforce through type system?
     #[yaserde(rename = "spatialDescription", prefix = "gx")]
     pub spatial_description: Option<ResourceReference>,
 }
@@ -206,8 +203,8 @@ impl PlaceDescription {
         }
     }
 
-    pub fn builder() -> PlaceDescriptionBuilder {
-        PlaceDescriptionBuilder::new()
+    pub fn builder<I: Into<TextValue>>(name: I) -> PlaceDescriptionBuilder {
+        PlaceDescriptionBuilder::new(name)
     }
 }
 
@@ -216,18 +213,11 @@ pub struct PlaceDescriptionBuilder(PlaceDescription);
 impl PlaceDescriptionBuilder {
     subject_builder_functions!(PlaceDescription);
 
-    pub(crate) fn new() -> Self {
-        Self(PlaceDescription::default())
-    }
-
-    pub fn latitude(&mut self, latitude: f64) -> &mut Self {
-        self.0.latitude = Some(latitude);
-        self
-    }
-
-    pub fn longitude(&mut self, longitude: f64) -> &mut Self {
-        self.0.longitude = Some(longitude);
-        self
+    pub(crate) fn new<I: Into<TextValue>>(name: I) -> Self {
+        Self(PlaceDescription {
+            names: vec![name.into()],
+            ..PlaceDescription::default()
+        })
     }
 
     pub fn name<I: Into<TextValue>>(&mut self, name: I) -> &mut Self {
@@ -235,7 +225,41 @@ impl PlaceDescriptionBuilder {
         self
     }
 
-    // TODO: Fill out rest of builder functions.
+    pub fn place_type(&mut self, place_type: Uri) -> &mut Self {
+        self.0.place_type = Some(place_type);
+        self
+    }
+
+    pub fn place(&mut self, place: ResourceReference) -> &mut Self {
+        self.0.place = Some(place);
+        self
+    }
+
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if `jurisdiction` has no `id` set.
+    pub fn jurisdiction(&mut self, jurisdiction: &PlaceDescription) -> Result<&mut Self> {
+        self.0.jurisdiction = Some(jurisdiction.try_into()?);
+        Ok(self)
+    }
+
+    pub fn latitude_and_longitude(&mut self, latitude: f64, longitude: f64) -> &mut Self {
+        self.0.latitude = Some(latitude);
+        self.0.longitude = Some(longitude);
+        self
+    }
+
+    pub fn temporal_description(&mut self, date: Date) -> &mut Self {
+        self.0.temporal_description = Some(date);
+        self
+    }
+
+    pub fn spatial_description(&mut self, description: ResourceReference) -> &mut Self {
+        self.0.spatial_description = Some(description);
+        self
+    }
 
     pub fn build(&self) -> PlaceDescription {
         PlaceDescription::new(
@@ -270,21 +294,130 @@ mod test {
 
     #[test]
     fn json_deserialize() {
-        todo!();
+        let json = r#"{          
+            "names" : [ {
+              "lang" : "en",
+              "value" : "Pope's Creek, Westmoreland, Virginia, United States"
+            } ,
+            {
+              "lang" : "zh",
+              "value" : "教皇的小河，威斯特摩兰，弗吉尼亚州，美国"
+            } ],
+            "type" : "http://identifier/for/the/place/type",
+            "place" : { "resource" : "..." },
+            "latitude" : 27.9883575,
+            "longitude" : 86.9252014,
+            "temporalDescription" : { "original": "..." },
+            "spatialDescription" : {
+              "resource" : "http://uri/for/KML/document"
+            }
+        }"#;
+
+        let expected_place_description = PlaceDescription::builder(TextValue::new(
+            "Pope's Creek, Westmoreland, Virginia, United States",
+            Some("en"),
+        ))
+        .name(TextValue::new(
+            "教皇的小河，威斯特摩兰，弗吉尼亚州，美国",
+            Some("zh"),
+        ))
+        .place_type(Uri::from("http://identifier/for/the/place/type"))
+        .place(ResourceReference::from("..."))
+        .latitude_and_longitude(27.9883575, 86.9252014)
+        .temporal_description(Date::new(Some("..."), None))
+        .spatial_description(ResourceReference::from("http://uri/for/KML/document"))
+        .build();
+
+        let place_description: PlaceDescription = serde_json::from_str(json).unwrap();
+        assert_eq!(place_description, expected_place_description);
     }
 
     #[test]
     fn xml_deserialize() {
-        todo!();
-    }
+        let xml = r#"
+        <PlaceDescription type="http://identifier/for/the/place/type">
+        <name lang="en">Pope's Creek, Westmoreland, Virginia, United States</name>
+        <name lang="zh">教皇的小河，威斯特摩兰，弗吉尼亚州，美国</name>
+        <place resource="..."/>
+        <latitude>27.9883575</latitude>
+        <longitude>86.9252014</longitude>
+        <temporalDescription>
+          <original>...</original>
+        </temporalDescription>
+        <spatialDescription resource="http://uri/for/KML/document"/>
+      </PlaceDescription>"#;
 
-    #[test]
-    fn xml_serialize() {
-        todo!();
+        let expected_place_description = PlaceDescription::builder(TextValue::new(
+            "Pope's Creek, Westmoreland, Virginia, United States",
+            Some("en"),
+        ))
+        .name(TextValue::new(
+            "教皇的小河，威斯特摩兰，弗吉尼亚州，美国",
+            Some("zh"),
+        ))
+        .place_type(Uri::from("http://identifier/for/the/place/type"))
+        .place(ResourceReference::from("..."))
+        .latitude_and_longitude(27.9883575, 86.9252014)
+        .temporal_description(Date::new(Some("..."), None))
+        .spatial_description(ResourceReference::from("http://uri/for/KML/document"))
+        .build();
+
+        let place_description: PlaceDescription = yaserde::de::from_str(xml).unwrap();
+        assert_eq!(place_description, expected_place_description);
     }
 
     #[test]
     fn json_serialize() {
-        todo!();
+        let place_description = PlaceDescription::builder(TextValue::new(
+            "Pope's Creek, Westmoreland, Virginia, United States",
+            Some("en"),
+        ))
+        .name(TextValue::new(
+            "教皇的小河，威斯特摩兰，弗吉尼亚州，美国",
+            Some("zh"),
+        ))
+        .place_type(Uri::from("http://identifier/for/the/place/type"))
+        .place(ResourceReference::from("..."))
+        .latitude_and_longitude(27.9883575, 86.9252014)
+        .temporal_description(Date::new(Some("..."), None))
+        .spatial_description(ResourceReference::from("http://uri/for/KML/document"))
+        .build();
+
+        let json = serde_json::to_string(&place_description).unwrap();
+
+        assert_eq!(
+            json,
+            r#"{"names":[{"lang":"en","value":"Pope's Creek, Westmoreland, Virginia, United States"},{"lang":"zh","value":"教皇的小河，威斯特摩兰，弗吉尼亚州，美国"}],"type":"http://identifier/for/the/place/type","place":{"resource":"..."},"latitude":27.9883575,"longitude":86.9252014,"temporalDescription":{"original":"..."},"spatialDescription":{"resource":"http://uri/for/KML/document"}}"#
+        );
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let place_description = PlaceDescription::builder(TextValue::new(
+            "Pope's Creek, Westmoreland, Virginia, United States",
+            Some("en"),
+        ))
+        .name(TextValue::new(
+            "教皇的小河，威斯特摩兰，弗吉尼亚州，美国",
+            Some("zh"),
+        ))
+        .place_type(Uri::from("http://identifier/for/the/place/type"))
+        .place(ResourceReference::from("..."))
+        .latitude_and_longitude(27.9883575, 86.9252014)
+        .temporal_description(Date::new(Some("..."), None))
+        .spatial_description(ResourceReference::from("http://uri/for/KML/document"))
+        .build();
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+
+        let xml = yaserde::ser::to_string_with_config(&place_description, &config).unwrap();
+
+        assert_eq!(
+            xml,
+            r#"<place xmlns="http://gedcomx.org/v1/" type="http://identifier/for/the/place/type"><name xml:lang="en">Pope's Creek, Westmoreland, Virginia, United States</name><name xml:lang="zh">教皇的小河，威斯特摩兰，弗吉尼亚州，美国</name><place resource="..." /><latitude>27.9883575</latitude><longitude>86.9252014</longitude><temporalDescription><original>...</original></temporalDescription><spatialDescription resource="http://uri/for/KML/document" /></place>"#
+        );
     }
 }

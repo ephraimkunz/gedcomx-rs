@@ -3,7 +3,7 @@ use std::convert::TryFrom;
 use serde::{Deserialize, Serialize};
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
-use crate::{Agent, Document, DocumentType, GedcomxError, Person, Uri};
+use crate::{Agent, Document, DocumentType, GedcomxError, Person, PlaceDescription, Uri};
 
 /// A generic reference to a resource.
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
@@ -48,6 +48,19 @@ impl TryFrom<&Person> for ResourceReference {
                 resource: id.into(),
             }),
             None => Err(GedcomxError::NoId("Person".to_string())),
+        }
+    }
+}
+
+impl TryFrom<&PlaceDescription> for ResourceReference {
+    type Error = GedcomxError;
+
+    fn try_from(place_description: &PlaceDescription) -> Result<Self, Self::Error> {
+        match &place_description.id {
+            Some(id) => Ok(Self {
+                resource: id.into(),
+            }),
+            None => Err(GedcomxError::NoId("PlaceDescription".to_string())),
         }
     }
 }

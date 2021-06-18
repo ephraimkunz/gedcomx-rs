@@ -31,29 +31,23 @@ fn test_struct() -> Gedcomx {
 }
 
 fn create_popes_creek() -> PlaceDescription {
-    PlaceDescription::builder()
+    PlaceDescription::builder("Pope's Creek, Westmoreland, Virginia, United States")
         .id("888")
-        .latitude(38.192353)
-        .longitude(-76.904069)
-        .name("Pope's Creek, Westmoreland, Virginia, United States")
+        .latitude_and_longitude(38.192353, -76.904069)
         .build()
 }
 
 fn create_mount_vernon() -> PlaceDescription {
-    PlaceDescription::builder()
+    PlaceDescription::builder("Mount Vernon, Fairfax County, Virginia, United States")
         .id("999")
-        .latitude(38.721144)
-        .longitude(-77.109461)
-        .name("Mount Vernon, Fairfax County, Virginia, United States")
+        .latitude_and_longitude(38.721144, -77.109461)
         .build()
 }
 
 fn create_chestnut_grove() -> PlaceDescription {
-    PlaceDescription::builder()
+    PlaceDescription::builder("Chestnut Grove, New Kent, Virginia, United States")
         .id("KKK")
-        .latitude(37.518304)
-        .longitude(-76.984148)
-        .name("Chestnut Grove, New Kent, Virginia, United States")
+        .latitude_and_longitude(37.518304, -76.984148)
         .build()
 }
 

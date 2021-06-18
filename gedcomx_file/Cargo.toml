@@ -1,8 +1,19 @@
 [package]
 name = "gedcomx_file"
-version = "0.1.0"
+version = "0.1.0-alpha.0"
+authors = ["Ephraim Kunz <ephraimkunz@me.com>"]
 edition = "2018"
+description = "A library for dealing with the GEDCOM X file format"
+keywords = ["genealogy", "gedcomx", "family-trees", "format", "file"]
+categories = ["encoding", "parsing"]
+license = "MIT"
+repository = "https://github.com/ephraimkunz/gedcomx-rs"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+zip = "0.5"
+thiserror = "1"
+
+
