@@ -6,7 +6,7 @@ use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{PlaceDescription, Result, Uri};
 
-///  A reference to a description of a place.
+/// A reference to a description of a place.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
 #[yaserde(
@@ -23,7 +23,6 @@ pub struct PlaceReference {
     /// A reference to a description of this place.
     ///
     /// MUST resolve to a PlaceDescription.
-    // TODO: Enforce with type system.
     #[yaserde(attribute, rename = "description")]
     #[serde(rename = "description")]
     pub description_ref: Option<Uri>,
@@ -71,6 +70,8 @@ impl PlaceReferenceBuilder {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
 
     #[test]
@@ -94,6 +95,25 @@ mod test {
     }
 
     #[test]
+    fn xml_deserialize() {
+        let xml = r#"<PlaceReference description="http://identifier/of/place/description/being/referenced">
+        <original>the original text</original>
+      </PlaceReference>"#;
+
+        let place_ref: PlaceReference = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(
+            place_ref,
+            PlaceReference {
+                original: Some("the original text".to_string()),
+                description_ref: Some(
+                    "http://identifier/of/place/description/being/referenced".into()
+                )
+            }
+        )
+    }
+
+    #[test]
     fn json_deserialize_optional_fields() {
         let json = r#"{}"#;
 
@@ -106,14 +126,34 @@ mod test {
     fn json_serialize() {
         let place_ref = PlaceReference {
             original: Some("the original text".to_string()),
-            description_ref: Some("http://identifier/of/place-description/being/referenced".into()),
+            description_ref: Some("http://identifier/of/place/description/being/referenced".into()),
         };
 
         let json = serde_json::to_string(&place_ref).unwrap();
 
         assert_eq!(
             json,
-            r#"{"original":"the original text","description":"http://identifier/of/place-description/being/referenced"}"#
+            r#"{"original":"the original text","description":"http://identifier/of/place/description/being/referenced"}"#
+        )
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let place_ref = PlaceReference {
+            original: Some("the original text".to_string()),
+            description_ref: Some("http://identifier/of/place/description/being/referenced".into()),
+        };
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+
+        let xml = yaserde::ser::to_string_with_config(&place_ref, &config).unwrap();
+
+        assert_eq!(
+            xml,
+            r#"<PlaceReference xmlns="http://gedcomx.org/v1/" description="http://identifier/of/place/description/being/referenced"><original>the original text</original></PlaceReference>"#
         )
     }
 

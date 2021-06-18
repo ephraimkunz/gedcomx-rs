@@ -46,7 +46,6 @@ pub struct Relationship {
     /// into this conclusion. If provided, MUST resolve to an instance of
     /// [Document](crate::Document) of type
     /// [Analysis](crate::DocumentType::Analysis).
-    // TODO: Validate this at compile time somehow?
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
