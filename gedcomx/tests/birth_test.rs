@@ -28,14 +28,12 @@ fn test_struct() -> Gedcomx {
     let source_description = SourceDescription::builder()
         .id("S-1")
         .title("Birth Certificate of Emma Bocock, 23 July 1843, General Registry Office")
-        .citation(
-            SourceCitation::builder(
-                "England, birth certificate for Emma Bocock, born 23 July 1843; citing 1843 Birth \
-                 in District and Sub-district of Ecclesall-Bierlow in the County of York, 303; \
-                 General Registry Office, Southport.",
-            )
-            .build(),
-        )
+        .citation(SourceCitation::new(
+            "England, birth certificate for Emma Bocock, born 23 July 1843; citing 1843 Birth in \
+             District and Sub-district of Ecclesall-Bierlow in the County of York, 303; General \
+             Registry Office, Southport.",
+            None,
+        ))
         .resource_type(ResourceType::PhysicalArtifact)
         .created("1843-07-27T07:00:00".parse().unwrap())
         .repository(&repository)

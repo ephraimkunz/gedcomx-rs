@@ -28,32 +28,18 @@ pub struct SourceCitation {
 }
 
 impl SourceCitation {
-    pub fn new(value: String, lang: Option<Lang>) -> Self {
-        Self { lang, value }
-    }
-
-    pub fn builder<I: Into<String>>(value: I) -> SourceCitationBuilder {
-        SourceCitationBuilder::new(value)
-    }
-}
-
-pub struct SourceCitationBuilder(SourceCitation);
-
-impl SourceCitationBuilder {
-    pub(crate) fn new<I: Into<String>>(value: I) -> Self {
-        Self(SourceCitation {
+    pub fn new<I: Into<String>>(value: I, lang: Option<Lang>) -> Self {
+        Self {
+            lang,
             value: value.into(),
-            ..SourceCitation::default()
-        })
-    }
-
-    pub fn build(&self) -> SourceCitation {
-        SourceCitation::new(self.0.value.clone(), self.0.lang.clone())
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::super::*;
 
     #[test]
@@ -64,6 +50,22 @@ mod test {
         }"#;
 
         let source_citation: SourceCitation = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            source_citation,
+            SourceCitation {
+                lang: Some("en".into()),
+                value: "a rendering of the full citation as a string".to_string(),
+            }
+        )
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r#"  <SourceCitation xml:lang="en">
+        <value>a rendering of the full citation as a string</value>    
+      </SourceCitation>"#;
+
+        let source_citation: SourceCitation = yaserde::de::from_str(xml).unwrap();
         assert_eq!(
             source_citation,
             SourceCitation {
@@ -101,6 +103,26 @@ mod test {
         assert_eq!(
             json,
             r#"{"lang":"en","value":"a rendering of the full citation as a string"}"#
+        )
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let source_citation = SourceCitation {
+            lang: Some("en".into()),
+            value: "a rendering of the full citation as a string".to_string(),
+        };
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+
+        let xml = yaserde::ser::to_string_with_config(&source_citation, &config).unwrap();
+
+        assert_eq!(
+            xml,
+            r#"<SourceCitation xmlns="http://gedcomx.org/v1/" xml:lang="en"><value>a rendering of the full citation as a string</value></SourceCitation>"#
         )
     }
 

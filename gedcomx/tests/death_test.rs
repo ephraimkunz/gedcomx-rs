@@ -52,13 +52,11 @@ fn test_example() {
     let gravestone_description = SourceDescription::builder()
         .id("S-1")
         .title("Grave Marker of WONG Aloiau, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii")
-        .citation(
-            SourceCitation::builder(
-                "WONG Aloiau gravestone, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii; visited \
-                 May 1975 by Jane Doe.",
-            )
-            .build(),
-        )
+        .citation(SourceCitation::new(
+            "WONG Aloiau gravestone, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii; visited May \
+             1975 by Jane Doe.",
+            None,
+        ))
         .resource_type(ResourceType::PhysicalArtifact)
         .repository(&cemetery)
         .unwrap()
@@ -68,13 +66,11 @@ fn test_example() {
     let gravestone_image_description = SourceDescription::builder()
         .id("S-2")
         .title("Grave Marker of WONG Aloiau, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii")
-        .citation(
-            SourceCitation::builder(
-                "WONG Aloiau gravestone (digital photograph), Lin Yee Chung Cemetery, Honolulu, \
-                 Oahu, Hawaii; visited May 1975 by Jane Doe.",
-            )
-            .build(),
-        )
+        .citation(SourceCitation::new(
+            "WONG Aloiau gravestone (digital photograph), Lin Yee Chung Cemetery, Honolulu, Oahu, \
+             Hawaii; visited May 1975 by Jane Doe.",
+            None,
+        ))
         .resource_type(ResourceType::DigitalArtifact)
         .source(
             SourceReference::builder(&gravestone_description)
@@ -103,13 +99,11 @@ fn test_example() {
             "Transcription of Grave Marker of WONG Aloiau, Lin Yee Chung Cemetery, Honolulu, \
              Oahu, Hawaii",
         )
-        .citation(
-            SourceCitation::builder(
-                "WONG Aloiau gravestone (transcription), Lin Yee Chung Cemetery, Honolulu, Oahu, \
-                 Hawaii; visited May 1975 by Jane Doe.",
-            )
-            .build(),
-        )
+        .citation(SourceCitation::new(
+            "WONG Aloiau gravestone (transcription), Lin Yee Chung Cemetery, Honolulu, Oahu, \
+             Hawaii; visited May 1975 by Jane Doe.",
+            None,
+        ))
         .resource_type(ResourceType::DigitalArtifact)
         .source(
             SourceReference::builder(&gravestone_image_description)
@@ -139,13 +133,11 @@ fn test_example() {
             "Translation of Grave Marker of WONG Aloiau, Lin Yee Chung Cemetery, Honolulu, Oahu, \
              Hawaii",
         )
-        .citation(
-            SourceCitation::builder(
-                "WONG Aloiau gravestone, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii; visited \
-                 May 1975 by Jane Doe. Translation by HANYU Pinyin 王大年.",
-            )
-            .build(),
-        )
+        .citation(SourceCitation::new(
+            "WONG Aloiau gravestone, Lin Yee Chung Cemetery, Honolulu, Oahu, Hawaii; visited May \
+             1975 by Jane Doe. Translation by HANYU Pinyin 王大年.",
+            None,
+        ))
         .attribution(translation_attribution)
         .resource_type(ResourceType::DigitalArtifact)
         .source(
