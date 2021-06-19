@@ -13,6 +13,11 @@ use crate::{Attribution, GedcomxError, Id, Qualifier, Result, SourceDescription,
 /// A reference to a source description.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
 pub struct SourceReference {
@@ -30,6 +35,7 @@ pub struct SourceReference {
     ///
     /// If not provided, the attribution of the containing resource of the
     /// source reference is assumed.
+    #[yaserde(prefix = "gx")]
     pub attribution: Option<Attribution>,
 
     /// Qualifiers for the reference, used to identify specific fragments of the
@@ -38,7 +44,7 @@ pub struct SourceReference {
     /// If present, use of a
     /// [`SourceReferenceQualifier`](crate::SourceReferenceQualifier) is
     /// RECOMMENDED.
-    #[yaserde(rename = "qualifier")]
+    #[yaserde(rename = "qualifier", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub qualifiers: Vec<Qualifier>,
 }
@@ -56,10 +62,6 @@ impl SourceReference {
             attribution,
             qualifiers,
         }
-    }
-
-    pub fn builder_with_raw(description: Uri) -> SourceReferenceBuilder {
-        SourceReferenceBuilder::new(description)
     }
 
     /// # Errors
@@ -82,8 +84,28 @@ impl SourceReferenceBuilder {
         })
     }
 
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`SourceReference`](crate::SourceReference) fails.
+    /// This happens if `description` has no `id` set.
+    pub fn description(&mut self, description: &SourceDescription) -> Result<&mut Self> {
+        self.0.description = description.try_into()?;
+        Ok(self)
+    }
+
     pub fn description_id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
         self.0.description_id = Some(id.into());
+        self
+    }
+
+    pub fn attribution(&mut self, attribution: Attribution) -> &mut Self {
+        self.0.attribution = Some(attribution);
+        self
+    }
+
+    pub fn qualifier(&mut self, qualifier: Qualifier) -> &mut Self {
+        self.0.qualifiers.push(qualifier);
         self
     }
 
@@ -102,7 +124,7 @@ impl TryFrom<&SourceDescription> for SourceReference {
 
     fn try_from(s: &SourceDescription) -> std::result::Result<Self, Self::Error> {
         match &s.id {
-            Some(id) => Ok(Self::builder_with_raw(id.into()).build()),
+            Some(id) => Ok(Self::new(id.into(), None, None, vec![])),
             None => Err(GedcomxError::NoId("SourceDescription".to_string())),
         }
     }
@@ -165,6 +187,8 @@ impl fmt::Display for SourceReferenceQualifier {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::TestData;
 
@@ -191,7 +215,21 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        todo!();
+        let data = TestData::new();
+
+        let xml = r#"
+        <SourceReference description="SD-1" descriptionId="Description id of the target source">
+        <attribution>
+          <contributor resource="A-1" />
+          <modified>2014-03-07T07:00:00</modified>
+        </attribution>
+        <qualifier name="http://gedcomx.org/RectangleRegion">rectangle region value</qualifier>    
+      </SourceReference>
+      "#;
+
+        let source_reference: SourceReference = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(source_reference, data.source_reference)
     }
 
     #[test]
@@ -203,7 +241,7 @@ mod test {
         let source_reference: SourceReference = serde_json::from_str(json).unwrap();
         assert_eq!(
             source_reference,
-            SourceReference::builder_with_raw(Uri::from("SD-1")).build()
+            SourceReference::new(Uri::from("SD-1"), None, None, vec![])
         )
     }
 
@@ -222,12 +260,22 @@ mod test {
 
     #[test]
     fn xml_serialize() {
-        todo!();
+        let data = TestData::new();
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+        let xml = yaserde::ser::to_string_with_config(&data.source_reference, &config).unwrap();
+
+        let expected_xml = r#"<SourceReference xmlns="http://gedcomx.org/v1/" description="SD-1" descriptionId="Description id of the target source"><attribution><contributor resource="A-1" /><modified>2014-03-07T07:00:00Z</modified></attribution><qualifier name="http://gedcomx.org/RectangleRegion">rectangle region value</qualifier></SourceReference>"#;
+
+        assert_eq!(xml, expected_xml)
     }
 
     #[test]
     fn json_serialize_optional_fields() {
-        let source_reference = SourceReference::builder_with_raw(Uri::from("SD-1")).build();
+        let source_reference = SourceReference::new(Uri::from("SD-1"), None, None, vec![]);
 
         let json = serde_json::to_string(&source_reference).unwrap();
         assert_eq!(json, r#"{"description":"SD-1"}"#);

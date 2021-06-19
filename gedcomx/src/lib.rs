@@ -91,7 +91,7 @@ impl TestData {
             name: SourceReferenceQualifier::RectangleRegion.into(),
             value: Some("rectangle region value".into()),
         };
-        let mut source_reference = SourceReference::builder_with_raw(Uri::from("SD-1")).build();
+        let mut source_reference = SourceReference::new(Uri::from("SD-1"), None, None, vec![]);
         source_reference.description_id = Some("Description id of the target source".into());
         source_reference.attribution = Some(attribution.clone());
         source_reference.qualifiers = vec![qualifier];
