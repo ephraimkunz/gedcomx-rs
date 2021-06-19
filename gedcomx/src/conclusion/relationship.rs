@@ -5,8 +5,8 @@ use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
-    Attribution, ConfidenceLevel, EnumAsString, EvidenceReference, Fact, GedcomxError, Id,
-    Identifier, Lang, Note, Person, ResourceReference, Result, SourceReference, Uri,
+    Attribution, ConfidenceLevel, EnumAsString, EvidenceReference, Fact, Id, Identifier, Lang,
+    Note, Person, ResourceReference, Result, SourceReference, Uri,
 };
 
 /// A relationship between two persons.
@@ -116,7 +116,6 @@ pub struct Relationship {
     /// Reference to the second person in the relationship.
     ///
     /// MUST resolve to an instance of http://gedcomx.org/v1/Person.
-    // TODO: Check with type system.
     #[yaserde(prefix = "gx")]
     pub person2: ResourceReference,
 
@@ -166,19 +165,6 @@ impl Relationship {
     /// # Errors
     ///
     /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
-    /// conversion into [`SourceReference`](crate::SourceReference) fails.
-    /// This happens if `source` has no `id` set.
-    pub fn source<I: TryInto<SourceReference, Error = GedcomxError>>(
-        &mut self,
-        source: I,
-    ) -> Result<&mut Self> {
-        self.sources.push(source.try_into()?);
-        Ok(self)
-    }
-
-    /// # Errors
-    ///
-    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
     /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
     /// This happens if either `person1` or `person2` has no `id` set.
     pub fn builder(person1: &Person, person2: &Person) -> Result<RelationshipBuilder> {
@@ -204,6 +190,26 @@ impl RelationshipBuilder {
         self
     }
 
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if either `person1` or `person2` has no `id` set.
+    pub fn person_1(&mut self, person: &Person) -> Result<&mut Self> {
+        self.0.person1 = person.try_into()?;
+        Ok(self)
+    }
+
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if either `person1` or `person2` has no `id` set.
+    pub fn person_2(&mut self, person: &Person) -> Result<&mut Self> {
+        self.0.person2 = person.try_into()?;
+        Ok(self)
+    }
+
     pub fn fact(&mut self, fact: Fact) -> &mut Self {
         self.0.facts.push(fact);
         self
@@ -213,8 +219,6 @@ impl RelationshipBuilder {
         self.0.facts = facts;
         self
     }
-
-    // TODO: Other builder properties.
 
     pub fn build(&self) -> Relationship {
         Relationship::new(
@@ -292,5 +296,117 @@ impl fmt::Display for RelationshipType {
 impl Default for RelationshipType {
     fn default() -> Self {
         Self::Custom(Uri::default())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn json_deserialize() {
+        let json = r##"{          
+            "type" : "http://gedcomx.org/Couple",
+            "person1" : {
+              "resource" : "#http://identifier/for/person/1"
+            },
+            "person2" : {
+              "resource" : "#http://identifier/for/person/2"
+            }
+          }"##;
+
+        let expected_relationship = Relationship::builder(
+            &Person::builder()
+                .id("http://identifier/for/person/1")
+                .build(),
+            &Person::builder()
+                .id("http://identifier/for/person/2")
+                .build(),
+        )
+        .unwrap()
+        .relationship_type(RelationshipType::Couple)
+        .build();
+
+        let relationship: Relationship = serde_json::from_str(json).unwrap();
+
+        assert_eq!(relationship, expected_relationship)
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        let xml = r##"  <Relationship id="local_id" type="http://gedcomx.org/Couple" extracted="false">
+        <person1 resource="#http://identifier/for/person/1"/>
+        <person2 resource="#http://identifier/for/person/2"/>
+
+      </Relationship>"##;
+
+        let expected_relationship = Relationship::builder(
+            &Person::builder()
+                .id("http://identifier/for/person/1")
+                .build(),
+            &Person::builder()
+                .id("http://identifier/for/person/2")
+                .build(),
+        )
+        .unwrap()
+        .id("local_id")
+        .extracted(false)
+        .relationship_type(RelationshipType::Couple)
+        .build();
+
+        let relationship: Relationship = yaserde::de::from_str(xml).unwrap();
+
+        assert_eq!(relationship, expected_relationship)
+    }
+
+    #[test]
+    fn json_serialize() {
+        let relationship = Relationship::builder(
+            &Person::builder()
+                .id("http://identifier/for/person/1")
+                .build(),
+            &Person::builder()
+                .id("http://identifier/for/person/2")
+                .build(),
+        )
+        .unwrap()
+        .relationship_type(RelationshipType::Couple)
+        .build();
+
+        let json = serde_json::to_string(&relationship).unwrap();
+
+        let expected_json = r##"{"type":"http://gedcomx.org/Couple","person1":{"resource":"#http://identifier/for/person/1"},"person2":{"resource":"#http://identifier/for/person/2"}}"##;
+
+        assert_eq!(json, expected_json)
+    }
+
+    #[test]
+    fn xml_serialize() {
+        let relationship = Relationship::builder(
+            &Person::builder()
+                .id("http://identifier/for/person/1")
+                .build(),
+            &Person::builder()
+                .id("http://identifier/for/person/2")
+                .build(),
+        )
+        .unwrap()
+        .id("local_id")
+        .extracted(false)
+        .relationship_type(RelationshipType::Couple)
+        .build();
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+
+        let xml = yaserde::ser::to_string_with_config(&relationship, &config).unwrap();
+
+        let expected_xml = r##"<Relationship xmlns="http://gedcomx.org/v1/" id="local_id" extracted="false" type="http://gedcomx.org/Couple"><person1 resource="#http://identifier/for/person/1" /><person2 resource="#http://identifier/for/person/2" /></Relationship>"##;
+
+        assert_eq!(xml, expected_xml)
     }
 }

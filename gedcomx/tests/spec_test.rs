@@ -1,7 +1,7 @@
 use gedcomx::{
     Agent, Attribution, Date, Fact, FactType, Gedcomx, GenderType, Name, NameForm, NamePart,
     NamePartType, Person, PersonBuilder, PlaceDescription, PlaceReference, Relationship,
-    SourceCitation, SourceDescription, Uri,
+    RelationshipBuilder, SourceCitation, SourceDescription, Uri,
 };
 
 mod common;
@@ -12,7 +12,7 @@ fn test_struct() -> Gedcomx {
     let chestnut_grove = create_chestnut_grove();
     let mut george = create_george_builder(&popes_creek, &mount_vernon);
     let mut martha = create_martha_builder(&chestnut_grove, &mount_vernon);
-    let mut marriage = create_marriage(&george.build(), &martha.build());
+    let mut marriage = create_marriage_builder(&george.build(), &martha.build());
     let sources = cite_george_martha_and_marriage(&mut george, &mut martha, &mut marriage);
     let contributor = create_contributor();
     let attribution = Attribution::builder()
@@ -22,7 +22,7 @@ fn test_struct() -> Gedcomx {
 
     let mut gx = Gedcomx::builder();
     gx.persons(vec![george.build(), martha.build()]);
-    gx.relationships(vec![marriage]);
+    gx.relationships(vec![marriage.build()]);
     gx.source_descriptions(sources);
     gx.agents(vec![contributor]);
     gx.attribution(attribution);
@@ -180,7 +180,7 @@ fn create_martha_builder(
     person
 }
 
-fn create_marriage(george: &Person, martha: &Person) -> Relationship {
+fn create_marriage_builder(george: &Person, martha: &Person) -> RelationshipBuilder {
     let mut relationship = Relationship::builder(george, martha).unwrap();
     relationship.id("DDD-DDDD");
 
@@ -197,13 +197,13 @@ fn create_marriage(george: &Person, martha: &Person) -> Relationship {
         .build();
 
     relationship.facts(vec![marriage]);
-    relationship.build()
+    relationship
 }
 
 fn cite_george_martha_and_marriage(
     george: &mut PersonBuilder,
     martha: &mut PersonBuilder,
-    relationship: &mut Relationship,
+    relationship: &mut RelationshipBuilder,
 ) -> Vec<SourceDescription> {
     let mut george_source = SourceDescription::builder();
     george_source.id("EEE-EEEE");
