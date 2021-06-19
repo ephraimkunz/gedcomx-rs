@@ -92,17 +92,22 @@ impl fmt::Display for Uri {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::SourceCitation;
 
     #[test]
     fn from_source_description() {
-        let source_description = SourceDescription::builder().id("test").build();
+        let source_description =
+            SourceDescription::builder(SourceCitation::new("source_citation", None))
+                .id("test")
+                .build();
         let uri = Uri::try_from(&source_description);
         assert_eq!(uri.unwrap(), Uri::from("#test"))
     }
 
     #[test]
     fn from_source_description_no_id() {
-        let source_description = SourceDescription::builder().build();
+        let source_description =
+            SourceDescription::builder(SourceCitation::new("source_citation", None)).build();
         let uri = Uri::try_from(&source_description);
         assert_eq!(
             uri.unwrap_err().to_string(),

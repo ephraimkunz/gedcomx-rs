@@ -14,6 +14,12 @@ pub struct ResourceReference {
     pub resource: Uri,
 }
 
+impl ResourceReference {
+    pub fn new(uri: Uri) -> Self {
+        Self { resource: uri }
+    }
+}
+
 impl From<&str> for ResourceReference {
     fn from(s: &str) -> Self {
         Self { resource: s.into() }

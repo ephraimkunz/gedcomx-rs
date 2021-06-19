@@ -5,13 +5,18 @@ use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
 use crate::{
-    Agent, Attribution, Coverage, EnumAsString, Id, Identifier, Note, ResourceReference, Result,
-    SourceCitation, SourceReference, TextValue, Timestamp, Uri,
+    Agent, Attribution, Coverage, Document, EnumAsString, Id, Identifier, Note, ResourceReference,
+    Result, SourceCitation, SourceReference, TextValue, Timestamp, Uri,
 };
 
 /// A description of a source of genealogical information.
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
+#[yaserde(
+    prefix = "gx",
+    default_namespace = "gx",
+    namespace = "gx: http://gedcomx.org/v1/"
+)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SourceDescription {
@@ -29,13 +34,12 @@ pub struct SourceDescription {
     /// At least one citation MUST be provided. If more than one citation is
     /// provided, citations are assumed to be given in order of preference, with
     /// the most preferred citation in the first position in the list.
-    #[yaserde(rename = "citation")]
-    pub citations: Vec<SourceCitation>, // TODO: Must have at least one.
+    #[yaserde(rename = "citation", prefix = "gx")]
+    pub citations: Vec<SourceCitation>,
 
     /// A hint about the media type of the resource being described.
     ///
     /// If provided, MUST be a valid MIME (media) type as specified by RFC 4288.
-    // TODO: Newtype?
     #[yaserde(rename = "mediaType", attribute)]
     pub media_type: Option<String>,
 
@@ -46,38 +50,38 @@ pub struct SourceDescription {
     /// A reference to the entity that mediates access to the described source.
     ///
     /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
-    // TODO: Enforce
+    #[yaserde(prefix = "gx")]
     pub mediator: Option<ResourceReference>,
 
     /// A reference to the entity responsible for making the described source
     /// available.
     ///
     /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
-    // TODO: Enforce
+    #[yaserde(prefix = "gx")]
     pub publisher: Option<ResourceReference>,
 
     /// A reference to the entities that authored the described source.
     ///
     /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
-    // TODO: Enforce
-    #[yaserde(rename = "author")]
+    #[yaserde(rename = "author", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub authors: Vec<ResourceReference>,
 
     /// A list of references to any sources from which this source is derived.
-    #[yaserde(rename = "source")]
+    #[yaserde(rename = "source", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub sources: Vec<SourceReference>,
 
     /// A reference to a document containing analysis about this source.
     ///
     /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Document of type http://gedcomx.org/Analysis.
+    #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
     /// A reference to the source that contains this source, i.e. its parent
     /// context. Used when the description of a source is not complete without
     /// the description of its parent (or containing) source.
-    #[yaserde(rename = "componentOf")]
+    #[yaserde(rename = "componentOf", prefix = "gx")]
     pub component_of: Option<SourceReference>,
 
     /// The display name(s) for this source.
@@ -85,25 +89,29 @@ pub struct SourceDescription {
     /// If more than one title is provided, titles are assumed to be given in
     /// order of preference, with the most preferred title in the first position
     /// in the list.
-    #[yaserde(rename = "title")]
+    #[yaserde(rename = "title", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub titles: Vec<TextValue>,
 
     /// A list of notes about a source.
-    #[yaserde(rename = "note")]
-    pub notes: Option<Note>,
+    #[yaserde(rename = "note", prefix = "gx")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub notes: Vec<Note>,
 
     /// The attribution of this source description.
     ///
     /// If not provided, the attribution of the containing data set (e.g. file)
     /// of the source description is assumed.
+    #[yaserde(prefix = "gx")]
     pub attribution: Option<Attribution>,
 
     /// The rights for this resource.
+    #[yaserde(prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub rights: Vec<ResourceReference>,
 
     /// The coverage of the resource.
+    #[yaserde(prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub coverage: Vec<Coverage>,
 
@@ -112,12 +120,12 @@ pub struct SourceDescription {
     /// If more than one description is provided, descriptions are assumed to be
     /// given in order of preference, with the most preferred description in the
     /// first position in the list.
-    #[yaserde(rename = "description")]
+    #[yaserde(rename = "description", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub descriptions: Vec<TextValue>,
 
     /// A list of identifiers for the resource being described.
-    #[yaserde(rename = "identifier")]
+    #[yaserde(rename = "identifier", prefix = "gx")]
     #[serde(
         skip_serializing_if = "Vec::is_empty",
         default,
@@ -126,17 +134,21 @@ pub struct SourceDescription {
     pub identifiers: Vec<Identifier>,
 
     /// Timestamp of when the resource being described was created.
+    #[yaserde(prefix = "gx")]
     pub created: Option<Timestamp>,
 
     /// Timestamp of when the resource being described was modified.
+    #[yaserde(prefix = "gx")]
     pub modified: Option<Timestamp>,
 
     /// Timestamp of when the resource being described was published.
+    #[yaserde(prefix = "gx")]
     pub published: Option<Timestamp>,
 
     /// A reference to the repository that contains the described resource.
     ///
     /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
+    #[yaserde(prefix = "gx")]
     pub repository: Option<ResourceReference>,
 }
 
@@ -156,7 +168,7 @@ impl SourceDescription {
         analysis: Option<ResourceReference>,
         component_of: Option<SourceReference>,
         titles: Vec<TextValue>,
-        notes: Option<Note>,
+        notes: Vec<Note>,
         attribution: Option<Attribution>,
         rights: Vec<ResourceReference>,
         coverage: Vec<Coverage>,
@@ -193,16 +205,17 @@ impl SourceDescription {
         }
     }
 
-    pub fn builder() -> SourceDescriptionBuilder {
-        SourceDescriptionBuilder::new()
+    pub fn builder(citation: SourceCitation) -> SourceDescriptionBuilder {
+        SourceDescriptionBuilder::new(citation)
     }
 }
 
 pub struct SourceDescriptionBuilder(SourceDescription);
 
 impl SourceDescriptionBuilder {
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new(citation: SourceCitation) -> Self {
         Self(SourceDescription {
+            citations: vec![citation],
             ..SourceDescription::default()
         })
     }
@@ -212,13 +225,8 @@ impl SourceDescriptionBuilder {
         self
     }
 
-    pub fn title<I: Into<TextValue>>(&mut self, title: I) -> &mut Self {
-        self.0.titles.push(title.into());
-        self
-    }
-
-    pub fn about(&mut self, uri: Uri) -> &mut Self {
-        self.0.about = Some(uri);
+    pub fn resource_type(&mut self, resource_type: ResourceType) -> &mut Self {
+        self.0.resource_type = Some(resource_type);
         self
     }
 
@@ -227,8 +235,88 @@ impl SourceDescriptionBuilder {
         self
     }
 
+    pub fn media_type<I: Into<String>>(&mut self, media_type: I) -> &mut Self {
+        self.0.media_type = Some(media_type.into());
+        self
+    }
+
+    pub fn about(&mut self, uri: Uri) -> &mut Self {
+        self.0.about = Some(uri);
+        self
+    }
+
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if `mediator` has no `id` set.
+    pub fn mediator(&mut self, mediator: &Agent) -> Result<&mut Self> {
+        self.0.mediator = Some(mediator.try_into()?);
+        Ok(self)
+    }
+
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if `publisher` has no `id` set.
+    pub fn publisher(&mut self, publisher: &Agent) -> Result<&mut Self> {
+        self.0.publisher = Some(publisher.try_into()?);
+        Ok(self)
+    }
+
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`ResourceReference`](crate::ResourceReference) fails.
+    /// This happens if `author` has no `id` set.
+    pub fn author(&mut self, author: &Agent) -> Result<&mut Self> {
+        self.0.authors.push(author.try_into()?);
+        Ok(self)
+    }
+
     pub fn source(&mut self, source: SourceReference) -> &mut Self {
         self.0.sources.push(source);
+        self
+    }
+
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError`](crate::GedcomxError) if a conversion into
+    /// [`Document`](crate::Document) fails. This happens if `document` has no
+    /// `id` set or has the wrong `document_type`.
+    pub fn analysis(&mut self, analysis: &Document) -> Result<&mut Self> {
+        self.0.analysis = Some(analysis.try_into()?);
+        Ok(self)
+    }
+
+    pub fn component_of(&mut self, component_of: SourceReference) -> &mut Self {
+        self.0.component_of = Some(component_of);
+        self
+    }
+
+    pub fn title<I: Into<TextValue>>(&mut self, title: I) -> &mut Self {
+        self.0.titles.push(title.into());
+        self
+    }
+
+    pub fn note(&mut self, note: Note) -> &mut Self {
+        self.0.notes.push(note);
+        self
+    }
+
+    pub fn attribution(&mut self, attribution: Attribution) -> &mut Self {
+        self.0.attribution = Some(attribution);
+        self
+    }
+
+    pub fn right(&mut self, right: Uri) -> &mut Self {
+        self.0.rights.push(ResourceReference::new(right));
+        self
+    }
+
+    pub fn coverage(&mut self, coverage: Coverage) -> &mut Self {
+        self.0.coverage.push(coverage);
         self
     }
 
@@ -237,8 +325,8 @@ impl SourceDescriptionBuilder {
         self
     }
 
-    pub fn resource_type(&mut self, resource_type: ResourceType) -> &mut Self {
-        self.0.resource_type = Some(resource_type);
+    pub fn identifier(&mut self, identifier: Identifier) -> &mut Self {
+        self.0.identifiers.push(identifier);
         self
     }
 
@@ -247,8 +335,13 @@ impl SourceDescriptionBuilder {
         self
     }
 
-    pub fn attribution(&mut self, attribution: Attribution) -> &mut Self {
-        self.0.attribution = Some(attribution);
+    pub fn modified(&mut self, modified: Timestamp) -> &mut Self {
+        self.0.modified = Some(modified);
+        self
+    }
+
+    pub fn published(&mut self, published: Timestamp) -> &mut Self {
+        self.0.published = Some(published);
         self
     }
 
@@ -354,21 +447,113 @@ mod test {
 
     #[test]
     fn json_deserialize() {
-        todo!();
+        let json = r##"{
+            "id" : "local_id",
+            "resourceType" : "http://gedcomx.org/PhysicalArtifact",
+            "citations" : [ { "value": "citation", "lang": "en"}],
+            "mediaType" : "media_type",
+            "about" : "about",
+            "mediator": {
+                "resource": "#agent"
+            },
+            "publisher": {
+                "resource": "#agent"
+            }
+          }"##;
+
+        let source_description: SourceDescription = serde_json::from_str(json).unwrap();
+
+        let agent = Agent::builder().id("agent").build();
+        let expected_source_description =
+            SourceDescription::builder(SourceCitation::new("citation", Some("en".into())))
+                .id("local_id")
+                .resource_type(ResourceType::PhysicalArtifact)
+                .media_type("media_type")
+                .about("about".into())
+                .mediator(&agent)
+                .unwrap()
+                .publisher(&agent)
+                .unwrap()
+                .build();
+
+        assert_eq!(source_description, expected_source_description)
     }
 
     #[test]
     fn xml_deserialize() {
-        todo!();
+        let xml = r##"<SourceDescription id="local_id" about="about" mediaType="media_type" resourceType="http://gedcomx.org/PhysicalArtifact">
+        <citation xml:lang="en">
+          <value>citation</value>
+        </citation>
+        <mediator resource="#agent" />
+        <publisher resource="#agent" />
+      </SourceDescription>"##;
+
+        let source_description: SourceDescription = yaserde::de::from_str(xml).unwrap();
+
+        let agent = Agent::builder().id("agent").build();
+        let expected_source_description =
+            SourceDescription::builder(SourceCitation::new("citation", Some("en".into())))
+                .id("local_id")
+                .resource_type(ResourceType::PhysicalArtifact)
+                .media_type("media_type")
+                .about("about".into())
+                .mediator(&agent)
+                .unwrap()
+                .publisher(&agent)
+                .unwrap()
+                .build();
+
+        assert_eq!(source_description, expected_source_description)
     }
 
     #[test]
     fn json_serialize() {
-        todo!();
+        let agent = Agent::builder().id("agent").build();
+
+        let source_description =
+            SourceDescription::builder(SourceCitation::new("citation", Some("en".into())))
+                .id("local_id")
+                .resource_type(ResourceType::PhysicalArtifact)
+                .media_type("media_type")
+                .about("about".into())
+                .mediator(&agent)
+                .unwrap()
+                .publisher(&agent)
+                .unwrap()
+                .build();
+
+        let json = serde_json::to_string(&source_description).unwrap();
+
+        let expected_json = r##"{"id":"local_id","resourceType":"http://gedcomx.org/PhysicalArtifact","citations":[{"lang":"en","value":"citation"}],"mediaType":"media_type","about":"about","mediator":{"resource":"#agent"},"publisher":{"resource":"#agent"}}"##;
+
+        assert_eq!(json, expected_json)
     }
 
     #[test]
     fn xml_serialize() {
-        todo!();
+        let agent = Agent::builder().id("agent").build();
+        let source_description =
+            SourceDescription::builder(SourceCitation::new("citation", Some("en".into())))
+                .id("local_id")
+                .resource_type(ResourceType::PhysicalArtifact)
+                .media_type("media_type")
+                .about("about".into())
+                .mediator(&agent)
+                .unwrap()
+                .publisher(&agent)
+                .unwrap()
+                .build();
+
+        let config = yaserde::ser::Config {
+            write_document_declaration: false,
+            ..yaserde::ser::Config::default()
+        };
+
+        let xml = yaserde::ser::to_string_with_config(&source_description, &config).unwrap();
+
+        let expected_xml = r##"<SourceDescription xmlns="http://gedcomx.org/v1/" id="local_id" resourceType="http://gedcomx.org/PhysicalArtifact" mediaType="media_type" about="about"><citation xml:lang="en"><value>citation</value></citation><mediator resource="#agent" /><publisher resource="#agent" /></SourceDescription>"##;
+
+        assert_eq!(xml, expected_xml)
     }
 }

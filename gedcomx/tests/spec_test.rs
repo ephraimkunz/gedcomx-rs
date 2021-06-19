@@ -205,26 +205,26 @@ fn cite_george_martha_and_marriage(
     martha: &mut PersonBuilder,
     relationship: &mut RelationshipBuilder,
 ) -> Vec<SourceDescription> {
-    let mut george_source = SourceDescription::builder();
-    george_source.id("EEE-EEEE");
-    george_source.about(Uri::from("http://en.wikipedia.org/wiki/George_washington"));
     let george_citation = SourceCitation::new(
         "\"George Washington.\" Wikipedia, The Free Encyclopedia. Wikimedia Foundation, Inc. 24 \
          October 2012.",
         None,
     );
-    george_source.citation(george_citation);
+    let mut george_source = SourceDescription::builder(george_citation);
+    george_source.id("EEE-EEEE");
+    george_source.about(Uri::from("http://en.wikipedia.org/wiki/George_washington"));
+
     let george_source = george_source.build();
 
-    let mut martha_source = SourceDescription::builder();
-    martha_source.id("FFF-FFFF");
-    martha_source.about(Uri::from("http://en.wikipedia.org/wiki/Martha_washington"));
     let martha_citation = SourceCitation::new(
         "\"Martha Washington.\" Wikipedia, The Free Encyclopedia. Wikimedia Foundation, Inc. 24 \
          October 2012.",
         None,
     );
-    martha_source.citation(martha_citation);
+    let mut martha_source = SourceDescription::builder(martha_citation);
+    martha_source.id("FFF-FFFF");
+    martha_source.about(Uri::from("http://en.wikipedia.org/wiki/Martha_washington"));
+
     let martha_source = martha_source.build();
 
     george.source(&george_source).unwrap();

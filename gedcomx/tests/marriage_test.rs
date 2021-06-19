@@ -35,29 +35,28 @@ fn test_example() {
         .build();
 
     //The parish register.
-    let record_description = SourceDescription::builder()
-        .id("S-1")
-        .title(
-            "Marriage entry for Samuel Ham and Elizabeth Spiller, Parish Register, Wilton, \
-             Somerset, England",
-        )
-        .description(
-            "Marriage entry for Samuel Ham and Elizabeth in a copy of the registers of the \
-             baptisms, marriages, and burials at the church of St. George in the parish of Wilton \
-             : adjoining Taunton, in the county of Somerset from A.D. 1558 to A.D. 1837.",
-        )
-        .citation(SourceCitation::new(
-            "Joseph Houghton Spencer, transcriber, Church of England, Parish Church of Wilton \
-             (Somerset). A copy of the registers of the baptisms, marriages, and burials at the \
-             church of St. George in the parish of Wilton : adjoining Taunton, in the county of \
-             Somerset from A.D. 1558 to A.D. 1837; Marriage entry for Samuel Ham and Elizabeth \
-             Spiller (3 November 1828), (Taunton: Barnicott, 1890), p. 224, No. 86.",
-            None,
-        ))
-        .resource_type(ResourceType::PhysicalArtifact)
-        .repository(&fhl)
-        .unwrap()
-        .build();
+    let record_description = SourceDescription::builder(SourceCitation::new(
+        "Joseph Houghton Spencer, transcriber, Church of England, Parish Church of Wilton \
+         (Somerset). A copy of the registers of the baptisms, marriages, and burials at the \
+         church of St. George in the parish of Wilton : adjoining Taunton, in the county of \
+         Somerset from A.D. 1558 to A.D. 1837; Marriage entry for Samuel Ham and Elizabeth \
+         Spiller (3 November 1828), (Taunton: Barnicott, 1890), p. 224, No. 86.",
+        None,
+    ))
+    .id("S-1")
+    .title(
+        "Marriage entry for Samuel Ham and Elizabeth Spiller, Parish Register, Wilton, Somerset, \
+         England",
+    )
+    .description(
+        "Marriage entry for Samuel Ham and Elizabeth in a copy of the registers of the baptisms, \
+         marriages, and burials at the church of St. George in the parish of Wilton : adjoining \
+         Taunton, in the county of Somerset from A.D. 1558 to A.D. 1837.",
+    )
+    .resource_type(ResourceType::PhysicalArtifact)
+    .repository(&fhl)
+    .unwrap()
+    .build();
 
     //The transcription of the grave stone.
     let transcription = Document::builder(
@@ -73,34 +72,32 @@ fn test_example() {
     .build();
 
     //The transcription described as a source.
-    let transcription_description = SourceDescription::builder()
-        .id("S-2")
-        .about(transcription.id.clone().unwrap().into())
-        .title(
-            "Transcription of marriage entry for Samuel Ham and Elizabeth Spiller, Parish \
-             Register, Wilton, Somerset, England",
-        )
-        .description(
-            "Transcription of marriage entry for Samuel Ham and Elizabeth in a copy of the \
-             registers of the baptisms, marriages, and burials at the church of St. George in the \
-             parish of Wilton : adjoining Taunton, in the county of Somerset from A.D. 1558 to \
-             A.D. 1837.",
-        )
-        .citation(SourceCitation::new(
-            "Joseph Houghton Spencer, transcriber, Church of England, Parish Church of Wilton \
-             (Somerset). A copy of the registers of the baptisms, marriages, and burials at the \
-             church of St. George in the parish of Wilton : adjoining Taunton, in the county of \
-             Somerset from A.D. 1558 to A.D. 1837; Marriage entry for Samuel Ham and Elizabeth \
-             Spiller (3 November 1828), (Taunton: Barnicott, 1890), p. 224, No. 86.",
-            None,
-        ))
-        .resource_type(ResourceType::DigitalArtifact)
-        .source(
-            SourceReference::builder(&record_description)
-                .unwrap()
-                .build(),
-        )
-        .build();
+    let transcription_description = SourceDescription::builder(SourceCitation::new(
+        "Joseph Houghton Spencer, transcriber, Church of England, Parish Church of Wilton \
+         (Somerset). A copy of the registers of the baptisms, marriages, and burials at the \
+         church of St. George in the parish of Wilton : adjoining Taunton, in the county of \
+         Somerset from A.D. 1558 to A.D. 1837; Marriage entry for Samuel Ham and Elizabeth \
+         Spiller (3 November 1828), (Taunton: Barnicott, 1890), p. 224, No. 86.",
+        None,
+    ))
+    .id("S-2")
+    .about(transcription.id.clone().unwrap().into())
+    .title(
+        "Transcription of marriage entry for Samuel Ham and Elizabeth Spiller, Parish Register, \
+         Wilton, Somerset, England",
+    )
+    .description(
+        "Transcription of marriage entry for Samuel Ham and Elizabeth in a copy of the registers \
+         of the baptisms, marriages, and burials at the church of St. George in the parish of \
+         Wilton : adjoining Taunton, in the county of Somerset from A.D. 1558 to A.D. 1837.",
+    )
+    .resource_type(ResourceType::DigitalArtifact)
+    .source(
+        SourceReference::builder(&record_description)
+            .unwrap()
+            .build(),
+    )
+    .build();
 
     //the marriage fact.
     let marriage = Fact::builder(FactType::Marriage)
