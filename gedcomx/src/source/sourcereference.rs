@@ -190,6 +190,11 @@ mod test {
     }
 
     #[test]
+    fn xml_deserialize() {
+        todo!();
+    }
+
+    #[test]
     fn json_deserialize_optional_fields() {
         let json = r#"{
             "description" : "SD-1"
@@ -213,6 +218,11 @@ mod test {
             json,
             r#"{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}"#
         );
+    }
+
+    #[test]
+    fn xml_serialize() {
+        todo!();
     }
 
     #[test]

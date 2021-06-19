@@ -345,3 +345,30 @@ impl Default for ResourceType {
         Self::Custom(Uri::default())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn json_deserialize() {
+        todo!();
+    }
+
+    #[test]
+    fn xml_deserialize() {
+        todo!();
+    }
+
+    #[test]
+    fn json_serialize() {
+        todo!();
+    }
+
+    #[test]
+    fn xml_serialize() {
+        todo!();
+    }
+}
