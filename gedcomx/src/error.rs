@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use thiserror::Error;
 
 use crate::DocumentType;
@@ -8,7 +10,7 @@ pub enum GedcomxError {
     /// An object with an `Id` was needed for an operation, but the object had
     /// no id.
     #[error("Can't get a non-None id for `{0}`")]
-    NoId(String), // TODO: Maybe should hold the object without id rather than a string?
+    NoId(String),
 
     /// An object with a certain DocumentType variant was needed for an
     /// operation, but the object had a different type.
@@ -37,4 +39,10 @@ pub enum GedcomxError {
     /// Error returned while attempting to serialize / deserialize as XML.
     #[error("Error serializing or deserializing XML")]
     XMLError(String),
+}
+
+impl GedcomxError {
+    pub fn no_id_error<T: Debug>(t: &T) -> Self {
+        Self::NoId(format!("{:#?}", t))
+    }
 }

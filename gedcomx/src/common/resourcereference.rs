@@ -40,7 +40,7 @@ impl TryFrom<&Agent> for ResourceReference {
             Some(id) => Ok(Self {
                 resource: id.into(),
             }),
-            None => Err(GedcomxError::NoId("Agent".to_string())),
+            None => Err(GedcomxError::no_id_error(&agent)),
         }
     }
 }
@@ -53,7 +53,7 @@ impl TryFrom<&Person> for ResourceReference {
             Some(id) => Ok(Self {
                 resource: id.into(),
             }),
-            None => Err(GedcomxError::NoId("Person".to_string())),
+            None => Err(GedcomxError::no_id_error(&person)),
         }
     }
 }
@@ -66,7 +66,7 @@ impl TryFrom<&PlaceDescription> for ResourceReference {
             Some(id) => Ok(Self {
                 resource: id.into(),
             }),
-            None => Err(GedcomxError::NoId("PlaceDescription".to_string())),
+            None => Err(GedcomxError::no_id_error(&place_description)),
         }
     }
 }
@@ -86,7 +86,7 @@ impl TryFrom<&Document> for ResourceReference {
             (Some(id), true) => Ok(Self {
                 resource: id.into(),
             }),
-            (None, _) => Err(GedcomxError::NoId("Document".to_string())),
+            (None, _) => Err(GedcomxError::no_id_error(&document)),
             (_, false) => Err(GedcomxError::WrongDocumentType {
                 expected: DocumentType::Analysis,
                 actual: document.document_type.as_ref().unwrap().clone(), /* Should never be None
@@ -118,7 +118,7 @@ mod test {
     fn from_agent_no_id() {
         let agent = Agent::default();
         let rr: Result<ResourceReference, GedcomxError> = (&agent).try_into();
-        let expected = GedcomxError::NoId("Agent".to_string()).to_string();
+        let expected = GedcomxError::no_id_error(&agent).to_string();
         assert_eq!(rr.unwrap_err().to_string(), expected)
     }
 
@@ -134,7 +134,7 @@ mod test {
     fn from_person_no_id() {
         let person = Person::default();
         let rr: Result<ResourceReference, GedcomxError> = (&person).try_into();
-        let expected = GedcomxError::NoId("Person".to_string()).to_string();
+        let expected = GedcomxError::no_id_error(&person).to_string();
         assert_eq!(rr.unwrap_err().to_string(), expected)
     }
 
@@ -163,7 +163,7 @@ mod test {
             .document_type(DocumentType::Analysis)
             .build();
         let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
-        let expected = GedcomxError::NoId("Document".to_string()).to_string();
+        let expected = GedcomxError::no_id_error(&document).to_string();
         assert_eq!(rr.unwrap_err().to_string(), expected)
     }
 
@@ -186,7 +186,7 @@ mod test {
     fn from_document_wrong_type_no_id() {
         let document = Document::default();
         let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
-        let expected = GedcomxError::NoId("Document".to_string()).to_string();
+        let expected = GedcomxError::no_id_error(&document).to_string();
         assert_eq!(rr.unwrap_err().to_string(), expected)
     }
 }

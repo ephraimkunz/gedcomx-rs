@@ -49,7 +49,7 @@ impl TryFrom<&PlaceDescription> for Uri {
     fn try_from(pd: &PlaceDescription) -> Result<Self, Self::Error> {
         match &pd.id {
             Some(id) => Ok(id.into()),
-            None => Err(GedcomxError::NoId("PlaceDescription".to_string())),
+            None => Err(GedcomxError::no_id_error(&pd)),
         }
     }
 }
@@ -60,7 +60,7 @@ impl TryFrom<&SourceDescription> for Uri {
     fn try_from(sd: &SourceDescription) -> Result<Self, Self::Error> {
         match &sd.id {
             Some(id) => Ok(id.into()),
-            None => Err(GedcomxError::NoId("SourceDescription".to_string())),
+            None => Err(GedcomxError::no_id_error(&sd)),
         }
     }
 }
@@ -111,7 +111,7 @@ mod test {
         let uri = Uri::try_from(&source_description);
         assert_eq!(
             uri.unwrap_err().to_string(),
-            GedcomxError::NoId("SourceDescription".to_string()).to_string()
+            GedcomxError::no_id_error(&source_description).to_string()
         )
     }
 
@@ -128,7 +128,7 @@ mod test {
         let uri = Uri::try_from(&place_description);
         assert_eq!(
             uri.unwrap_err().to_string(),
-            GedcomxError::NoId("PlaceDescription".to_string()).to_string()
+            GedcomxError::no_id_error(&place_description).to_string()
         )
     }
 

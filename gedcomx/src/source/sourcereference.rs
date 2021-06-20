@@ -125,7 +125,7 @@ impl TryFrom<&SourceDescription> for SourceReference {
     fn try_from(s: &SourceDescription) -> std::result::Result<Self, Self::Error> {
         match &s.id {
             Some(id) => Ok(Self::new(id.into(), None, None, vec![])),
-            None => Err(GedcomxError::NoId("SourceDescription".to_string())),
+            None => Err(GedcomxError::no_id_error(&s)),
         }
     }
 }

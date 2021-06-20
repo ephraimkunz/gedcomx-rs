@@ -6,9 +6,7 @@ macro_rules! try_from_evidencereference {
             fn try_from(f: &$from_type) -> Result<Self, Self::Error> {
                 match &f.id {
                     Some(id) => Ok(Self::new(id.into(), None)),
-                    None => Err(GedcomxError::NoId(
-                        std::any::type_name::<$from_type>().to_string(),
-                    )),
+                    None => Err(GedcomxError::no_id_error(f)),
                 }
             }
         }

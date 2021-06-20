@@ -252,7 +252,7 @@ mod test {
         let agent = Agent::builder().person(&person).map(|b| b.build());
         assert_eq!(
             agent.unwrap_err().to_string(),
-            GedcomxError::NoId("Person".to_string()).to_string()
+            GedcomxError::no_id_error(&person).to_string()
         )
     }
 
