@@ -1,3 +1,5 @@
+use std::convert::TryInto;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -73,7 +75,6 @@ pub struct Gedcomx {
     /// Reference to the description of this data set.
     ///
     /// If provided, MUST resolve to an instance of SourceDescription.
-    // TODO: Enforce
     #[yaserde(attribute)]
     pub description: Option<Uri>,
 }
@@ -122,8 +123,18 @@ impl GedcomxBuilder {
         Self(Gedcomx::default())
     }
 
-    pub fn agent(&mut self, agent: Agent) -> &mut Self {
-        self.0.agents.push(agent);
+    pub fn id<I: Into<Id>>(&mut self, id: I) -> &mut Self {
+        self.0.id = Some(id.into());
+        self
+    }
+
+    pub fn lang<I: Into<Lang>>(&mut self, lang: I) -> &mut Self {
+        self.0.lang = Some(lang.into());
+        self
+    }
+
+    pub fn attribution(&mut self, attribution: Attribution) -> &mut Self {
+        self.0.attribution = Some(attribution);
         self
     }
 
@@ -147,21 +158,6 @@ impl GedcomxBuilder {
         self
     }
 
-    pub fn document(&mut self, document: Document) -> &mut Self {
-        self.0.documents.push(document);
-        self
-    }
-
-    pub fn attribution(&mut self, atribution: Attribution) -> &mut Self {
-        self.0.attribution = Some(atribution);
-        self
-    }
-
-    pub fn event(&mut self, event: Event) -> &mut Self {
-        self.0.events.push(event);
-        self
-    }
-
     pub fn source_description(&mut self, source_description: SourceDescription) -> &mut Self {
         self.0.source_descriptions.push(source_description);
         self
@@ -175,14 +171,64 @@ impl GedcomxBuilder {
         self
     }
 
+    pub fn agent(&mut self, agent: Agent) -> &mut Self {
+        self.0.agents.push(agent);
+        self
+    }
+
     pub fn agents(&mut self, agents: Vec<Agent>) -> &mut Self {
         self.0.agents = agents;
+        self
+    }
+
+    pub fn event(&mut self, event: Event) -> &mut Self {
+        self.0.events.push(event);
+        self
+    }
+
+    pub fn events(&mut self, events: Vec<Event>) -> &mut Self {
+        self.0.events = events;
+        self
+    }
+
+    pub fn document(&mut self, document: Document) -> &mut Self {
+        self.0.documents.push(document);
+        self
+    }
+
+    pub fn documents(&mut self, documents: Vec<Document>) -> &mut Self {
+        self.0.documents = documents;
+        self
+    }
+
+    pub fn place(&mut self, place: PlaceDescription) -> &mut Self {
+        self.0.places.push(place);
         self
     }
 
     pub fn places(&mut self, places: Vec<PlaceDescription>) -> &mut Self {
         self.0.places = places;
         self
+    }
+
+    pub fn group(&mut self, group: Group) -> &mut Self {
+        self.0.groups.push(group);
+        self
+    }
+
+    pub fn groups(&mut self, groups: Vec<Group>) -> &mut Self {
+        self.0.groups = groups;
+        self
+    }
+
+    /// # Errors
+    ///
+    /// Will return [`GedcomxError::NoId`](crate::GedcomxError::NoId) if a
+    /// conversion into [`Uri`](crate::Uri) fails.
+    /// This happens if `description` has no `id` set.
+    pub fn description(&mut self, description: &SourceDescription) -> Result<&mut Self> {
+        self.0.description = Some(description.try_into()?);
+        Ok(self)
     }
 
     pub fn build(&self) -> Gedcomx {
@@ -322,21 +368,31 @@ mod test {
 
     #[test]
     fn json_deserialize() {
-        todo!();
+        let gedcomx: Gedcomx = Gedcomx::from_json_str("{}").unwrap();
+        assert_eq!(gedcomx, Gedcomx::default());
     }
 
     #[test]
     fn xml_deserialize() {
-        todo!();
+        let gedcomx: Gedcomx = Gedcomx::from_xml_str("<Gedcomx></Gedcomx>").unwrap();
+        assert_eq!(gedcomx, Gedcomx::default());
     }
 
     #[test]
     fn json_serialize() {
-        todo!();
+        let gedcomx = Gedcomx::default();
+        let json = gedcomx.to_json_string().unwrap();
+        assert_eq!(json, "{}");
     }
 
     #[test]
     fn xml_serialize() {
-        todo!();
+        let gedcomx = Gedcomx::default();
+        let json = gedcomx.to_xml_string().unwrap();
+        assert_eq!(
+            json,
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?><gedcomx xmlns=\"http://gedcomx.org/v1/\" \
+             />"
+        );
     }
 }

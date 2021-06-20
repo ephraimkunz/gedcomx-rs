@@ -66,7 +66,6 @@ struct TestConclusionData {
 struct TestData {
     attribution: Attribution,
     source_reference: SourceReference,
-    note: Note,
     evidence_reference: EvidenceReference,
     conclusion_data: TestConclusionData,
 }
@@ -109,7 +108,7 @@ impl TestData {
             analysis: Some(ResourceReference::from(
                 "http://identifier/for/analysis/document",
             )),
-            notes: vec![note.clone()],
+            notes: vec![note],
             confidence: Some(ConfidenceLevel::High),
             attribution: Some(attribution.clone()),
         };
@@ -120,7 +119,6 @@ impl TestData {
         Self {
             attribution,
             source_reference,
-            note,
             evidence_reference,
             conclusion_data,
         }
