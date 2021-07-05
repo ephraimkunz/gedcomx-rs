@@ -21,6 +21,11 @@ This crate provides conformance to the following GEDCOM X specs:
 - [ ] [GEDCOM X Atom Extensions 1.0](https://github.com/FamilySearch/gedcomx-rs/blob/master/specifications/atom-model-specification.md)
 - [ ] [GEDCOM X RS 1.0](https://github.com/FamilySearch/gedcomx-rs/blob/master/specifications/rs-specification.md)
 
+## Features
+- Well tested: hundreds of unit tests and some large integration tests. Integration tests parsing of all the recipes in the [Recipe Book](http://www.gedcomx.org/Recipe-Book.html) as well as other test data from the [Java Gedcomx implementation](https://github.com/FamilySearch/gedcomx-java).
+- Use the builder pattern to safely build GEDCOM X data models.
+- XML and JSON serialization and deserialization supported.
+
 ## Usage and Documentation
 Full crate documentation and examples is available [here](https://docs.rs/gedcomx).
 
