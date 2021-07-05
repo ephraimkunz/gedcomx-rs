@@ -1,13 +1,13 @@
 [package]
 name = "gedcomx"
-version = "0.1.0-alpha.6"
+version = "0.1.0"
 authors = ["Ephraim Kunz <ephraimkunz@me.com>"]
 edition = "2018"
 description = "The core data structures and serialization / deserialization of the GEDCOM X format."
 keywords = ["genealogy", "gedcomx", "family-trees"]
 categories = ["encoding", "parsing"]
 license = "MIT"
-repository = "https://github.com/ephraimkunz/gedcomx-rs/gedcomx"
+repository = "https://github.com/ephraimkunz/gedcomx-rs/tree/main/gedcomx"
 readme = "README.md"
 
 [dependencies]
