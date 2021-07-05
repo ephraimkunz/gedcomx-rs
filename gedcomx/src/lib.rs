@@ -35,7 +35,9 @@
 //! method will take any required argument the final type needs to have set.
 //! Other properties can then be set on the builder. After the builder has been
 //! fully configured, it can be transformed into an instance of the type it is
-//! building by calling the `build` method on it. ```
+//! building by calling the `build` method on it.
+//!
+//! ```
 //! use gedcomx::{Gedcomx, Name, NameForm, NameType, Person};
 //!
 //! let gx = Gedcomx::builder()
