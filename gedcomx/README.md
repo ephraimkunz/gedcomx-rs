@@ -34,7 +34,7 @@ Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-gedcomx = "0.4"
+gedcomx = "0.1.0-alpha.6"
 ```
 
 ## Example
