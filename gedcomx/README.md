@@ -19,3 +19,6 @@ This crate provides conformance to the following GEDCOM X specs:
 - [ ] [FamilySearch GEDCOM X Extensions](https://github.com/FamilySearch/gedcomx-familysearch-extensions/blob/master/specifications/gedcomx-familysearch-specification.md)
 - [ ] [GEDCOM X Atom Extensions 1.0](https://github.com/FamilySearch/gedcomx-rs/blob/master/specifications/atom-model-specification.md)
 - [ ] [GEDCOM X RS 1.0](https://github.com/FamilySearch/gedcomx-rs/blob/master/specifications/rs-specification.md)
+
+## Contributing
+See the [Design Doc](gedcomx/DESIGN.md) for more information about why various choices were made. PRs welcome!

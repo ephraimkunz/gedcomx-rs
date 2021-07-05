@@ -26,6 +26,6 @@ gedcomx_date = "0.0.2"
 serde_json = "1"
 
 [dev-dependencies]
-pretty_assertions = "0.6"
+pretty_assertions = "0.7"
 assert-json-diff = "2"
 env_logger = "0.8"

@@ -1,3 +1,93 @@
+//! # GEDCOM X
+//! GEDCOM X defines an open data model and an open serialization format for
+//! exchanging the genealogical data essential to the genealogical research
+//! process. Examples of these data include information about persons, the
+//! relationships between persons, and the records that support that
+//! information.
+//!
+//! This library provides the base types necessary to implement the GEDCOM X
+//! conceptual model and aims to implement further extensions to this model in
+//! the future. The goal of the library is to provide a correct, hard to misuse
+//! API that can handle serialization / deserialization to and from both
+//! JSON and XML. It's intended to be a solid foundationalal building block that
+//! other genealogical software can be built on top of.
+//!
+//! ## Deserialize a GEDCOM X document from JSON
+//!
+//! ```
+//! use gedcomx_date::{parse, GedcomxDate};
+//! let date = parse("+1988-03-29T03:19").unwrap();
+//! match date {
+//!     GedcomxDate::Simple(simple_date) => {
+//!         let date = simple_date.date;
+//!         println!("{}", date.year); // 1988
+//!         println!("{}", date.month.unwrap()); // 3
+//!         println!("{}", date.day.unwrap()); // 29
+//!         let time = simple_date.time.unwrap();
+//!         println!("{}", time.hours); // 3
+//!         println!("{}", time.minutes.unwrap()); // 19
+//!     }
+//!     _ => {}
+//! }
+//! ```
+
+//! ## Build and serialize a GEDCOM X document to JSON
+//!
+//! ```
+//! use gedcomx_date::{parse, GedcomxDate};
+//! let date = parse("+1988-03-29T03:19").unwrap();
+//! match date {
+//!     GedcomxDate::Simple(simple_date) => {
+//!         let date = simple_date.date;
+//!         println!("{}", date.year); // 1988
+//!         println!("{}", date.month.unwrap()); // 3
+//!         println!("{}", date.day.unwrap()); // 29
+//!         let time = simple_date.time.unwrap();
+//!         println!("{}", time.hours); // 3
+//!         println!("{}", time.minutes.unwrap()); // 19
+//!     }
+//!     _ => {}
+//! }
+//! ```
+
+//! ## Deserialize a GEDCOM X document from XML
+//!
+//! ```
+//! use gedcomx_date::{parse, GedcomxDate};
+//! let date = parse("+1988-03-29T03:19").unwrap();
+//! match date {
+//!     GedcomxDate::Simple(simple_date) => {
+//!         let date = simple_date.date;
+//!         println!("{}", date.year); // 1988
+//!         println!("{}", date.month.unwrap()); // 3
+//!         println!("{}", date.day.unwrap()); // 29
+//!         let time = simple_date.time.unwrap();
+//!         println!("{}", time.hours); // 3
+//!         println!("{}", time.minutes.unwrap()); // 19
+//!     }
+//!     _ => {}
+//! }
+//! ```
+
+//! ## Build and serialize a GEDCOM X document to XML
+//!
+//! ```
+//! use gedcomx_date::{parse, GedcomxDate};
+//! let date = parse("+1988-03-29T03:19").unwrap();
+//! match date {
+//!     GedcomxDate::Simple(simple_date) => {
+//!         let date = simple_date.date;
+//!         println!("{}", date.year); // 1988
+//!         println!("{}", date.month.unwrap()); // 3
+//!         println!("{}", date.day.unwrap()); // 29
+//!         let time = simple_date.time.unwrap();
+//!         println!("{}", time.hours); // 3
+//!         println!("{}", time.minutes.unwrap()); // 19
+//!     }
+//!     _ => {}
+//! }
+//! ```
+
 #![deny(clippy::all)]
 #![deny(clippy::pedantic)]
 #![deny(clippy::nursery)]
