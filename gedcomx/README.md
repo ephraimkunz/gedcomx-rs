@@ -21,9 +21,18 @@ This crate provides conformance to the following GEDCOM X specs:
 - [ ] [GEDCOM X Atom Extensions 1.0](https://github.com/FamilySearch/gedcomx-rs/blob/master/specifications/atom-model-specification.md)
 - [ ] [GEDCOM X RS 1.0](https://github.com/FamilySearch/gedcomx-rs/blob/master/specifications/rs-specification.md)
 
-## Usage and Documentation
-Full crate documentation and examples is available [here](https://docs.rs/gedcomx).
+## Documentation
+https://docs.rs/gedcomx
 
+## Usage
+Add this to your Cargo.toml:
+
+```toml
+[dependencies]
+gedcomx = "0.4"
+```
+
+## Example
 A GEDCOM X document can be deserialized from JSON:
 
 ```rust
