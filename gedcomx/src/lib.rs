@@ -7,85 +7,101 @@
 //!
 //! This library provides the base types necessary to implement the GEDCOM X
 //! conceptual model and aims to implement further extensions to this model in
-//! the future. The goal of the library is to provide a correct, hard to misuse
+//! the future. The goal of the library is to provide a correct, hard-to-misuse
 //! API that can handle serialization / deserialization to and from both
-//! JSON and XML. It's intended to be a solid foundationalal building block that
+//! JSON and XML. It's intended to be a solid foundational building block that
 //! other genealogical software can be built on top of.
 //!
+//! # Examples
 //! ## Deserialize a GEDCOM X document from JSON
 //!
 //! ```
-//! use gedcomx_date::{parse, GedcomxDate};
-//! let date = parse("+1988-03-29T03:19").unwrap();
-//! match date {
-//!     GedcomxDate::Simple(simple_date) => {
-//!         let date = simple_date.date;
-//!         println!("{}", date.year); // 1988
-//!         println!("{}", date.month.unwrap()); // 3
-//!         println!("{}", date.day.unwrap()); // 29
-//!         let time = simple_date.time.unwrap();
-//!         println!("{}", time.hours); // 3
-//!         println!("{}", time.minutes.unwrap()); // 19
-//!     }
-//!     _ => {}
-//! }
+//! use gedcomx::Gedcomx;
+//!
+//! let json = std::fs::read_to_string("../data/birth.json").unwrap();
+//! let gx = Gedcomx::from_json_str(&json).unwrap();
+//! println!(
+//!     "Successfully deserialized GEDCOM X document from JSON with {} people inside!",
+//!     gx.persons.len()
+//! );
+//!
+//! assert_eq!(gx.persons.len(), 4);
 //! ```
 
 //! ## Build and serialize a GEDCOM X document to JSON
+//! Most of the GEDCOM X types have lots of properties. Builders are provided
+//! for most types to conveniently set only the properties you choose to.
+//! Builders can be created with the `builder` method on the specific type. This
+//! method will take any required argument the final type needs to have set.
+//! Other properties can then be set on the builder. After the builder has been
+//! fully configured, it can be transformed into an instance of the type it is
+//! building by calling the `build` method on it. ```
+//! use gedcomx::{Gedcomx, Name, NameForm, NameType, Person};
 //!
-//! ```
-//! use gedcomx_date::{parse, GedcomxDate};
-//! let date = parse("+1988-03-29T03:19").unwrap();
-//! match date {
-//!     GedcomxDate::Simple(simple_date) => {
-//!         let date = simple_date.date;
-//!         println!("{}", date.year); // 1988
-//!         println!("{}", date.month.unwrap()); // 3
-//!         println!("{}", date.day.unwrap()); // 29
-//!         let time = simple_date.time.unwrap();
-//!         println!("{}", time.hours); // 3
-//!         println!("{}", time.minutes.unwrap()); // 19
-//!     }
-//!     _ => {}
-//! }
+//! let gx = Gedcomx::builder()
+//!     .person(
+//!         Person::builder()
+//!             .private(true)
+//!             .name(
+//!                 Name::builder(
+//!                     NameForm::builder()
+//!                         .full_text("Jim Halpert")
+//!                         .lang("en")
+//!                         .build(),
+//!                 )
+//!                 .name_type(NameType::BirthName)
+//!                 .build(),
+//!             )
+//!             .build(),
+//!     )
+//!     .build();
+//!
+//! let json = gx.to_json_string_pretty().unwrap();
+//!
+//! assert_eq!(json.len(), 285);
 //! ```
 
 //! ## Deserialize a GEDCOM X document from XML
 //!
 //! ```
-//! use gedcomx_date::{parse, GedcomxDate};
-//! let date = parse("+1988-03-29T03:19").unwrap();
-//! match date {
-//!     GedcomxDate::Simple(simple_date) => {
-//!         let date = simple_date.date;
-//!         println!("{}", date.year); // 1988
-//!         println!("{}", date.month.unwrap()); // 3
-//!         println!("{}", date.day.unwrap()); // 29
-//!         let time = simple_date.time.unwrap();
-//!         println!("{}", time.hours); // 3
-//!         println!("{}", time.minutes.unwrap()); // 19
-//!     }
-//!     _ => {}
-//! }
+//! use gedcomx::Gedcomx;
+//!
+//! let xml = std::fs::read_to_string("../data/birth.xml").unwrap();
+//! let gx = Gedcomx::from_xml_str(&xml).unwrap();
+//! println!(
+//!     "Successfully deserialized GEDCOM X document from XML with {} people inside!",
+//!     gx.persons.len()
+//! );
+//!
+//! assert_eq!(gx.persons.len(), 4);
 //! ```
 
 //! ## Build and serialize a GEDCOM X document to XML
 //!
 //! ```
-//! use gedcomx_date::{parse, GedcomxDate};
-//! let date = parse("+1988-03-29T03:19").unwrap();
-//! match date {
-//!     GedcomxDate::Simple(simple_date) => {
-//!         let date = simple_date.date;
-//!         println!("{}", date.year); // 1988
-//!         println!("{}", date.month.unwrap()); // 3
-//!         println!("{}", date.day.unwrap()); // 29
-//!         let time = simple_date.time.unwrap();
-//!         println!("{}", time.hours); // 3
-//!         println!("{}", time.minutes.unwrap()); // 19
-//!     }
-//!     _ => {}
-//! }
+//! use gedcomx::{Gedcomx, Name, NameForm, NameType, Person};
+//!
+//! let gx = Gedcomx::builder()
+//!     .person(
+//!         Person::builder()
+//!             .private(true)
+//!             .name(
+//!                 Name::builder(
+//!                     NameForm::builder()
+//!                         .full_text("Jim Halpert")
+//!                         .lang("en")
+//!                         .build(),
+//!                 )
+//!                 .name_type(NameType::BirthName)
+//!                 .build(),
+//!             )
+//!             .build(),
+//!     )
+//!     .build();
+//!
+//! let xml = gx.to_xml_string_pretty().unwrap();
+//!
+//! assert_eq!(xml.len(), 277);
 //! ```
 
 #![deny(clippy::all)]

@@ -9,7 +9,7 @@ use crate::{
     Relationship, Result, SourceDescription, Uri,
 };
 
-/// A container for a set of GEDCOM X data.
+/// A container for a set of GEDCOM X data. The top level type in the library.
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, YaSerialize, YaDeserialize, Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]
