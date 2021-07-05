@@ -22,4 +22,4 @@ This crate provides conformance to the following GEDCOM X specs:
 - [ ] [GEDCOM X RS 1.0](https://github.com/FamilySearch/gedcomx-rs/blob/master/specifications/rs-specification.md)
 
 ## Contributing
-See the [Design Doc](gedcomx/DESIGN.md) for more information about why various choices were made. PRs welcome!
+See the [Design Doc](DESIGN.md) for more information about why various choices were made. PRs welcome!
