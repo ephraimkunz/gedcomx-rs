@@ -94,6 +94,7 @@
 #![deny(clippy::cargo)]
 // #![deny(missing_docs)]
 // #![deny(missing_doc_code_examples)]
+#![allow(clippy::nonstandard_macro_braces)] // https://github.com/rust-lang/rust-clippy/issues/7434
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::must_use_candidate)]
