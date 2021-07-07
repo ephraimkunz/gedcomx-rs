@@ -42,29 +42,31 @@ impl YaSerialize for Timestamp {
     ) -> Result<(), String> {
         if let Some(start_event_name) = writer.get_start_event_name() {
             writer
-                .write(xml::writer::XmlEvent::start_element(
+                .write(yaserde::xml::writer::XmlEvent::start_element(
                     start_event_name.as_str(),
                 ))
                 .map_err(|e| e.to_string())?;
         }
 
         writer
-            .write(xml::writer::XmlEvent::characters(&self.to_string()))
+            .write(yaserde::xml::writer::XmlEvent::characters(
+                &self.to_string(),
+            ))
             .map_err(|e| e.to_string())?;
         writer
-            .write(xml::writer::XmlEvent::end_element())
+            .write(yaserde::xml::writer::XmlEvent::end_element())
             .map_err(|e| e.to_string())?;
         Ok(())
     }
 
     fn serialize_attributes(
         &self,
-        attributes: Vec<xml::attribute::OwnedAttribute>,
-        namespace: xml::namespace::Namespace,
+        attributes: Vec<yaserde::xml::attribute::OwnedAttribute>,
+        namespace: yaserde::xml::namespace::Namespace,
     ) -> Result<
         (
-            Vec<xml::attribute::OwnedAttribute>,
-            xml::namespace::Namespace,
+            Vec<yaserde::xml::attribute::OwnedAttribute>,
+            yaserde::xml::namespace::Namespace,
         ),
         String,
     > {
@@ -76,19 +78,19 @@ impl YaDeserialize for Timestamp {
     fn deserialize<R: std::io::Read>(
         reader: &mut yaserde::de::Deserializer<R>,
     ) -> Result<Self, String> {
-        if let xml::reader::XmlEvent::StartElement { .. } = reader.next_event()? {
+        if let yaserde::xml::reader::XmlEvent::StartElement { .. } = reader.next_event()? {
         } else {
             return Err("No start event".to_string());
         }
 
         let timestamp;
-        if let xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
+        if let yaserde::xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
             timestamp = text.parse().map_err(|e: ParseError| e.to_string())?;
         } else {
             return Err("Characters missing".to_string());
         }
 
-        if let xml::reader::XmlEvent::EndElement { .. } = reader.next_event()? {
+        if let yaserde::xml::reader::XmlEvent::EndElement { .. } = reader.next_event()? {
             Ok(timestamp)
         } else {
             Err("No end event".to_string())

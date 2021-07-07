@@ -20,26 +20,29 @@ impl yaserde::YaSerialize for GedcomxDate {
         let yaserde_label = writer
             .get_start_event_name()
             .unwrap_or_else(|| "GedcomxDate".to_string());
-        let struct_start_event = xml::writer::XmlEvent::start_element(yaserde_label.as_ref())
-            .default_ns("http://gedcomx.org/v1/");
-        let event: ::xml::writer::events::XmlEvent = struct_start_event.into();
+        let struct_start_event =
+            yaserde::xml::writer::XmlEvent::start_element(yaserde_label.as_ref())
+                .default_ns("http://gedcomx.org/v1/");
+        let event: yaserde::xml::writer::events::XmlEvent = struct_start_event.into();
         let _ret = writer.write(event);
 
-        let _ret = writer.write(xml::writer::XmlEvent::characters(self.to_string().as_str()));
+        let _ret = writer.write(yaserde::xml::writer::XmlEvent::characters(
+            self.to_string().as_str(),
+        ));
 
-        let _ret = writer.write(xml::writer::events::XmlEvent::end_element());
+        let _ret = writer.write(yaserde::xml::writer::events::XmlEvent::end_element());
 
         Ok(())
     }
 
     fn serialize_attributes(
         &self,
-        attributes: Vec<xml::attribute::OwnedAttribute>,
-        namespace: xml::namespace::Namespace,
+        attributes: Vec<yaserde::xml::attribute::OwnedAttribute>,
+        namespace: yaserde::xml::namespace::Namespace,
     ) -> Result<
         (
-            Vec<xml::attribute::OwnedAttribute>,
-            xml::namespace::Namespace,
+            Vec<yaserde::xml::attribute::OwnedAttribute>,
+            yaserde::xml::namespace::Namespace,
         ),
         String,
     > {
@@ -51,7 +54,7 @@ impl yaserde::YaDeserialize for GedcomxDate {
     fn deserialize<R: std::io::Read>(
         reader: &mut yaserde::de::Deserializer<R>,
     ) -> Result<Self, String> {
-        if let xml::reader::XmlEvent::StartElement { name, .. } = reader.peek()?.clone() {
+        if let yaserde::xml::reader::XmlEvent::StartElement { name, .. } = reader.peek()?.clone() {
             let expected_name = "formal".to_owned();
             if name.local_name != expected_name {
                 return Err(format!(
@@ -64,7 +67,7 @@ impl yaserde::YaDeserialize for GedcomxDate {
             return Err("StartElement missing".to_string());
         }
 
-        if let xml::reader::XmlEvent::Characters(text) = reader.peek()?.clone() {
+        if let yaserde::xml::reader::XmlEvent::Characters(text) = reader.peek()?.clone() {
             text.parse::<Self>().map_err(|e| e.to_string())
         } else {
             Err("Characters missing".to_string())

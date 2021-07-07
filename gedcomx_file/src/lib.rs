@@ -1,7 +1,7 @@
 // use std::{
 //     collections::HashMap,
 //     fmt::{Debug, Formatter},
-//     io::{self, Read, Seek},
+//     io::{self},
 // };
 // use thiserror::Error;
 
@@ -11,7 +11,7 @@
 // }
 
 // struct GedcomxFileEntry<'a> {
-//     inner: zip::read::ZipFile<'a>,
+//     filename: &'a str,
 // }
 
 // impl<'a> Debug for GedcomxFileEntry<'a> {
@@ -27,8 +27,10 @@
 //     }
 
 //     /// Get the entries found in this GEDCOM X file. Does not include the manifest.
-//     fn entries<'a>(&'a mut self) -> GedcomxFileIter<'a, R> {
-//         GedcomxFileIter { i: 0, file: self }
+//     fn entries<'a>(&'a mut self) -> impl Iterator<Item = GedcomxFileEntry> {
+//         GedcomxFileIter {
+//             inner: self.reader.file_names(),
+//         }
 //     }
 
 //     /// Get the manifest.
@@ -42,28 +44,24 @@
 //     }
 // }
 
-// struct GedcomxFileIter<'a, R> {
-//     i: usize,
-//     file: &'a mut GedcomxFile<R>,
+// struct GedcomxFileIter<I> {
+//     inner: I,
 // }
 
-// impl<'a, R: Read + Seek> Iterator for GedcomxFileIter<'a, R> {
+// impl<'a, I: Iterator<Item = &'a str>> Iterator for GedcomxFileIter<I> {
 //     type Item = GedcomxFileEntry<'a>;
 
-//     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-//         if self.i >= self.file.reader.len() {
-//             return None;
+//     fn next(&mut self) -> Option<GedcomxFileEntry<'a>> {
+//         let filename = match self.inner.next() {
+//             Some(s) => s,
+//             None => return None,
+//         };
+
+//         if filename == "META-INF/MANIFEST.MF" {
+//             return self.next();
 //         }
 
-//         let item = self
-//             .file
-//             .reader
-//             .by_index(self.i)
-//             .ok()
-//             .map(|f| GedcomxFileEntry { inner: f });
-//         self.i += 1;
-
-//         item
+//         Some(GedcomxFileEntry { filename })
 //     }
 // }
 
@@ -85,8 +83,8 @@
 //         let fp = Path::new("data/sample.gedx");
 //         let f = File::open(fp).unwrap();
 //         let mut gxf = GedcomxFile::from_reader(f).unwrap();
-//         for f in gxf.entries() {
-//             println!("{:?}", f);
+//         for entry in gxf.entries() {
+//             let gx = gxf.read_resource(entry);
 //         }
 //     }
 // }

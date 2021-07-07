@@ -55,7 +55,7 @@ impl yaserde::YaSerialize for Identifier {
     ) -> Result<(), String> {
         let provided_start_event_name = writer.get_start_event_name();
         let start_name = provided_start_event_name.as_deref().unwrap_or("identifier");
-        let mut start_builder = xml::writer::XmlEvent::start_element(start_name);
+        let mut start_builder = yaserde::xml::writer::XmlEvent::start_element(start_name);
 
         let identifier_type_value;
         if let Some(t) = &self.identifier_type {
@@ -65,22 +65,24 @@ impl yaserde::YaSerialize for Identifier {
 
         writer.write(start_builder).map_err(|e| e.to_string())?;
         writer
-            .write(xml::writer::XmlEvent::characters(&self.value.to_string()))
+            .write(yaserde::xml::writer::XmlEvent::characters(
+                &self.value.to_string(),
+            ))
             .map_err(|e| e.to_string())?;
         writer
-            .write(xml::writer::XmlEvent::end_element())
+            .write(yaserde::xml::writer::XmlEvent::end_element())
             .map_err(|e| e.to_string())?;
         Ok(())
     }
 
     fn serialize_attributes(
         &self,
-        attributes: Vec<xml::attribute::OwnedAttribute>,
-        namespace: xml::namespace::Namespace,
+        attributes: Vec<yaserde::xml::attribute::OwnedAttribute>,
+        namespace: yaserde::xml::namespace::Namespace,
     ) -> Result<
         (
-            Vec<xml::attribute::OwnedAttribute>,
-            xml::namespace::Namespace,
+            Vec<yaserde::xml::attribute::OwnedAttribute>,
+            yaserde::xml::namespace::Namespace,
         ),
         String,
     > {
@@ -94,7 +96,7 @@ impl yaserde::YaDeserialize for Identifier {
     ) -> Result<Self, String> {
         let mut identifier_type = None;
 
-        if let xml::reader::XmlEvent::StartElement {
+        if let yaserde::xml::reader::XmlEvent::StartElement {
             name: element_name,
             attributes,
             ..
@@ -130,7 +132,7 @@ impl yaserde::YaDeserialize for Identifier {
             return Err("StartElement missing".to_string());
         }
 
-        if let xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
+        if let yaserde::xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
             Ok(Self {
                 value: text.into(),
                 identifier_type,
