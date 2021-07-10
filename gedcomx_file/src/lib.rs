@@ -21,13 +21,16 @@ pub enum GedcomxFileEntry<R: Read> {
 }
 
 const MANIFEST_STR: &str = "META-INF/MANIFEST.MF";
+pub const GEDCOMX_RESOURCE_NAME: &str = "main";
 
+/// A file containing a bundle of genealogical resources.
 #[derive(Debug)]
 pub struct GedcomxFile<R> {
     inner: zip::ZipArchive<R>,
 }
 
 impl<R: io::Read + io::Seek> GedcomxFile<R> {
+    /// Create from a reader. This is usually a std::fs::File.
     pub fn from_reader(reader: R) -> Result<Self, GedcomxFileError> {
         let zip = zip::ZipArchive::new(reader)?;
         Ok(Self { inner: zip })
@@ -43,6 +46,7 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
         self.inner.is_empty()
     }
 
+    /// Get the resource entries by index in this GEDCOM X file.
     pub fn by_index(
         &mut self,
         file_number: usize,
@@ -56,7 +60,7 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
         self.inner.file_names()
     }
 
-    /// Get the entries by name in this GEDCOM X file.
+    /// Get the resource entries by name in this GEDCOM X file.
     pub fn by_name(
         &mut self,
         name: &str,
@@ -99,7 +103,7 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
         }
     }
 
-    /// Get the attributes that have been associated with this GEDCOM X file.
+    /// Get the attributes for a resource specified by name. Use `GEDCOMX_RESOURCE_NAME` to get the attributes for the GEDCOM X file itself.
     pub fn attributes_by_name(
         &mut self,
         name: &str,
@@ -110,7 +114,7 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
             .ok_or(GedcomxFileError::ZipError(ZipError::FileNotFound))
     }
 
-    /// Get the attributes that have been associated with this GEDCOM X file.
+    /// Get the attributes for a resource specified by index.
     pub fn attributes_by_index(
         &mut self,
         file_number: usize,
@@ -124,6 +128,7 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
     }
 }
 
+/// Required entry in a GEDCOM X file that provides metadata about the file and each of the resources in the file.
 #[derive(Debug)]
 pub struct GedcomxManifest {
     inner: HashMap<String, HashMap<String, String>>,
@@ -138,7 +143,7 @@ impl GedcomxManifest {
 
         let mut current_section = {
             let mut m = HashMap::new();
-            m.insert("Name".to_string(), "main".to_string());
+            m.insert("Name".to_string(), GEDCOMX_RESOURCE_NAME.to_string());
             m
         };
 
@@ -163,6 +168,7 @@ impl GedcomxManifest {
         Ok(Self { inner: sections })
     }
 
+    /// Attributes in the form of key -> value mappings for a given resource name. Use `GEDCOMX_RESOURCE_NAME` as the name to get the attributes of the GEDCOM X file itself.
     pub fn attributes_by_name(&self, name: &str) -> Option<HashMap<String, String>> {
         self.inner.get(name).cloned()
     }
@@ -225,6 +231,16 @@ mod tests {
     }
 
     #[test]
+    fn gedcomx_resource_constant() {
+        let fp = Path::new("data/sample.gedx");
+        let f = File::open(fp).unwrap();
+        let mut gxf = GedcomxFile::from_reader(f).unwrap();
+        let manifest = gxf.manifest().unwrap();
+        let name = manifest.attributes_by_name(GEDCOMX_RESOURCE_NAME).unwrap();
+        assert_eq!(name.get("Name").unwrap(), "main");
+    }
+
+    #[test]
     fn manifest() {
         let fp = Path::new("data/sample.gedx");
         let f = File::open(fp).unwrap();
@@ -232,7 +248,7 @@ mod tests {
 
         let expected = {
             let main = HashMap::<_, _>::from_iter([
-                ("Name".to_string(), "main".to_string()),
+                ("Name".to_string(), GEDCOMX_RESOURCE_NAME.to_string()),
                 ("Manifest-Version".to_string(), "1.0".to_string()),
                 (
                     "Created-By".to_string(),
@@ -268,7 +284,7 @@ mod tests {
             ]);
 
             HashMap::<_, _>::from_iter([
-                ("main".to_string(), main),
+                (GEDCOMX_RESOURCE_NAME.to_string(), main),
                 ("person1.png".to_string(), person1),
                 ("person2.png".to_string(), person2),
                 ("tree.xml".to_string(), tree),
