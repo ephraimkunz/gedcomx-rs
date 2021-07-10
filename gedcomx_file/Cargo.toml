@@ -15,5 +15,5 @@ readme = "README.md"
 [dependencies]
 zip = "0.5"
 thiserror = "1"
-
+gedcomx = "0.1"
 
