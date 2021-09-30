@@ -122,11 +122,11 @@ impl fmt::Display for GedcomxDate {
             gedcomx_date::GedcomxDate::Recurring(recurring) => {
                 if let Some(count) = recurring.count {
                     s.push_str(&format!("R{}/", count));
-                    range_into_string(&Some(recurring.start), &Some(recurring.end), false, &mut s);
                 } else {
                     s.push_str("R/");
-                    range_into_string(&Some(recurring.start), &Some(recurring.end), false, &mut s);
                 }
+
+                range_into_string(&Some(recurring.start), &Some(recurring.end), false, &mut s);
             }
         };
 
