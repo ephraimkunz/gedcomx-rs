@@ -33,13 +33,13 @@ impl From<String> for Uri {
 
 impl From<Id> for Uri {
     fn from(id: Id) -> Self {
-        Self(format!("#{}", id.to_string()))
+        Self(format!("#{}", id))
     }
 }
 
 impl From<&Id> for Uri {
     fn from(id: &Id) -> Self {
-        Self(format!("#{}", id.to_string()))
+        Self(format!("#{}", id))
     }
 }
 
