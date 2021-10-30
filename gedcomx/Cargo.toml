@@ -2,7 +2,7 @@
 name = "gedcomx"
 version = "0.1.1"
 authors = ["Ephraim Kunz <ephraimkunz@me.com>"]
-edition = "2018"
+edition = "2021"
 description = "The core data structures and serialization / deserialization of the GEDCOM X format."
 keywords = ["genealogy", "gedcomx", "family-trees"]
 categories = ["encoding", "parsing"]

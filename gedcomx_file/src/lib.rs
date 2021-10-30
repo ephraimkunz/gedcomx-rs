@@ -11,7 +11,7 @@ use zip::{read::ZipFile, result::ZipError};
 #[derive(Debug)]
 pub enum GedcomxFileEntry<R: Read> {
     /// A JSON or XML document in GEDCOM X format that has been deserialized.
-    Gedcomx(gedcomx::Gedcomx),
+    Gedcomx(Box<gedcomx::Gedcomx>),
 
     /// A GedcomxFile manifest.
     Manifest(GedcomxManifest),
@@ -84,11 +84,11 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
             .and_then(|e| e.to_str())
         {
             Some("json") => match gedcomx::Gedcomx::from_json_reader(&mut entry) {
-                Ok(gx) => Ok(GedcomxFileEntry::Gedcomx(gx)),
+                Ok(gx) => Ok(GedcomxFileEntry::Gedcomx(Box::new(gx))),
                 Err(e) => Err(GedcomxFileError::GedcomxError(e)),
             },
             Some("xml") => match gedcomx::Gedcomx::from_xml_reader(&mut entry) {
-                Ok(gx) => Ok(GedcomxFileEntry::Gedcomx(gx)),
+                Ok(gx) => Ok(GedcomxFileEntry::Gedcomx(Box::new(gx))),
                 Err(e) => Err(GedcomxFileError::GedcomxError(e)),
             },
             _ => Ok(GedcomxFileEntry::Reader(entry)),
