@@ -161,7 +161,7 @@ impl GedcomxManifest {
                     sections.insert(name, current_section.clone());
                     current_section.clear();
                 }
-            } else if let Some((key, value)) = line.split_once(":") {
+            } else if let Some((key, value)) = line.split_once(':') {
                 current_section.insert(key.trim().to_string(), value.trim().to_string());
             }
         }

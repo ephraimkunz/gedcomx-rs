@@ -83,12 +83,12 @@ impl YaDeserialize for Timestamp {
             return Err("No start event".to_string());
         }
 
-        let timestamp;
-        if let yaserde::xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
-            timestamp = text.parse().map_err(|e: ParseError| e.to_string())?;
-        } else {
-            return Err("Characters missing".to_string());
-        }
+        let timestamp =
+            if let yaserde::xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
+                text.parse().map_err(|e: ParseError| e.to_string())?
+            } else {
+                return Err("Characters missing".to_string());
+            };
 
         if let yaserde::xml::reader::XmlEvent::EndElement { .. } = reader.next_event()? {
             Ok(timestamp)
