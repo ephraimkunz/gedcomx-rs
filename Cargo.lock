@@ -200,12 +200,11 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 [[package]]
 name = "gedcomx"
 version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f9dfa5d220f88c7a3e15be4dec1a8211d81f6262379da1d7c16914075ede0b0"
 dependencies = [
- "assert-json-diff",
  "chrono",
- "env_logger",
  "gedcomx_date",
- "pretty_assertions",
  "serde",
  "serde_json",
  "serde_with",
@@ -216,12 +215,13 @@ dependencies = [
 
 [[package]]
 name = "gedcomx"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f9dfa5d220f88c7a3e15be4dec1a8211d81f6262379da1d7c16914075ede0b0"
+version = "0.1.2"
 dependencies = [
+ "assert-json-diff",
  "chrono",
+ "env_logger",
  "gedcomx_date",
+ "pretty_assertions",
  "serde",
  "serde_json",
  "serde_with",
@@ -243,7 +243,7 @@ dependencies = [
 name = "gedcomx_file"
 version = "0.1.0-alpha.0"
 dependencies = [
- "gedcomx 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gedcomx 0.1.1",
  "thiserror",
  "zip",
 ]
