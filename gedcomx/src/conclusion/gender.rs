@@ -1,5 +1,6 @@
 use std::fmt;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -92,6 +93,23 @@ impl Gender {
     }
 }
 
+impl Arbitrary for Gender {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut gender = Self::builder(GenderType::arbitrary(g))
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .build();
+
+        gender.analysis = Some(ResourceReference::arbitrary(g));
+        gender.sources = vec![SourceReference::arbitrary(g)];
+
+        gender
+    }
+}
+
 pub struct GenderBuilder(Gender);
 
 impl GenderBuilder {
@@ -176,6 +194,20 @@ impl fmt::Display for GenderType {
             Self::Intersex => write!(f, "http://gedcomx.org/Intersex"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Arbitrary for GenderType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::Male,
+            Self::Female,
+            Self::Unknown,
+            Self::Intersex,
+            Self::Custom(Uri::arbitrary(g)),
+        ];
+
+        g.choose(&options).unwrap().clone()
     }
 }
 
@@ -291,5 +323,19 @@ mod test {
             xml,
             "<Gender xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/Male\" />"
         );
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Gender) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Gender = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Gender) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Gender = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

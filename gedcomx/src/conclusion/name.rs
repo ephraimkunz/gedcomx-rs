@@ -1,5 +1,6 @@
-use std::{fmt, str::FromStr};
+use std::{fmt, str::FromStr, vec};
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -166,6 +167,25 @@ impl Name {
     }
 }
 
+impl Arbitrary for Name {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut name = Self::builder(NameForm::arbitrary(g))
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .name_type(NameType::arbitrary(g))
+            .date(Date::arbitrary(g))
+            .build();
+
+        name.analysis = Some(ResourceReference::arbitrary(g));
+        name.sources = vec![SourceReference::arbitrary(g)];
+
+        name
+    }
+}
+
 pub struct NameBuilder(Name);
 
 impl NameBuilder {
@@ -288,6 +308,23 @@ impl Default for NameType {
     }
 }
 
+impl Arbitrary for NameType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::BirthName,
+            Self::MarriedName,
+            Self::AlsoKnownAs,
+            Self::Nickname,
+            Self::AdoptiveName,
+            Self::FormalName,
+            Self::ReligiousName,
+            Self::Custom(Uri::arbitrary(g)),
+        ];
+
+        g.choose(&options).unwrap().clone()
+    }
+}
+
 /// A representation of a name (a "name form") within a given cultural context,
 /// such as a given language and script.
 ///
@@ -386,6 +423,16 @@ impl NameForm {
     }
 }
 
+impl Arbitrary for NameForm {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::builder()
+            .lang(Lang::arbitrary(g))
+            .full_text(crate::arbitrary_trimmed(g))
+            .part(NamePart::arbitrary(g))
+            .build()
+    }
+}
+
 pub struct NameFormBuilder(NameForm);
 
 impl NameFormBuilder {
@@ -474,6 +521,15 @@ impl NamePart {
     }
 }
 
+impl Arbitrary for NamePart {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::builder(crate::arbitrary_trimmed(g))
+            .part_type(NamePartType::arbitrary(g))
+            .qualifier(Qualifier::arbitrary(g))
+            .build()
+    }
+}
+
 pub struct NamePartBuilder(NamePart);
 
 impl NamePartBuilder {
@@ -556,6 +612,20 @@ impl fmt::Display for NamePartType {
 impl Default for NamePartType {
     fn default() -> Self {
         Self::Custom(Uri::default())
+    }
+}
+
+impl Arbitrary for NamePartType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::Prefix,
+            Self::Suffix,
+            Self::Given,
+            Self::Surname,
+            Self::Custom(Uri::arbitrary(g)),
+        ];
+
+        g.choose(&options).unwrap().clone()
     }
 }
 
@@ -1026,5 +1096,19 @@ mod test {
                 Qualifier::new(npq.to_string(), Some("Kunz".to_string()))
             );
         }
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Name) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Name = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Name) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Name = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

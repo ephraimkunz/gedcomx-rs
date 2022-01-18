@@ -1,3 +1,4 @@
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -33,6 +34,12 @@ impl SourceCitation {
             lang,
             value: value.into(),
         }
+    }
+}
+
+impl Arbitrary for SourceCitation {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::new(crate::arbitrary_trimmed(g), Some(Lang::arbitrary(g)))
     }
 }
 
@@ -139,5 +146,19 @@ mod test {
             json,
             r#"{"value":"a rendering of the full citation as a string"}"#
         )
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: SourceCitation) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: SourceCitation = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: SourceCitation) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: SourceCitation = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

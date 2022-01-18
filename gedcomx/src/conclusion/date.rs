@@ -1,3 +1,4 @@
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -33,8 +34,19 @@ impl Date {
     }
 }
 
+impl Arbitrary for Date {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::new(
+            Some(crate::arbitrary_trimmed(g)),
+            Some(GedcomxDate::arbitrary(g)),
+        )
+    }
+}
+
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use super::*;
 
     #[test]
@@ -160,5 +172,20 @@ mod test {
         let xml = yaserde::ser::to_string_with_config(&date, &config).unwrap();
 
         assert_eq!(xml, r#"<Date xmlns="http://gedcomx.org/v1/" />"#)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Date) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Date = serde_json::from_str(&json).unwrap();
+        assert_eq!(input, from_json);
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Date) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Date = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

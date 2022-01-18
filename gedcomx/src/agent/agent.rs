@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -114,6 +115,27 @@ impl Agent {
         AgentBuilder::new()
     }
 }
+
+impl Arbitrary for Agent {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut agent = Self::builder()
+            .id(Id::arbitrary(g))
+            .identifier(Identifier::arbitrary(g))
+            .name(TextValue::arbitrary(g))
+            .homepage(ResourceReference::arbitrary(g))
+            .openid(ResourceReference::arbitrary(g))
+            .account(OnlineAccount::arbitrary(g))
+            .email(ResourceReference::arbitrary(g))
+            .phone(ResourceReference::arbitrary(g))
+            .address(Address::arbitrary(g))
+            .build();
+
+        agent.person = Some(ResourceReference::arbitrary(g));
+
+        agent
+    }
+}
+
 pub struct AgentBuilder(Agent);
 
 impl AgentBuilder {
@@ -383,5 +405,19 @@ mod test {
         let xml = yaserde::ser::to_string_with_config(&agent, &config).unwrap();
         let expected_xml = r##"<agent xmlns="http://gedcomx.org/v1/" id="local_id"><identifier type="http://gedcomx.org/Primary">primaryIdentifier</identifier><name>Ephraim Kunz</name><name xml:lang="es">Ephraim Kunz Spanish</name><homepage resource="www.ephraimkunz.com" /><openid resource="some_openid_value" /><account><serviceHomepage resource="http://familysearch.org/" /><accountName>Family Search Account</accountName></account><email resource="mailto:someone@gedcomx.org" /><email resource="mailto:someone2@gedcomx.org" /><phone resource="tel:+1-201-555-0123" /><address><country>United States</country></address><person resource="#P-1" /></agent>"##;
         assert_eq!(xml, expected_xml)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Agent) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Agent = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Agent) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Agent = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

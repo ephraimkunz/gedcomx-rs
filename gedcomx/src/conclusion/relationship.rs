@@ -1,5 +1,6 @@
 use std::{convert::TryInto, fmt};
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -172,6 +173,30 @@ impl Relationship {
     }
 }
 
+impl Arbitrary for Relationship {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut relationship = Self::builder(&Person::arbitrary(g), &Person::arbitrary(g))
+            .unwrap()
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .extracted(bool::arbitrary(g))
+            .identifier(Identifier::arbitrary(g))
+            .relationship_type(RelationshipType::arbitrary(g))
+            .facts(vec![Fact::arbitrary(g)])
+            .build();
+
+        relationship.sources = vec![SourceReference::arbitrary(g)];
+        relationship.analysis = Some(ResourceReference::arbitrary(g));
+        relationship.evidence = vec![EvidenceReference::arbitrary(g)];
+        relationship.media = vec![SourceReference::arbitrary(g)];
+
+        relationship
+    }
+}
+
 pub struct RelationshipBuilder(Relationship);
 
 impl RelationshipBuilder {
@@ -299,6 +324,21 @@ impl Default for RelationshipType {
     }
 }
 
+impl Arbitrary for RelationshipType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::AncestorDescendant,
+            Self::Couple,
+            Self::EnslavedBy,
+            Self::Godparent,
+            Self::ParentChild,
+            Self::Custom(Uri::arbitrary(g)),
+        ];
+
+        g.choose(&options).unwrap().clone()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
@@ -408,5 +448,20 @@ mod test {
         let expected_xml = r##"<Relationship xmlns="http://gedcomx.org/v1/" id="local_id" extracted="false" type="http://gedcomx.org/Couple"><person1 resource="#http://identifier/for/person/1" /><person2 resource="#http://identifier/for/person/2" /></Relationship>"##;
 
         assert_eq!(xml, expected_xml)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Relationship) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Relationship = serde_json::from_str(&json).unwrap();
+        assert_eq!(from_json, input);
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Relationship) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Relationship = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

@@ -4,6 +4,7 @@ use std::{
     str::FromStr,
 };
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -71,6 +72,17 @@ impl SourceReference {
     /// This happens if `description` has no `id` set.
     pub fn builder(description: &SourceDescription) -> Result<SourceReferenceBuilder> {
         Ok(SourceReferenceBuilder::new(description.try_into()?))
+    }
+}
+
+impl Arbitrary for SourceReference {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::new(
+            Uri::arbitrary(g),
+            Some(Id::arbitrary(g)),
+            Some(Attribution::arbitrary(g)),
+            vec![Qualifier::arbitrary(g)],
+        )
     }
 }
 
@@ -185,6 +197,18 @@ impl fmt::Display for SourceReferenceQualifier {
     }
 }
 
+impl Arbitrary for SourceReferenceQualifier {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::CharacterRegion,
+            Self::RectangleRegion,
+            Self::TimeRegion,
+        ];
+
+        g.choose(&options).unwrap().clone()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
@@ -279,5 +303,19 @@ mod test {
 
         let json = serde_json::to_string(&source_reference).unwrap();
         assert_eq!(json, r#"{"description":"SD-1"}"#);
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: SourceReference) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: SourceReference = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: SourceReference) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: SourceReference = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

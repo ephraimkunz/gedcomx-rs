@@ -1,5 +1,6 @@
 use std::fmt;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 
 use crate::{EnumAsString, Uri};
@@ -55,7 +56,7 @@ impl yaserde::YaSerialize for Identifier {
     ) -> Result<(), String> {
         let provided_start_event_name = writer.get_start_event_name();
         let start_name = provided_start_event_name.as_deref().unwrap_or("identifier");
-        let mut start_builder = yaserde::xml::writer::XmlEvent::start_element(start_name);
+        let mut start_builder = xml::writer::XmlEvent::start_element(start_name);
 
         let identifier_type_value;
         if let Some(t) = &self.identifier_type {
@@ -65,24 +66,22 @@ impl yaserde::YaSerialize for Identifier {
 
         writer.write(start_builder).map_err(|e| e.to_string())?;
         writer
-            .write(yaserde::xml::writer::XmlEvent::characters(
-                &self.value.to_string(),
-            ))
+            .write(xml::writer::XmlEvent::characters(&self.value.to_string()))
             .map_err(|e| e.to_string())?;
         writer
-            .write(yaserde::xml::writer::XmlEvent::end_element())
+            .write(xml::writer::XmlEvent::end_element())
             .map_err(|e| e.to_string())?;
         Ok(())
     }
 
     fn serialize_attributes(
         &self,
-        attributes: Vec<yaserde::xml::attribute::OwnedAttribute>,
-        namespace: yaserde::xml::namespace::Namespace,
+        attributes: Vec<xml::attribute::OwnedAttribute>,
+        namespace: xml::namespace::Namespace,
     ) -> Result<
         (
-            Vec<yaserde::xml::attribute::OwnedAttribute>,
-            yaserde::xml::namespace::Namespace,
+            Vec<xml::attribute::OwnedAttribute>,
+            xml::namespace::Namespace,
         ),
         String,
     > {
@@ -96,7 +95,7 @@ impl yaserde::YaDeserialize for Identifier {
     ) -> Result<Self, String> {
         let mut identifier_type = None;
 
-        if let yaserde::xml::reader::XmlEvent::StartElement {
+        if let xml::reader::XmlEvent::StartElement {
             name: element_name,
             attributes,
             ..
@@ -132,7 +131,7 @@ impl yaserde::YaDeserialize for Identifier {
             return Err("StartElement missing".to_string());
         }
 
-        if let yaserde::xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
+        if let xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
             Ok(Self {
                 value: text.into(),
                 identifier_type,
@@ -141,6 +140,12 @@ impl yaserde::YaDeserialize for Identifier {
         } else {
             Err("Uri missing".to_string())
         }
+    }
+}
+
+impl Arbitrary for Identifier {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::new(Uri::arbitrary(g), Some(IdentifierType::arbitrary(g)))
     }
 }
 
@@ -273,6 +278,8 @@ pub(in crate) mod serde_vec_identifier_to_map {
 }
 
 /// Standard identifier types.
+/// Custom identifier types should not have a value of "$" since this is
+/// reserved for identifiers without a type in JSON.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
@@ -330,6 +337,27 @@ impl fmt::Display for IdentifierType {
             Self::Deprecated => write!(f, "http://gedcomx.org/Deprecated"),
             Self::Custom(c) => write!(f, "{}", c),
         }
+    }
+}
+
+impl Arbitrary for IdentifierType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        // Don't allow an identifier to use "$" as it's custom IdentifierType, since
+        // that symbol is reserved to collect identifier values with a None
+        // IdentifierType.
+
+        let mut custom = Uri::arbitrary(g);
+        while custom == "$".into() {
+            custom = Uri::arbitrary(g);
+        }
+
+        let options = vec![
+            Self::Primary,
+            Self::Authority,
+            Self::Deprecated,
+            Self::Custom(custom),
+        ];
+        g.choose(&options).unwrap().clone()
     }
 }
 

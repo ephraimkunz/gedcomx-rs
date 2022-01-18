@@ -1,5 +1,6 @@
 use std::convert::TryFrom;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
@@ -93,6 +94,14 @@ impl TryFrom<&Document> for ResourceReference {
                                                                            * here based on above
                                                                            * match statement. */
             }),
+        }
+    }
+}
+
+impl Arbitrary for ResourceReference {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self {
+            resource: Uri::arbitrary(g),
         }
     }
 }

@@ -1,6 +1,7 @@
 use std::{fmt, str::FromStr};
 
-use chrono::{serde::ts_milliseconds, DateTime, NaiveDateTime, ParseError, Utc};
+use chrono::{serde::ts_milliseconds, DateTime, NaiveDateTime, ParseError, TimeZone, Utc};
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use yaserde::{YaDeserialize, YaSerialize};
 
@@ -42,31 +43,29 @@ impl YaSerialize for Timestamp {
     ) -> Result<(), String> {
         if let Some(start_event_name) = writer.get_start_event_name() {
             writer
-                .write(yaserde::xml::writer::XmlEvent::start_element(
+                .write(xml::writer::XmlEvent::start_element(
                     start_event_name.as_str(),
                 ))
                 .map_err(|e| e.to_string())?;
         }
 
         writer
-            .write(yaserde::xml::writer::XmlEvent::characters(
-                &self.to_string(),
-            ))
+            .write(xml::writer::XmlEvent::characters(&self.to_string()))
             .map_err(|e| e.to_string())?;
         writer
-            .write(yaserde::xml::writer::XmlEvent::end_element())
+            .write(xml::writer::XmlEvent::end_element())
             .map_err(|e| e.to_string())?;
         Ok(())
     }
 
     fn serialize_attributes(
         &self,
-        attributes: Vec<yaserde::xml::attribute::OwnedAttribute>,
-        namespace: yaserde::xml::namespace::Namespace,
+        attributes: Vec<xml::attribute::OwnedAttribute>,
+        namespace: xml::namespace::Namespace,
     ) -> Result<
         (
-            Vec<yaserde::xml::attribute::OwnedAttribute>,
-            yaserde::xml::namespace::Namespace,
+            Vec<xml::attribute::OwnedAttribute>,
+            xml::namespace::Namespace,
         ),
         String,
     > {
@@ -78,19 +77,19 @@ impl YaDeserialize for Timestamp {
     fn deserialize<R: std::io::Read>(
         reader: &mut yaserde::de::Deserializer<R>,
     ) -> Result<Self, String> {
-        if let yaserde::xml::reader::XmlEvent::StartElement { .. } = reader.next_event()? {
+        if let xml::reader::XmlEvent::StartElement { .. } = reader.next_event()? {
         } else {
             return Err("No start event".to_string());
         }
 
-        let timestamp =
-            if let yaserde::xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
-                text.parse().map_err(|e: ParseError| e.to_string())?
-            } else {
-                return Err("Characters missing".to_string());
-            };
+        let timestamp = if let xml::reader::XmlEvent::Characters(text) = reader.next_event()? {
+            text.parse().map_err(|e: ParseError| e.to_string())?
+        } else {
+            return Err("Characters missing".to_string());
+        };
 
-        if let yaserde::xml::reader::XmlEvent::EndElement { .. } = reader.next_event()? {
+        // Yaserde seems to depend on us not consuming the end event.
+        if let xml::reader::XmlEvent::EndElement { .. } = reader.peek()? {
             Ok(timestamp)
         } else {
             Err("No end event".to_string())
@@ -170,6 +169,23 @@ impl fmt::Display for Timestamp {
         };
 
         write!(f, "{}", partial)
+    }
+}
+
+impl Arbitrary for Timestamp {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let naive = chrono::NaiveDate::from_ymd(
+            arbitrary_between!(i32; g, 1900, 2200),
+            arbitrary_between!(u32; g, 1, 12),
+            arbitrary_between!(u32; g, 1, 28),
+        )
+        .and_hms(
+            arbitrary_between!(u32; g, 0, 23),
+            arbitrary_between!(u32; g, 0, 59),
+            arbitrary_between!(u32; g, 0, 59),
+        );
+
+        Utc.from_utc_datetime(&naive).into()
     }
 }
 
@@ -295,5 +311,12 @@ mod test {
             .to_string(),
             "2020-03-07T04:40:00"
         );
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Timestamp) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Timestamp = serde_json::from_str(&json).unwrap();
+        input == from_json
     }
 }

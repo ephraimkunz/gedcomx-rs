@@ -20,13 +20,13 @@ path = ".."
 members = ["."]
 
 [[bin]]
-name = "deserialize_json"
-path = "fuzz_targets/deserialize_json.rs"
+name = "json"
+path = "fuzz_targets/json.rs"
 test = false
 doc = false
 
 [[bin]]
-name = "deserialize_xml"
-path = "fuzz_targets/deserialize_xml.rs"
+name = "xml"
+path = "fuzz_targets/xml.rs"
 test = false
 doc = false

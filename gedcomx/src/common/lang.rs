@@ -1,5 +1,6 @@
 use std::fmt;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 
 /// Defined by [IETF BCP 47](https://tools.ietf.org/html/bcp47).
@@ -23,5 +24,11 @@ impl From<&str> for Lang {
 impl From<String> for Lang {
     fn from(s: String) -> Self {
         Self(s)
+    }
+}
+
+impl Arbitrary for Lang {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self(crate::arbitrary_trimmed(g))
     }
 }

@@ -1,5 +1,6 @@
 use std::fmt;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 
 use crate::{EnumAsString, Uri};
@@ -48,6 +49,19 @@ impl fmt::Display for ConfidenceLevel {
 impl Default for ConfidenceLevel {
     fn default() -> Self {
         Self::Custom(Uri::default())
+    }
+}
+
+impl Arbitrary for ConfidenceLevel {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::High,
+            Self::Medium,
+            Self::Low,
+            Self::Custom(Uri::arbitrary(g)),
+        ];
+
+        g.choose(&options).unwrap().clone()
     }
 }
 
@@ -107,5 +121,12 @@ mod test {
         let expected = "this is a test";
 
         assert_eq!(actual, expected)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: ConfidenceLevel) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: ConfidenceLevel = serde_json::from_str(&json).unwrap();
+        input == from_json
     }
 }

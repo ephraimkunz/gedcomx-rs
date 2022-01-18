@@ -1,3 +1,4 @@
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -53,6 +54,16 @@ impl Note {
 
     pub fn builder<I: Into<String>>(text: I) -> NoteBuilder {
         NoteBuilder::new(text)
+    }
+}
+
+impl Arbitrary for Note {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::builder(crate::arbitrary_trimmed(g))
+            .lang(Lang::arbitrary(g))
+            .subject(crate::arbitrary_trimmed(g))
+            .attribution(Attribution::arbitrary(g))
+            .build()
     }
 }
 
@@ -212,5 +223,19 @@ mod test {
             .attribution(Attribution::default())
             .build();
         assert_eq!(note, expected)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Note) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Note = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Note) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Note = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

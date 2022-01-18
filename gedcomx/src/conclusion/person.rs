@@ -1,3 +1,4 @@
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -157,6 +158,31 @@ impl Person {
 
     pub fn builder() -> PersonBuilder {
         PersonBuilder::new()
+    }
+}
+
+impl Arbitrary for Person {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut person = Self::builder()
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .extracted(bool::arbitrary(g))
+            .identifier(Identifier::arbitrary(g))
+            .private(bool::arbitrary(g))
+            .gender(Gender::arbitrary(g))
+            .name(Name::arbitrary(g))
+            .fact(Fact::arbitrary(g))
+            .build();
+
+        person.sources = vec![SourceReference::arbitrary(g)];
+        person.analysis = Some(ResourceReference::arbitrary(g));
+        person.evidence = vec![EvidenceReference::arbitrary(g)];
+        person.media = vec![SourceReference::arbitrary(g)];
+
+        person
     }
 }
 
@@ -337,5 +363,19 @@ mod test {
         let expected = r##"{"id":"P-2","extracted":true,"names":[{"nameForms":[{"fullText":"Lo Yau"}]},{"type":"http://gedcomx.org/AlsoKnownAs","nameForms":[{"fullText":"Young Hong Wong"}]}]}"##;
 
         assert_eq!(json, expected)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Person) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Person = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Person) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Person = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

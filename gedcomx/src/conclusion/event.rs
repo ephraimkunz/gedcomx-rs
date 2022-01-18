@@ -1,5 +1,6 @@
-use std::fmt;
+use std::{fmt, vec};
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -189,6 +190,31 @@ impl Event {
 
     pub fn builder() -> EventBuilder {
         EventBuilder::new()
+    }
+}
+
+impl Arbitrary for Event {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut event = Self::builder()
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .extracted(bool::arbitrary(g))
+            .identifier(Identifier::arbitrary(g))
+            .event_type(EventType::arbitrary(g))
+            .date(Date::arbitrary(g))
+            .place(PlaceReference::arbitrary(g))
+            .role(EventRole::arbitrary(g))
+            .build();
+
+        event.sources = vec![SourceReference::arbitrary(g)];
+        event.analysis = Some(ResourceReference::arbitrary(g));
+        event.evidence = vec![EvidenceReference::arbitrary(g)];
+        event.media = vec![SourceReference::arbitrary(g)];
+
+        event
     }
 }
 
@@ -404,6 +430,50 @@ impl Default for EventType {
     }
 }
 
+impl Arbitrary for EventType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::Adoption,
+            Self::AdultChristening,
+            Self::Annulment,
+            Self::Baptism,
+            Self::BarMitzvah,
+            Self::BatMitzvah,
+            Self::Birth,
+            Self::Blessing,
+            Self::Burial,
+            Self::Census,
+            Self::Christening,
+            Self::Circumcision,
+            Self::Confirmation,
+            Self::Cremation,
+            Self::Death,
+            Self::Divorce,
+            Self::DivorceFiling,
+            Self::Education,
+            Self::Engagement,
+            Self::Emigration,
+            Self::Excommunication,
+            Self::FirstCommunion,
+            Self::Funeral,
+            Self::Immigration,
+            Self::LandTransaction,
+            Self::Marriage,
+            Self::MilitaryAward,
+            Self::MilitaryDischarge,
+            Self::Mission,
+            Self::MoveFrom,
+            Self::MoveTo,
+            Self::Naturalization,
+            Self::Ordination,
+            Self::Retirement,
+            Self::Custom(Uri::arbitrary(g)),
+        ];
+
+        g.choose(&options).unwrap().clone()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
@@ -480,5 +550,19 @@ mod test {
             xml,
             r#"<Event xmlns="http://gedcomx.org/v1/" id="local_id" type="http://gedcomx.org/Marriage"><date><original>date</original></date></Event>"#
         )
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Event) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Event = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Event) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Event = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

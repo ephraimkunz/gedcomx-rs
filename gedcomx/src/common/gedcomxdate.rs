@@ -1,5 +1,6 @@
 use std::{convert::TryFrom, fmt, str};
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 
 use crate::GedcomxError;
@@ -20,29 +21,26 @@ impl yaserde::YaSerialize for GedcomxDate {
         let yaserde_label = writer
             .get_start_event_name()
             .unwrap_or_else(|| "GedcomxDate".to_string());
-        let struct_start_event =
-            yaserde::xml::writer::XmlEvent::start_element(yaserde_label.as_ref())
-                .default_ns("http://gedcomx.org/v1/");
-        let event: yaserde::xml::writer::events::XmlEvent = struct_start_event.into();
+        let struct_start_event = xml::writer::XmlEvent::start_element(yaserde_label.as_ref())
+            .default_ns("http://gedcomx.org/v1/");
+        let event: xml::writer::events::XmlEvent = struct_start_event.into();
         let _ret = writer.write(event);
 
-        let _ret = writer.write(yaserde::xml::writer::XmlEvent::characters(
-            self.to_string().as_str(),
-        ));
+        let _ret = writer.write(xml::writer::XmlEvent::characters(self.to_string().as_str()));
 
-        let _ret = writer.write(yaserde::xml::writer::events::XmlEvent::end_element());
+        let _ret = writer.write(xml::writer::events::XmlEvent::end_element());
 
         Ok(())
     }
 
     fn serialize_attributes(
         &self,
-        attributes: Vec<yaserde::xml::attribute::OwnedAttribute>,
-        namespace: yaserde::xml::namespace::Namespace,
+        attributes: Vec<xml::attribute::OwnedAttribute>,
+        namespace: xml::namespace::Namespace,
     ) -> Result<
         (
-            Vec<yaserde::xml::attribute::OwnedAttribute>,
-            yaserde::xml::namespace::Namespace,
+            Vec<xml::attribute::OwnedAttribute>,
+            xml::namespace::Namespace,
         ),
         String,
     > {
@@ -54,7 +52,7 @@ impl yaserde::YaDeserialize for GedcomxDate {
     fn deserialize<R: std::io::Read>(
         reader: &mut yaserde::de::Deserializer<R>,
     ) -> Result<Self, String> {
-        if let yaserde::xml::reader::XmlEvent::StartElement { name, .. } = reader.peek()?.clone() {
+        if let xml::reader::XmlEvent::StartElement { name, .. } = reader.peek()?.clone() {
             let expected_name = "formal".to_owned();
             if name.local_name != expected_name {
                 return Err(format!(
@@ -67,7 +65,7 @@ impl yaserde::YaDeserialize for GedcomxDate {
             return Err("StartElement missing".to_string());
         }
 
-        if let yaserde::xml::reader::XmlEvent::Characters(text) = reader.peek()?.clone() {
+        if let xml::reader::XmlEvent::Characters(text) = reader.peek()?.clone() {
             text.parse::<Self>().map_err(|e| e.to_string())
         } else {
             Err("Characters missing".to_string())
@@ -166,7 +164,11 @@ fn date_time_into_string(
                 if tz_hours == 0 && tz_minutes == 0 {
                     s.push('Z');
                 } else {
-                    s.push(if tz_hours > 0 { '+' } else { '-' });
+                    s.push(if tz_hours > 0 || tz_minutes > 0 {
+                        '+'
+                    } else {
+                        '-'
+                    });
                     s.push_str(&format!("{:02}:{:02}", tz_hours.abs(), tz_minutes.abs()));
                 }
             }
@@ -247,6 +249,98 @@ fn duration_into_string(duration: &gedcomx_date::Duration, s: &mut String) {
         if duration.seconds != 0 {
             s.push_str(&format!("{}S", duration.seconds));
         }
+    }
+}
+
+impl Arbitrary for GedcomxDate {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let tz_offset_hours = arbitrary_between!(i32; g, -12, 12);
+        let tz_offset_minutes = if tz_offset_hours < 0 {
+            -arbitrary_between!(i32; g, 0, 59)
+        } else {
+            arbitrary_between!(i32; g, 0, 59)
+        };
+
+        let datetime_or_duration = vec![
+            gedcomx_date::DateTimeOrDuration::DateTime(gedcomx_date::DateTime {
+                date: gedcomx_date::Date {
+                    year: arbitrary_between!(i32; g, 1800, 2200),
+                    month: Some(arbitrary_between!(u32; g, 1, 12)),
+                    day: Some(arbitrary_between!(u32; g, 1, 28)),
+                },
+                time: Some(gedcomx_date::Time {
+                    hours: arbitrary_between!(u32; g, 0, 23),
+                    minutes: Some(arbitrary_between!(u32; g, 0, 59)),
+                    seconds: Some(arbitrary_between!(u32; g, 0, 59)),
+                    tz_offset_hours: Some(tz_offset_hours),
+                    tz_offset_minutes: Some(tz_offset_minutes),
+                }),
+            }),
+            gedcomx_date::DateTimeOrDuration::Duration(gedcomx_date::Duration {
+                years: arbitrary_between!(u32; g, 0, 400),
+                months: arbitrary_between!(u32; g, 0, 11),
+                days: arbitrary_between!(u32; g, 0, 28),
+                hours: arbitrary_between!(u32; g, 0, 23),
+                minutes: arbitrary_between!(u32; g, 0, 59),
+                seconds: arbitrary_between!(u32; g, 0, 59),
+            }),
+        ];
+
+        let options = vec![
+            gedcomx_date::GedcomxDate::Simple(gedcomx_date::Simple {
+                date: gedcomx_date::Date {
+                    year: arbitrary_between!(i32; g, 1800, 2200),
+                    month: Some(arbitrary_between!(u32; g, 1, 12)),
+                    day: Some(arbitrary_between!(u32; g, 1, 28)),
+                },
+                time: Some(gedcomx_date::Time {
+                    hours: arbitrary_between!(u32; g, 0, 23),
+                    minutes: Some(arbitrary_between!(u32; g, 0, 59)),
+                    seconds: Some(arbitrary_between!(u32; g, 0, 59)),
+                    tz_offset_hours: Some(tz_offset_hours),
+                    tz_offset_minutes: Some(tz_offset_minutes),
+                }),
+                approximate: bool::arbitrary(g),
+            }),
+            gedcomx_date::GedcomxDate::Range(gedcomx_date::Range {
+                start: Some(gedcomx_date::DateTime {
+                    date: gedcomx_date::Date {
+                        year: arbitrary_between!(i32; g, 1800, 2200),
+                        month: Some(arbitrary_between!(u32; g, 1, 12)),
+                        day: Some(arbitrary_between!(u32; g, 1, 28)),
+                    },
+                    time: Some(gedcomx_date::Time {
+                        hours: arbitrary_between!(u32; g, 0, 23),
+                        minutes: Some(arbitrary_between!(u32; g, 0, 59)),
+                        seconds: Some(arbitrary_between!(u32; g, 0, 59)),
+                        tz_offset_hours: Some(tz_offset_hours),
+                        tz_offset_minutes: Some(tz_offset_minutes),
+                    }),
+                }),
+                end: Some(*g.choose(&datetime_or_duration).unwrap()),
+                approximate: bool::arbitrary(g),
+            }),
+            gedcomx_date::GedcomxDate::Recurring(gedcomx_date::Recurring {
+                start: gedcomx_date::DateTime {
+                    date: gedcomx_date::Date {
+                        year: arbitrary_between!(i32; g, 1800, 2200),
+                        month: Some(arbitrary_between!(u32; g, 1, 12)),
+                        day: Some(arbitrary_between!(u32; g, 1, 28)),
+                    },
+                    time: Some(gedcomx_date::Time {
+                        hours: arbitrary_between!(u32; g, 0, 23),
+                        minutes: Some(arbitrary_between!(u32; g, 0, 59)),
+                        seconds: Some(arbitrary_between!(u32; g, 0, 59)),
+                        tz_offset_hours: Some(tz_offset_hours),
+                        tz_offset_minutes: Some(tz_offset_minutes),
+                    }),
+                },
+                end: *g.choose(&datetime_or_duration).unwrap(),
+                count: Some(u32::arbitrary(g)),
+            }),
+        ];
+
+        Self(*g.choose(&options).unwrap())
     }
 }
 

@@ -1,3 +1,4 @@
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -28,6 +29,15 @@ impl Qualifier {
             name: name.into(),
             value: value.map(std::convert::Into::into),
         }
+    }
+}
+
+impl Arbitrary for Qualifier {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::new(
+            crate::arbitrary_trimmed(g),
+            Some(crate::arbitrary_trimmed(g)),
+        )
     }
 }
 
@@ -103,5 +113,19 @@ mod test {
             Some("...qualifier value..."),
         );
         assert_eq!(qualifier, expected)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Qualifier) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Qualifier = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Qualifier) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Qualifier = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

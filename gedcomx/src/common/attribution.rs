@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -67,6 +68,21 @@ impl Attribution {
 
     pub fn builder() -> AttributionBuilder {
         AttributionBuilder::new()
+    }
+}
+
+impl Arbitrary for Attribution {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut attribution = Self::builder()
+            .modified(Timestamp::arbitrary(g))
+            .change_message(crate::arbitrary_trimmed(g))
+            .created(Timestamp::arbitrary(g))
+            .build();
+
+        attribution.contributor = Some(ResourceReference::arbitrary(g));
+        attribution.creator = Some(ResourceReference::arbitrary(g));
+
+        attribution
     }
 }
 
@@ -329,5 +345,19 @@ mod test {
         let expected_xml = r#"<attribution xmlns="http://gedcomx.org/v1/" />"#;
 
         assert_eq!(xml, expected_xml)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Attribution) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Attribution = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Attribution) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Attribution = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

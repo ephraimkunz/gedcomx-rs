@@ -83,11 +83,10 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "gedcomx"
-version = "0.1.0-alpha.2"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "gedcomx_date",
- "log",
  "serde",
  "serde_json",
  "serde_with",
@@ -116,12 +115,9 @@ dependencies = [
 
 [[package]]
 name = "heck"
-version = "0.3.2"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87cbf45460356b7deeb5e3415b5563308c0a9b057c85e12b06ad551f98d0a6ac"
-dependencies = [
- "unicode-segmentation",
-]
+checksum = "2540771e65fc8cb83cd6e8a237f70c319bd5c29f78ed1084ba5d50eeac86f7f9"
 
 [[package]]
 name = "ident_case"
@@ -311,12 +307,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "unicode-segmentation"
-version = "1.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bb0d2e7be6ae3a5fa87eed5fb451aff96f2573d2694942e40543ae0bbe19c796"
-
-[[package]]
 name = "unicode-xid"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -358,9 +348,7 @@ checksum = "b07db065a5cf61a7e4ba64f29e67db906fb1787316516c4e6e5ff0fea1efcd8a"
 
 [[package]]
 name = "yaserde"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a0cba68bfdc6f34ebd456d126f062ab13358de4f8cb3e72135e7c9abf660068"
+version = "0.7.1"
 dependencies = [
  "log",
  "xml-rs",
@@ -368,9 +356,7 @@ dependencies = [
 
 [[package]]
 name = "yaserde_derive"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6830def1c7840ddfdee690765630439a2a461a4f0e6dfe1f9020b5b2e7f27085"
+version = "0.7.1"
 dependencies = [
  "heck",
  "log",

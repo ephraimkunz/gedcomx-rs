@@ -1,3 +1,4 @@
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use yaserde_derive::{YaDeserialize, YaSerialize};
 
@@ -34,6 +35,12 @@ impl OnlineAccount {
             service_homepage: service_homepage.into(),
             account_name: account_name.into(),
         }
+    }
+}
+
+impl Arbitrary for OnlineAccount {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::new(ResourceReference::arbitrary(g), crate::arbitrary_trimmed(g))
     }
 }
 
@@ -107,5 +114,19 @@ mod test {
             xml,
             r#"<account xmlns="http://gedcomx.org/v1/"><serviceHomepage resource="http://familysearch.org/" /><accountName>Family Search Account</accountName></account>"#
         )
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: OnlineAccount) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: OnlineAccount = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: OnlineAccount) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: OnlineAccount = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

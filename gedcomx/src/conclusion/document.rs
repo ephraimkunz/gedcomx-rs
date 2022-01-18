@@ -1,5 +1,6 @@
 use std::fmt;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -115,6 +116,26 @@ impl Document {
     }
 }
 
+impl Arbitrary for Document {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut document = Self::builder(crate::arbitrary_trimmed(g))
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .document_type(DocumentType::arbitrary(g))
+            .extracted(bool::arbitrary(g))
+            .text_type(TextType::arbitrary(g))
+            .build();
+
+        document.analysis = Some(ResourceReference::arbitrary(g));
+        document.sources = vec![SourceReference::arbitrary(g)];
+
+        document
+    }
+}
+
 pub struct DocumentBuilder(Document);
 
 impl DocumentBuilder {
@@ -211,6 +232,20 @@ impl Default for DocumentType {
     }
 }
 
+impl Arbitrary for DocumentType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::Analysis,
+            Self::Abstract,
+            Self::Transcription,
+            Self::Translation,
+            Self::Custom(Uri::arbitrary(g)),
+        ];
+
+        g.choose(&options).unwrap().clone()
+    }
+}
+
 /// In some cases, a text value must include styling or layout to fully convey
 /// its intended meaning. Where such a requirement has been identified,
 /// implementers can designate that a text value may include such styling or
@@ -251,6 +286,13 @@ impl fmt::Display for TextType {
 impl Default for TextType {
     fn default() -> Self {
         Self::Plain
+    }
+}
+
+impl Arbitrary for TextType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![Self::Plain, Self::Xhtml];
+        g.choose(&options).unwrap().clone()
     }
 }
 
@@ -332,5 +374,19 @@ mod test {
             xml,
             r#"<Document xmlns="http://gedcomx.org/v1/" type="http://gedcomx.org/Analysis" extracted="false" textType="plain"><text>...text of the document...</text></Document>"#
         )
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Document) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Document = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Document) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Document = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

@@ -1,5 +1,6 @@
 use std::vec;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -161,6 +162,30 @@ impl Group {
     }
 }
 
+impl Arbitrary for Group {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut group = Self::builder(TextValue::arbitrary(g))
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .extracted(bool::arbitrary(g))
+            .identifier(Identifier::arbitrary(g))
+            .date(Date::arbitrary(g))
+            .place(PlaceReference::arbitrary(g))
+            .role(GroupRole::arbitrary(g))
+            .build();
+
+        group.sources = vec![SourceReference::arbitrary(g)];
+        group.analysis = Some(ResourceReference::arbitrary(g));
+        group.evidence = vec![EvidenceReference::arbitrary(g)];
+        group.media = vec![SourceReference::arbitrary(g)];
+
+        group
+    }
+}
+
 pub struct GroupBuilder(Group);
 
 impl GroupBuilder {
@@ -298,5 +323,19 @@ mod test {
             xml,
             r#"<Group xmlns="http://gedcomx.org/v1/"><name xml:lang="en">Monticello Plantation</name><name xml:lang="zh">monticello种植园</name><date><original>date</original></date><place><original>place</original></place></Group>"#
         )
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Group) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Group = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Group) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Group = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

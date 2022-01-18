@@ -1,5 +1,6 @@
 use std::convert::TryFrom;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -61,6 +62,12 @@ try_from_evidencereference!(Event);
 try_from_evidencereference!(PlaceDescription);
 try_from_evidencereference!(Relationship);
 try_from_evidencereference!(Group);
+
+impl Arbitrary for EvidenceReference {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::new(Uri::arbitrary(g), Some(Attribution::arbitrary(g)))
+    }
+}
 
 #[cfg(test)]
 mod test {
@@ -188,5 +195,19 @@ mod test {
         let expected_xml = r#"<evidence xmlns="http://gedcomx.org/v1/" resource="http://identifier/for/data/being/referenced" />"#;
 
         assert_eq!(xml, expected_xml)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: EvidenceReference) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: EvidenceReference = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: EvidenceReference) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: EvidenceReference = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

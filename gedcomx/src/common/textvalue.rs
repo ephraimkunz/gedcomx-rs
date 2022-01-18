@@ -1,3 +1,4 @@
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -37,6 +38,12 @@ impl From<&str> for TextValue {
             value: s.into(),
             ..Self::default()
         }
+    }
+}
+
+impl Arbitrary for TextValue {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::new(crate::arbitrary_trimmed(g), Some(Lang::arbitrary(g)))
     }
 }
 
@@ -113,5 +120,19 @@ mod test {
         let textvalue: TextValue = yaserde::de::from_str(&xml).unwrap();
         let expected = TextValue::new("...textual value...", Some("en"));
         assert_eq!(textvalue, expected)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: TextValue) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: TextValue = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: TextValue) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: TextValue = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

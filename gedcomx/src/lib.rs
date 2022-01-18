@@ -233,3 +233,20 @@ impl TestData {
         }
     }
 }
+
+// XML roundtripping for Option<String> is only guaranteeed when a string is
+// non-empty and has leading and trailing whitespace trimmed. If the string is
+// empty, it will be roundtripped to None. If it has leading or trailing
+// whitespace, that will be stripped due to yaserde setting the trim_whitespace
+// flag on the wrapped xml parser.
+use quickcheck::{Arbitrary, Gen};
+
+fn arbitrary_trimmed(g: &mut Gen) -> String {
+    let mut trimmed = String::new();
+    while trimmed.is_empty() {
+        let non_trimmed = String::arbitrary(g);
+        trimmed = non_trimmed.trim().to_string();
+    }
+
+    trimmed
+}

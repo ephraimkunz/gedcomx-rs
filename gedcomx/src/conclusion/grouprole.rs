@@ -1,5 +1,6 @@
 use std::{convert::TryInto, fmt};
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -116,6 +117,27 @@ impl GroupRole {
     }
 }
 
+impl Arbitrary for GroupRole {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut group_role = Self::builder(&Person::arbitrary(g))
+            .unwrap()
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .date(Date::arbitrary(g))
+            .details(crate::arbitrary_trimmed(g))
+            .group_role_type(GroupRoleType::arbitrary(g))
+            .build();
+
+        group_role.analysis = Some(ResourceReference::arbitrary(g));
+        group_role.sources = vec![SourceReference::arbitrary(g)];
+
+        group_role
+    }
+}
+
 pub struct GroupRoleBuilder(GroupRole);
 
 impl GroupRoleBuilder {
@@ -187,6 +209,12 @@ impl fmt::Display for GroupRoleType {
 impl Default for GroupRoleType {
     fn default() -> Self {
         Self::Custom(Uri::default())
+    }
+}
+
+impl Arbitrary for GroupRoleType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::Custom(Uri::arbitrary(g))
     }
 }
 
@@ -429,5 +457,19 @@ mod test {
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"person":{"resource":"http://identifier/for/person/1"}}"#
         )
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: GroupRole) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: GroupRole = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: GroupRole) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: GroupRole = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

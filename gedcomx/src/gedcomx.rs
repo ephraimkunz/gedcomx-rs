@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -113,6 +114,28 @@ impl Gedcomx {
 
     pub fn builder() -> GedcomxBuilder {
         GedcomxBuilder::new()
+    }
+}
+
+impl Arbitrary for Gedcomx {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut gx = Self::builder()
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .person(Person::arbitrary(g))
+            .relationship(Relationship::arbitrary(g))
+            .source_description(SourceDescription::arbitrary(g))
+            .agent(Agent::arbitrary(g))
+            .event(Event::arbitrary(g))
+            .document(Document::arbitrary(g))
+            .place(PlaceDescription::arbitrary(g))
+            .group(Group::arbitrary(g))
+            .build();
+
+        gx.description = Some(Uri::arbitrary(g));
+
+        gx
     }
 }
 
@@ -394,5 +417,21 @@ mod test {
             "<?xml version=\"1.0\" encoding=\"utf-8\"?><gedcomx xmlns=\"http://gedcomx.org/v1/\" \
              />"
         );
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Gedcomx) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Gedcomx = serde_json::from_str(&json).unwrap();
+        assert_eq!(input, from_json);
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Gedcomx) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Gedcomx = yaserde::de::from_str(&xml).unwrap();
+        assert_eq!(input, from_xml);
+        input == from_xml
     }
 }

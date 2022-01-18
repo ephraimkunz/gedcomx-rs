@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -38,6 +39,18 @@ impl PlaceReference {
 
     pub fn builder() -> PlaceReferenceBuilder {
         PlaceReferenceBuilder::new()
+    }
+}
+
+impl Arbitrary for PlaceReference {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut place_reference = Self::builder()
+            .original(crate::arbitrary_trimmed(g))
+            .build();
+
+        place_reference.description_ref = Some(Uri::arbitrary(g));
+
+        place_reference
     }
 }
 
@@ -164,5 +177,19 @@ mod test {
         let json = serde_json::to_string(&place_ref).unwrap();
 
         assert_eq!(json, r#"{}"#)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: PlaceReference) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: PlaceReference = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: PlaceReference) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: PlaceReference = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

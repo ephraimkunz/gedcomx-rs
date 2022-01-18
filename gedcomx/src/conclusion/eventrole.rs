@@ -1,5 +1,6 @@
 use std::{convert::TryInto, fmt};
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -111,6 +112,26 @@ impl EventRole {
     }
 }
 
+impl Arbitrary for EventRole {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut event_role = Self::builder(&Person::arbitrary(g))
+            .unwrap()
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .event_role_type(EventRoleType::arbitrary(g))
+            .details(crate::arbitrary_trimmed(g))
+            .build();
+
+        event_role.analysis = Some(ResourceReference::arbitrary(g));
+        event_role.sources = vec![SourceReference::arbitrary(g)];
+
+        event_role
+    }
+}
+
 pub struct EventRoleBuilder(EventRole);
 
 impl EventRoleBuilder {
@@ -204,6 +225,20 @@ impl fmt::Display for EventRoleType {
 impl Default for EventRoleType {
     fn default() -> Self {
         Self::Custom(Uri::default())
+    }
+}
+
+impl Arbitrary for EventRoleType {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::Principal,
+            Self::Participant,
+            Self::Official,
+            Self::Witness,
+            Self::Custom(Uri::arbitrary(g)),
+        ];
+
+        g.choose(&options).unwrap().clone()
     }
 }
 
@@ -445,5 +480,19 @@ mod test {
             xml,
             r#"<EventRole xmlns="http://gedcomx.org/v1/"><person resource="http://identifier/for/person/1" /></EventRole>"#
         )
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: EventRole) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: EventRole = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: EventRole) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: EventRole = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

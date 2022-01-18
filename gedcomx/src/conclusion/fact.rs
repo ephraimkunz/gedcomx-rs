@@ -1,5 +1,6 @@
 use std::{fmt, str::FromStr};
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -156,6 +157,27 @@ impl Fact {
 
     pub fn builder(fact_type: FactType) -> FactBuilder {
         FactBuilder::new(fact_type)
+    }
+}
+
+impl Arbitrary for Fact {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut fact = Self::builder(FactType::arbitrary(g))
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .date(Date::arbitrary(g))
+            .place(PlaceReference::arbitrary(g))
+            .value(crate::arbitrary_trimmed(g))
+            .qualifier(Qualifier::arbitrary(g))
+            .build();
+
+        fact.analysis = Some(ResourceReference::arbitrary(g));
+        fact.sources = vec![SourceReference::arbitrary(g)];
+
+        fact
     }
 }
 
@@ -716,6 +738,116 @@ impl Default for FactType {
     }
 }
 
+impl Arbitrary for FactType {
+    #[allow(clippy::too_many_lines)]
+    fn arbitrary(g: &mut Gen) -> Self {
+        let options = vec![
+            Self::Adoption,
+            Self::AdultChristening,
+            Self::Amnesty,
+            Self::AncestralHall,
+            Self::AncestralPoem,
+            Self::Apprenticeship,
+            Self::Arrest,
+            Self::Award,
+            Self::Baptism,
+            Self::BarMitzvah,
+            Self::BatMitzvah,
+            Self::Birth,
+            Self::BirthNotice,
+            Self::Blessing,
+            Self::Branch,
+            Self::Burial,
+            Self::Caste,
+            Self::Census,
+            Self::Christening,
+            Self::Circumcision,
+            Self::Clan,
+            Self::Confirmation,
+            Self::Court,
+            Self::Cremation,
+            Self::Death,
+            Self::Education,
+            Self::EducationEnrollment,
+            Self::Emigration,
+            Self::Enslavement,
+            Self::Ethnicity,
+            Self::Excommunication,
+            Self::FirstCommunion,
+            Self::Funeral,
+            Self::GenderChange,
+            Self::GenerationNumber,
+            Self::Graduation,
+            Self::Immigration,
+            Self::Imprisonment,
+            Self::Inquest,
+            Self::LandTransaction,
+            Self::Language,
+            Self::Living,
+            Self::MaritalStatus,
+            Self::Medical,
+            Self::MilitaryAward,
+            Self::MilitaryDischarge,
+            Self::MilitaryDraftRegistration,
+            Self::MilitaryInduction,
+            Self::MilitaryService,
+            Self::Mission,
+            Self::MoveFrom,
+            Self::MoveTo,
+            Self::MultipleBirth,
+            Self::NationalId,
+            Self::Nationality,
+            Self::Naturalization,
+            Self::NumberOfChildren,
+            Self::NumberOfMarriages,
+            Self::Obituary,
+            Self::OfficialPosition,
+            Self::Occupation,
+            Self::Ordination,
+            Self::Pardon,
+            Self::PhysicalDescription,
+            Self::Probate,
+            Self::Property,
+            Self::Race,
+            Self::Religion,
+            Self::Residence,
+            Self::Retirement,
+            Self::Stillbirth,
+            Self::TaxAssessment,
+            Self::Tribe,
+            Self::Will,
+            Self::Visit,
+            Self::Yahrzeit,
+            Self::Annulment,
+            Self::CommonLawMarriage,
+            Self::CivilUnion,
+            Self::Divorce,
+            Self::DivorceFiling,
+            Self::DomesticPartnership,
+            Self::Engagement,
+            Self::Marriage,
+            Self::MarriageBanns,
+            Self::MarriageContract,
+            Self::MarriageLicense,
+            Self::MarriageNotice,
+            Self::Separation,
+            Self::AdoptiveParent,
+            Self::BiologicalParent,
+            Self::ChildOrder,
+            Self::EnteringHeir,
+            Self::ExitingHeir,
+            Self::FosterParent,
+            Self::GuardianParent,
+            Self::StepParent,
+            Self::SociologicalParent,
+            Self::SurrogateParent,
+            Self::Custom(Uri::arbitrary(g)),
+        ];
+
+        g.choose(&options).unwrap().clone()
+    }
+}
+
 /// Fact qualifiers.
 #[derive(Debug, PartialEq, Clone)]
 #[non_exhaustive]
@@ -1016,5 +1148,19 @@ mod test {
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"type":"http://gedcomx.org/Birth"}"#
         );
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Fact) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Fact = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Fact) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Fact = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

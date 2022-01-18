@@ -1,5 +1,6 @@
 use std::{convert::TryFrom, fmt};
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -86,6 +87,12 @@ impl From<FactQualifier> for Uri {
 impl fmt::Display for Uri {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         self.0.fmt(f)
+    }
+}
+
+impl Arbitrary for Uri {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self(crate::arbitrary_trimmed(g))
     }
 }
 

@@ -1,3 +1,4 @@
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -94,6 +95,24 @@ impl Address {
     }
 }
 
+impl Arbitrary for Address {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::builder()
+            .value(crate::arbitrary_trimmed(g))
+            .city(crate::arbitrary_trimmed(g))
+            .country(crate::arbitrary_trimmed(g))
+            .postal_code(crate::arbitrary_trimmed(g))
+            .state_or_province(crate::arbitrary_trimmed(g))
+            .street(crate::arbitrary_trimmed(g))
+            .street2(crate::arbitrary_trimmed(g))
+            .street3(crate::arbitrary_trimmed(g))
+            .street4(crate::arbitrary_trimmed(g))
+            .street5(crate::arbitrary_trimmed(g))
+            .street6(crate::arbitrary_trimmed(g))
+            .build()
+    }
+}
+
 pub struct AddressBuilder(Address);
 
 impl AddressBuilder {
@@ -175,6 +194,7 @@ impl AddressBuilder {
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
     use yaserde::ser::Config;
 
     use super::*;
@@ -328,5 +348,19 @@ mod test {
             xml,
             r#"<address xmlns="http://gedcomx.org/v1/"><city>East Palo Alto</city><country>United States</country><postalCode>94303</postalCode><stateOrProvince>California</stateOrProvince><street>2299 Poplar Ave</street></address>"#
         )
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Address) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Address = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Address) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Address = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

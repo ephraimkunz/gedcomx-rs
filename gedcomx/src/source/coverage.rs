@@ -1,3 +1,4 @@
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -26,6 +27,12 @@ pub struct Coverage {
 impl Coverage {
     pub fn new(spatial: Option<PlaceReference>, temporal: Option<Date>) -> Self {
         Self { spatial, temporal }
+    }
+}
+
+impl Arbitrary for Coverage {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self::new(Some(PlaceReference::arbitrary(g)), Some(Date::arbitrary(g)))
     }
 }
 
@@ -123,5 +130,19 @@ mod test {
         let expected_xml = r#"<Coverage xmlns="http://gedcomx.org/v1/"><spatial><original>Place reference</original></spatial><temporal><original>Original date</original></temporal></Coverage>"#;
 
         assert_eq!(xml, expected_xml)
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: Coverage) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: Coverage = serde_json::from_str(&json).unwrap();
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: Coverage) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: Coverage = yaserde::de::from_str(&xml).unwrap();
+        input == from_xml
     }
 }

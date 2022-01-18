@@ -1,5 +1,6 @@
 use std::fmt;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 
 /// A local, context-specific id for the data.
@@ -23,5 +24,11 @@ impl From<&str> for Id {
 impl From<String> for Id {
     fn from(s: String) -> Self {
         Self(s)
+    }
+}
+
+impl Arbitrary for Id {
+    fn arbitrary(g: &mut Gen) -> Self {
+        Self(crate::arbitrary_trimmed(g))
     }
 }

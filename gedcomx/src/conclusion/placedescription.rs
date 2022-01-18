@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 
+use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use yaserde_derive::{YaDeserialize, YaSerialize};
@@ -205,6 +206,34 @@ impl PlaceDescription {
 
     pub fn builder<I: Into<TextValue>>(name: I) -> PlaceDescriptionBuilder {
         PlaceDescriptionBuilder::new(name)
+    }
+}
+
+impl Arbitrary for PlaceDescription {
+    fn arbitrary(g: &mut Gen) -> Self {
+        let mut place_description = Self::builder(TextValue::arbitrary(g))
+            .id(Id::arbitrary(g))
+            .lang(Lang::arbitrary(g))
+            .note(Note::arbitrary(g))
+            .confidence(ConfidenceLevel::arbitrary(g))
+            .attribution(Attribution::arbitrary(g))
+            .extracted(bool::arbitrary(g))
+            .identifier(Identifier::arbitrary(g))
+            .place_type(Uri::arbitrary(g))
+            .place(ResourceReference::arbitrary(g))
+            // Comment out for quickcheck tests because otherwise f64 doesn't compare equal.
+            // .latitude_and_longitude(f64::arbitrary(g), f64::arbitrary(g))
+            .temporal_description(Date::arbitrary(g))
+            .spatial_description(ResourceReference::arbitrary(g))
+            .build();
+
+        place_description.sources = vec![SourceReference::arbitrary(g)];
+        place_description.analysis = Some(ResourceReference::arbitrary(g));
+        place_description.evidence = vec![EvidenceReference::arbitrary(g)];
+        place_description.media = vec![SourceReference::arbitrary(g)];
+        place_description.jurisdiction = Some(ResourceReference::arbitrary(g));
+
+        place_description
     }
 }
 
@@ -419,5 +448,21 @@ mod test {
             xml,
             r#"<place xmlns="http://gedcomx.org/v1/" type="http://identifier/for/the/place/type"><name xml:lang="en">Pope's Creek, Westmoreland, Virginia, United States</name><name xml:lang="zh">教皇的小河，威斯特摩兰，弗吉尼亚州，美国</name><place resource="..." /><latitude>27.9883575</latitude><longitude>86.9252014</longitude><temporalDescription><original>...</original></temporalDescription><spatialDescription resource="http://uri/for/KML/document" /></place>"#
         );
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_json(input: PlaceDescription) -> bool {
+        let json = serde_json::to_string(&input).unwrap();
+        let from_json: PlaceDescription = serde_json::from_str(&json).unwrap();
+        assert_eq!(input, from_json);
+        input == from_json
+    }
+
+    #[quickcheck_macros::quickcheck]
+    fn roundtrip_xml(input: PlaceDescription) -> bool {
+        let xml = yaserde::ser::to_string(&input).unwrap();
+        let from_xml: PlaceDescription = yaserde::de::from_str(&xml).unwrap();
+        assert_eq!(input, from_xml);
+        input == from_xml
     }
 }
