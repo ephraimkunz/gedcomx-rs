@@ -23,6 +23,7 @@ This crate provides conformance to the following GEDCOM X specs:
 
 ## Features
 - Well tested: hundreds of unit tests and some large integration tests. Integration tests parsing of all the recipes in the [Recipe Book](http://www.gedcomx.org/Recipe-Book.html) as well as other test data from the [Java Gedcomx implementation](https://github.com/FamilySearch/gedcomx-java).
+- [Fuzzed](https://github.com/rust-fuzz/cargo-fuzz) and [quickchecked](https://github.com/BurntSushi/quickcheck).
 - Use the builder pattern to safely build GEDCOM X data models.
 - XML and JSON serialization and deserialization supported.
 
