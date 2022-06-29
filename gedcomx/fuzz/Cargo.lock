@@ -3,6 +3,15 @@
 version = 3
 
 [[package]]
+name = "aho-corasick"
+version = "0.7.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e37cfd5e7657ada45f742d6e99ca5788580b5c529dc78faf11ece6dc702656f"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
 name = "arbitrary"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -76,6 +85,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "env_logger"
+version = "0.8.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a19187fea3ac7e84da7dacf48de0c45d63c6a76f9490dae389aead16c243fce3"
+dependencies = [
+ "log",
+ "regex",
+]
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -83,10 +102,11 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "gedcomx"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "chrono",
  "gedcomx_date",
+ "quickcheck",
  "serde",
  "serde_json",
  "serde_with",
@@ -111,6 +131,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f76aa7fd4b387d599451903f88b0f307797d7f6d8deee06311a8dbefc0a551e3"
 dependencies = [
  "nom",
+]
+
+[[package]]
+name = "getrandom"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d39cd93900197114fa1fcb7ae84ca742095eed9442088988ae74fa744e930e77"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "wasi",
 ]
 
 [[package]]
@@ -157,6 +188,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "memchr"
+version = "2.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
+
+[[package]]
 name = "nom"
 version = "1.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -191,6 +228,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "quickcheck"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "588f6378e4dd99458b60ec275b4477add41ce4fa9f64dcba6f15adccb19b50d6"
+dependencies = [
+ "env_logger",
+ "log",
+ "rand",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -198,6 +246,41 @@ checksum = "991431c3519a3f36861882da93630ce66b52918dcf1b8e2fd66b397fc96f28df"
 dependencies = [
  "proc-macro2",
 ]
+
+[[package]]
+name = "rand"
+version = "0.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404"
+dependencies = [
+ "rand_core",
+]
+
+[[package]]
+name = "rand_core"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d34f1408f55294453790c48b2f1ebbb1c5b4b7563eb1f418bcfcfdbb06ebb4e7"
+dependencies = [
+ "getrandom",
+]
+
+[[package]]
+name = "regex"
+version = "1.5.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a11647b6b25ff05a515cb92c365cec08801e83423a235b51e231e1808747286"
+dependencies = [
+ "aho-corasick",
+ "memchr",
+ "regex-syntax",
+]
+
+[[package]]
+name = "regex-syntax"
+version = "0.6.25"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
 
 [[package]]
 name = "ryu"
@@ -348,7 +431,9 @@ checksum = "b07db065a5cf61a7e4ba64f29e67db906fb1787316516c4e6e5ff0fea1efcd8a"
 
 [[package]]
 name = "yaserde"
-version = "0.7.1"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4bf52af554a50b866aaad63d7eabd6fca298db3dfe49afd50b7ba5a33dfa0582"
 dependencies = [
  "log",
  "xml-rs",
@@ -356,7 +441,9 @@ dependencies = [
 
 [[package]]
 name = "yaserde_derive"
-version = "0.7.1"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7ab8bd5c76eebb8380b26833d30abddbdd885b00dd06178412e0d51d5bfc221f"
 dependencies = [
  "heck",
  "log",
