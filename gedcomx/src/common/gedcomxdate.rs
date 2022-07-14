@@ -1,4 +1,4 @@
-use std::{convert::TryFrom, fmt, str};
+use std::{convert::TryFrom, fmt, fmt::Write, str};
 
 use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
@@ -119,7 +119,7 @@ impl fmt::Display for GedcomxDate {
             }
             gedcomx_date::GedcomxDate::Recurring(recurring) => {
                 if let Some(count) = recurring.count {
-                    s.push_str(&format!("R{}/", count));
+                    let _ = write!(s, "R{}/", count);
                 } else {
                     s.push_str("R/");
                 }
@@ -138,25 +138,25 @@ fn date_time_into_string(
     s: &mut String,
 ) {
     s.push(if date.year >= 0 { '+' } else { '-' });
-    s.push_str(&format!("{:04}", date.year.abs()));
+    let _ = write!(s, "{:04}", date.year.abs());
 
     if let Some(month) = date.month {
-        s.push_str(&format!("-{:02}", month));
+        let _ = write!(s, "-{:02}", month);
     }
 
     if let Some(day) = date.day {
-        s.push_str(&format!("-{:02}", day));
+        let _ = write!(s, "-{:02}", day);
     }
 
     if let Some(time) = time {
-        s.push_str(&format!("T{:02}", time.hours));
+        let _ = write!(s, "T{:02}", time.hours);
 
         if let Some(minutes) = time.minutes {
-            s.push_str(&format!(":{:02}", minutes));
+            let _ = write!(s, ":{:02}", minutes);
         }
 
         if let Some(seconds) = time.seconds {
-            s.push_str(&format!(":{:02}", seconds));
+            let _ = write!(s, ":{:02}", seconds);
         }
 
         match (time.tz_offset_hours, time.tz_offset_minutes) {
@@ -169,7 +169,7 @@ fn date_time_into_string(
                     } else {
                         '-'
                     });
-                    s.push_str(&format!("{:02}:{:02}", tz_hours.abs(), tz_minutes.abs()));
+                    let _ = write!(s, "{:02}:{:02}", tz_hours.abs(), tz_minutes.abs());
                 }
             }
 
@@ -178,7 +178,7 @@ fn date_time_into_string(
                     s.push('Z');
                 } else {
                     s.push(if tz_hours > 0 { '+' } else { '-' });
-                    s.push_str(&format!("{:02}", tz_hours.abs()));
+                    let _ = write!(s, "{:02}", tz_hours.abs());
                 }
             }
 
@@ -224,30 +224,30 @@ fn duration_into_string(duration: &gedcomx_date::Duration, s: &mut String) {
     s.push('P');
 
     if duration.years != 0 {
-        s.push_str(&format!("{}Y", duration.years));
+        let _ = write!(s, "{}Y", duration.years);
     }
 
     if duration.months != 0 {
-        s.push_str(&format!("{}M", duration.months));
+        let _ = write!(s, "{}M", duration.months);
     }
 
     if duration.days != 0 {
-        s.push_str(&format!("{}D", duration.days));
+        let _ = write!(s, "{}D", duration.days);
     }
 
     if duration.hours != 0 || duration.minutes != 0 || duration.seconds != 0 {
         s.push('T');
 
         if duration.hours != 0 {
-            s.push_str(&format!("{}H", duration.hours));
+            let _ = write!(s, "{}H", duration.hours);
         }
 
         if duration.minutes != 0 {
-            s.push_str(&format!("{}M", duration.minutes));
+            let _ = write!(s, "{}M", duration.minutes);
         }
 
         if duration.seconds != 0 {
-            s.push_str(&format!("{}S", duration.seconds));
+            let _ = write!(s, "{}S", duration.seconds);
         }
     }
 }
