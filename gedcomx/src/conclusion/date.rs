@@ -7,7 +7,9 @@ use crate::GedcomxDate;
 
 /// A concluded genealogical date.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[derive(
+    Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default, Eq,
+)]
 #[yaserde(
     prefix = "gx",
     default_namespace = "gx",

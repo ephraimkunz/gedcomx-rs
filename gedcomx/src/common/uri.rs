@@ -15,7 +15,7 @@ use crate::{
 /// by referencing a URI that identifies the person. When a property (such as
 /// the person1 property of Relationship) is of data type URI, the value of the
 /// property is interpreted as a "URI Reference" as defined by [RFC 3986, section 4](https://tools.ietf.org/html/rfc3986#section-4).
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default, Eq)]
 pub struct Uri(String);
 
 impl_characters_yaserialize_yadeserialize!(Uri, "Uri");
@@ -48,10 +48,9 @@ impl TryFrom<&PlaceDescription> for Uri {
     type Error = GedcomxError;
 
     fn try_from(pd: &PlaceDescription) -> Result<Self, Self::Error> {
-        match &pd.id {
-            Some(id) => Ok(id.into()),
-            None => Err(GedcomxError::no_id_error(&pd)),
-        }
+        pd.id
+            .as_ref()
+            .map_or_else(|| Err(GedcomxError::no_id_error(&pd)), |id| Ok(id.into()))
     }
 }
 
@@ -59,10 +58,9 @@ impl TryFrom<&SourceDescription> for Uri {
     type Error = GedcomxError;
 
     fn try_from(sd: &SourceDescription) -> Result<Self, Self::Error> {
-        match &sd.id {
-            Some(id) => Ok(id.into()),
-            None => Err(GedcomxError::no_id_error(&sd)),
-        }
+        sd.id
+            .as_ref()
+            .map_or_else(|| Err(GedcomxError::no_id_error(&sd)), |id| Ok(id.into()))
     }
 }
 

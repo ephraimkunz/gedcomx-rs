@@ -12,7 +12,9 @@ use crate::{Address, Id, Identifier, OnlineAccount, Person, ResourceReference, R
 ///
 /// In genealogical research, an agent often takes the role of a contributor.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone)]
+#[derive(
+    Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Default, Clone, Eq,
+)]
 #[yaserde(
     rename = "agent",
     prefix = "gx",

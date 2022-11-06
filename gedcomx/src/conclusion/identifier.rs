@@ -22,7 +22,7 @@ use crate::{EnumAsString, Uri};
 /// instance of [`PlaceDescription`](crate::PlaceDescription). Salt Lake City is
 /// maintained in the Geographic Names Information System (GNIS), an external
 /// place authority. The description of Salt Lake City might identify the associated GNIS resource using an identifier of type [`Authority`](crate::IdentifierType::Authority) with value "<http://geonames.usgs.gov/pls/gnispublic/f?p=gnispq:3:::NO::P3_FID:2411771>".
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 pub struct Identifier {
     /// The value of the identifier.
@@ -149,7 +149,7 @@ impl Arbitrary for Identifier {
     }
 }
 
-pub(crate) mod serde_vec_identifier_to_map {
+pub mod serde_vec_identifier_to_map {
     use std::{collections::HashMap, fmt};
 
     use serde::{
@@ -280,7 +280,7 @@ pub(crate) mod serde_vec_identifier_to_map {
 /// Standard identifier types.
 /// Custom identifier types should not have a value of "$" since this is
 /// reserved for identifiers without a type in JSON.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum IdentifierType {

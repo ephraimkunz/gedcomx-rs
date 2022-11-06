@@ -269,7 +269,7 @@ impl EventBuilder {
 }
 
 /// Standard event types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum EventType {

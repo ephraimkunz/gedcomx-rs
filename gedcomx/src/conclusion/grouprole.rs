@@ -183,7 +183,7 @@ impl GroupRoleBuilder {
 }
 
 /// Group role types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum GroupRoleType {

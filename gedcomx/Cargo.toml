@@ -19,7 +19,7 @@ yaserde = "0.8"
 yaserde_derive = "0.8"
 gedcomx_date = "0.0.2"
 serde_json = "1"
-xml-rs = "0.8.3"
+xml-rs = "0.8"
 quickcheck = "1"
 
 [dev-dependencies]

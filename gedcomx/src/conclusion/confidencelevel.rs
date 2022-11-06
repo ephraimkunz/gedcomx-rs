@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::{EnumAsString, Uri};
 
 /// Levels of confidence.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum ConfidenceLevel {

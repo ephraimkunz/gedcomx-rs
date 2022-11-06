@@ -242,7 +242,7 @@ impl From<&str> for Name {
 }
 
 /// Standard name types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NameType {
@@ -386,7 +386,9 @@ impl Arbitrary for NameType {
 /// NameForm3.parts[2].value=Tchaikovsky
 /// ```
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[derive(
+    Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default, Eq,
+)]
 #[non_exhaustive]
 #[yaserde(
     prefix = "gx",
@@ -474,7 +476,9 @@ impl NameFormBuilder {
 /// Some name parts may have qualifiers to provide additional semantic meaning
 /// to the name part (e.g., "given name" or "surname").
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[derive(
+    Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default, Eq,
+)]
 #[yaserde(
     prefix = "gx",
     default_namespace = "gx",
@@ -565,7 +569,7 @@ impl NamePartBuilder {
 }
 
 /// Standard name part types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum NamePartType {
@@ -634,7 +638,7 @@ impl Arbitrary for NamePartType {
 /// Identify how the name part was used by the person to which the name applies.
 /// For example, a name part qualifier may specify that a given name part was
 /// used by the person as a Title.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 pub enum NamePartQualifier {
     /// A designation for honorifics (e.g. Dr., Rev., His Majesty, Haji), ranks

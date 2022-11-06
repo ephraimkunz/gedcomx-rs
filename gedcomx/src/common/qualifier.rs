@@ -8,7 +8,9 @@ use crate::Uri;
 /// Used to supply additional details, annotations, tags, or other qualifying
 /// data to a specific data element.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[derive(
+    Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default, Eq,
+)]
 #[non_exhaustive]
 pub struct Qualifier {
     /// The name of the qualifier. The name should be an element of a

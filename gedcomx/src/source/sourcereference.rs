@@ -135,15 +135,15 @@ impl TryFrom<&SourceDescription> for SourceReference {
     type Error = GedcomxError;
 
     fn try_from(s: &SourceDescription) -> std::result::Result<Self, Self::Error> {
-        match &s.id {
-            Some(id) => Ok(Self::new(id.into(), None, None, vec![])),
-            None => Err(GedcomxError::no_id_error(&s)),
-        }
+        s.id.as_ref().map_or_else(
+            || Err(GedcomxError::no_id_error(&s)),
+            |id| Ok(Self::new(id.into(), None, None, vec![])),
+        )
     }
 }
 
 /// Source reference qualifiers.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 pub enum SourceReferenceQualifier {
     /// A region of text in a digital document, in the form of a,b where a is

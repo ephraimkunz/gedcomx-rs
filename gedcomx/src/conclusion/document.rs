@@ -181,7 +181,7 @@ impl DocumentBuilder {
 }
 
 /// Document types
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum DocumentType {
@@ -250,7 +250,7 @@ impl Arbitrary for DocumentType {
 /// its intended meaning. Where such a requirement has been identified,
 /// implementers can designate that a text value may include such styling or
 /// layout by specifying an alternate text type.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum TextType {

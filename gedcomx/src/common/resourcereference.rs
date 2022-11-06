@@ -7,7 +7,9 @@ use yaserde_derive::{YaDeserialize, YaSerialize};
 use crate::{Agent, Document, DocumentType, GedcomxError, Person, PlaceDescription, Uri};
 
 /// A generic reference to a resource.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[derive(
+    Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default, Eq,
+)]
 #[non_exhaustive]
 pub struct ResourceReference {
     /// The URI to the resource being referenced.
@@ -37,12 +39,14 @@ impl TryFrom<&Agent> for ResourceReference {
     type Error = GedcomxError;
 
     fn try_from(agent: &Agent) -> Result<Self, Self::Error> {
-        match &agent.id {
-            Some(id) => Ok(Self {
-                resource: id.into(),
-            }),
-            None => Err(GedcomxError::no_id_error(&agent)),
-        }
+        agent.id.as_ref().map_or_else(
+            || Err(GedcomxError::no_id_error(&agent)),
+            |id| {
+                Ok(Self {
+                    resource: id.into(),
+                })
+            },
+        )
     }
 }
 
@@ -50,12 +54,14 @@ impl TryFrom<&Person> for ResourceReference {
     type Error = GedcomxError;
 
     fn try_from(person: &Person) -> Result<Self, Self::Error> {
-        match &person.id {
-            Some(id) => Ok(Self {
-                resource: id.into(),
-            }),
-            None => Err(GedcomxError::no_id_error(&person)),
-        }
+        person.id.as_ref().map_or_else(
+            || Err(GedcomxError::no_id_error(&person)),
+            |id| {
+                Ok(Self {
+                    resource: id.into(),
+                })
+            },
+        )
     }
 }
 
@@ -63,12 +69,14 @@ impl TryFrom<&PlaceDescription> for ResourceReference {
     type Error = GedcomxError;
 
     fn try_from(place_description: &PlaceDescription) -> Result<Self, Self::Error> {
-        match &place_description.id {
-            Some(id) => Ok(Self {
-                resource: id.into(),
-            }),
-            None => Err(GedcomxError::no_id_error(&place_description)),
-        }
+        place_description.id.as_ref().map_or_else(
+            || Err(GedcomxError::no_id_error(&place_description)),
+            |id| {
+                Ok(Self {
+                    resource: id.into(),
+                })
+            },
+        )
     }
 }
 
@@ -81,7 +89,7 @@ impl TryFrom<&Document> for ResourceReference {
     fn try_from(document: &Document) -> Result<Self, Self::Error> {
         match (
             &document.id,
-            document.document_type == None
+            document.document_type.is_none()
                 || document.document_type == Some(DocumentType::Analysis),
         ) {
             (Some(id), true) => Ok(Self {

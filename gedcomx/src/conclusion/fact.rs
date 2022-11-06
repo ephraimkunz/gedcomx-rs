@@ -232,7 +232,7 @@ impl FactBuilder {
 }
 
 /// Standard fact types.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum FactType {
@@ -849,7 +849,7 @@ impl Arbitrary for FactType {
 }
 
 /// Fact qualifiers.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 pub enum FactQualifier {
     /// The age of a person at the event described by the fact.

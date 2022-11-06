@@ -7,7 +7,9 @@ use crate::Lang;
 
 /// An element representing a text value that may be in a specific language.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[derive(
+    Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default, Eq,
+)]
 #[non_exhaustive]
 pub struct TextValue {
     /// The locale identifier for the value of the text.

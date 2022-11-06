@@ -146,7 +146,7 @@ impl From<GenderType> for Gender {
 }
 
 /// Type of gender.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum GenderType {

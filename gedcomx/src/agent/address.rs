@@ -5,7 +5,9 @@ use yaserde_derive::{YaDeserialize, YaSerialize};
 
 /// A street or postal address of a person or organization.
 #[skip_serializing_none]
-#[derive(Debug, Serialize, YaSerialize, YaDeserialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(
+    Debug, Serialize, YaSerialize, YaDeserialize, Deserialize, PartialEq, Eq, Clone, Default,
+)]
 #[yaserde(
     rename = "address",
     prefix = "gx",

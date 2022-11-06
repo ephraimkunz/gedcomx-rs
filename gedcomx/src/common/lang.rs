@@ -4,7 +4,7 @@ use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 
 /// Defined by [IETF BCP 47](https://tools.ietf.org/html/bcp47).
-#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Lang(String);
 
 impl_characters_yaserialize_yadeserialize!(Lang, "Lang");

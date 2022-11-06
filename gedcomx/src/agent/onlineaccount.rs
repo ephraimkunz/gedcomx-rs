@@ -5,7 +5,9 @@ use yaserde_derive::{YaDeserialize, YaSerialize};
 use crate::ResourceReference;
 
 /// A description of an account for an online service provider.
-#[derive(Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default)]
+#[derive(
+    Debug, Serialize, Deserialize, YaSerialize, YaDeserialize, PartialEq, Clone, Default, Eq,
+)]
 #[yaserde(
     rename = "account",
     prefix = "gx",
