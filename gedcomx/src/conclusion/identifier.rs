@@ -120,8 +120,8 @@ impl yaserde::YaDeserialize for Identifier {
                 let expected_name = "type";
                 if t.name.local_name != "type" {
                     return Err(format!(
-                        "Wrong attribute name: {}, expected: {}",
-                        t.name, expected_name
+                        "Wrong attribute name: {}, expected: {expected_name}",
+                        t.name
                     ));
                 }
 
@@ -179,7 +179,7 @@ pub mod serde_vec_identifier_to_map {
                 .entry(
                     id.identifier_type
                         .as_ref()
-                        .map_or(String::from("$"), std::string::ToString::to_string),
+                        .map_or_else(|| String::from("$"), std::string::ToString::to_string),
                 )
                 .or_insert_with(|| {
                     if id.value_in_vec {
@@ -335,7 +335,7 @@ impl fmt::Display for IdentifierType {
             Self::Primary => write!(f, "http://gedcomx.org/Primary"),
             Self::Authority => write!(f, "http://gedcomx.org/Authority"),
             Self::Deprecated => write!(f, "http://gedcomx.org/Deprecated"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -392,7 +392,7 @@ mod test {
         );
         no_list_identifier.value_in_vec = false;
 
-        let identifiers: TestIdentifierGroup = serde_json::from_str(&json).unwrap();
+        let identifiers: TestIdentifierGroup = serde_json::from_str(json).unwrap();
 
         let expected_identifiers = TestIdentifierGroup {
             identifiers: vec![
@@ -410,7 +410,7 @@ mod test {
             ],
         };
 
-        assert_eq!(identifiers, expected_identifiers)
+        assert_eq!(identifiers, expected_identifiers);
     }
 
     #[test]
@@ -433,7 +433,7 @@ mod test {
         let json = serde_json::to_string(&identifiers).unwrap();
         let expected_json = r#"{"$":["untyped_identifier1","untyped_identifier2"],"http://custom.org/SingleValuedIdentifierType":["singlevalued1"],"http://gedcomx.org/Primary":["primary1","primary2"]}"#;
 
-        assert_eq!(json, expected_json)
+        assert_eq!(json, expected_json);
     }
 
     #[test]
@@ -447,7 +447,7 @@ mod test {
 
         assert_eq!(
             expected_identifier,
-            yaserde::de::from_str::<Identifier>(&xml).unwrap()
+            yaserde::de::from_str::<Identifier>(xml).unwrap()
         );
     }
 
@@ -467,6 +467,6 @@ mod test {
         .unwrap();
         let expected_xml = r#"<identifier type="http://gedcomx.org/Primary">https://familysearch.org/platform/records/collections</identifier>"#;
 
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 }

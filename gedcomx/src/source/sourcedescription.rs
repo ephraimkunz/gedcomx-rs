@@ -460,7 +460,7 @@ impl fmt::Display for ResourceType {
             Self::PhysicalArtifact => write!(f, "http://gedcomx.org/PhysicalArtifact"),
             Self::DigitalArtifact => write!(f, "http://gedcomx.org/DigitalArtifact"),
             Self::Record => write!(f, "http://gedcomx.org/Record"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -522,7 +522,7 @@ mod test {
                 .unwrap()
                 .build();
 
-        assert_eq!(source_description, expected_source_description)
+        assert_eq!(source_description, expected_source_description);
     }
 
     #[test]
@@ -550,7 +550,7 @@ mod test {
                 .unwrap()
                 .build();
 
-        assert_eq!(source_description, expected_source_description)
+        assert_eq!(source_description, expected_source_description);
     }
 
     #[test]
@@ -573,7 +573,7 @@ mod test {
 
         let expected_json = r##"{"id":"local_id","resourceType":"http://gedcomx.org/PhysicalArtifact","citations":[{"lang":"en","value":"citation"}],"mediaType":"media_type","about":"about","mediator":{"resource":"#agent"},"publisher":{"resource":"#agent"}}"##;
 
-        assert_eq!(json, expected_json)
+        assert_eq!(json, expected_json);
     }
 
     #[test]
@@ -600,7 +600,7 @@ mod test {
 
         let expected_xml = r##"<SourceDescription xmlns="http://gedcomx.org/v1/" id="local_id" resourceType="http://gedcomx.org/PhysicalArtifact" mediaType="media_type" about="about"><citation xml:lang="en"><value>citation</value></citation><mediator resource="#agent" /><publisher resource="#agent" /></SourceDescription>"##;
 
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 
     #[quickcheck_macros::quickcheck]

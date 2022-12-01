@@ -352,7 +352,7 @@ mod test {
         ))
         .place_type(Uri::from("http://identifier/for/the/place/type"))
         .place(ResourceReference::from("..."))
-        .latitude_and_longitude(27.9883575, 86.9252014)
+        .latitude_and_longitude(27.988_357_5, 86.925_201_4)
         .temporal_description(Date::new(Some("..."), None))
         .spatial_description(ResourceReference::from("http://uri/for/KML/document"))
         .build();
@@ -386,7 +386,7 @@ mod test {
         ))
         .place_type(Uri::from("http://identifier/for/the/place/type"))
         .place(ResourceReference::from("..."))
-        .latitude_and_longitude(27.9883575, 86.9252014)
+        .latitude_and_longitude(27.988_357_5, 86.925_201_4)
         .temporal_description(Date::new(Some("..."), None))
         .spatial_description(ResourceReference::from("http://uri/for/KML/document"))
         .build();
@@ -407,7 +407,7 @@ mod test {
         ))
         .place_type(Uri::from("http://identifier/for/the/place/type"))
         .place(ResourceReference::from("..."))
-        .latitude_and_longitude(27.9883575, 86.9252014)
+        .latitude_and_longitude(27.988_357_5, 86.925_201_4)
         .temporal_description(Date::new(Some("..."), None))
         .spatial_description(ResourceReference::from("http://uri/for/KML/document"))
         .build();
@@ -432,7 +432,7 @@ mod test {
         ))
         .place_type(Uri::from("http://identifier/for/the/place/type"))
         .place(ResourceReference::from("..."))
-        .latitude_and_longitude(27.9883575, 86.9252014)
+        .latitude_and_longitude(27.988_357_5, 86.925_201_4)
         .temporal_description(Date::new(Some("..."), None))
         .spatial_description(ResourceReference::from("http://uri/for/KML/document"))
         .build();

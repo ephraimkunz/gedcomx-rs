@@ -231,7 +231,7 @@ mod test {
             .street6("street6")
             .build();
 
-        assert_eq!(address_1, address_2)
+        assert_eq!(address_1, address_2);
     }
 
     #[test]
@@ -266,7 +266,7 @@ mod test {
                 street5: Some("street5".to_string()),
                 street6: Some("street6".to_string()),
             }
-        )
+        );
     }
 
     #[test]
@@ -274,7 +274,7 @@ mod test {
         let json = r#"{}"#;
 
         let address: Address = serde_json::from_str(json).unwrap();
-        assert_eq!(address, Address::default())
+        assert_eq!(address, Address::default());
     }
 
     #[test]
@@ -298,7 +298,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"value":"value","city":"city","country":"country","postalCode":"postalcode","stateOrProvince":"stateorprovince","street":"street","street2":"street2","street3":"street3","street4":"street4","street5":"street5","street6":"street6"}"#
-        )
+        );
     }
 
     #[test]
@@ -307,7 +307,7 @@ mod test {
 
         let json = serde_json::to_string(&address).unwrap();
 
-        assert_eq!(json, r#"{}"#)
+        assert_eq!(json, r#"{}"#);
     }
 
     #[test]
@@ -329,7 +329,7 @@ mod test {
             .build();
         let address: Address = yaserde::de::from_str(xml).unwrap();
 
-        assert_eq!(address, expected_address)
+        assert_eq!(address, expected_address);
     }
 
     #[test]
@@ -342,14 +342,16 @@ mod test {
             .street("2299 Poplar Ave")
             .build();
 
-        let mut config = Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&address, &config).unwrap();
 
         assert_eq!(
             xml,
             r#"<address xmlns="http://gedcomx.org/v1/"><city>East Palo Alto</city><country>United States</country><postalCode>94303</postalCode><stateOrProvince>California</stateOrProvince><street>2299 Poplar Ave</street></address>"#
-        )
+        );
     }
 
     #[quickcheck_macros::quickcheck]

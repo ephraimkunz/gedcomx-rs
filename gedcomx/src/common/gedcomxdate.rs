@@ -119,7 +119,7 @@ impl fmt::Display for GedcomxDate {
             }
             gedcomx_date::GedcomxDate::Recurring(recurring) => {
                 if let Some(count) = recurring.count {
-                    let _ = write!(s, "R{}/", count);
+                    let _ = write!(s, "R{count}/");
                 } else {
                     s.push_str("R/");
                 }
@@ -128,7 +128,7 @@ impl fmt::Display for GedcomxDate {
             }
         };
 
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }
 
@@ -141,22 +141,22 @@ fn date_time_into_string(
     let _ = write!(s, "{:04}", date.year.abs());
 
     if let Some(month) = date.month {
-        let _ = write!(s, "-{:02}", month);
+        let _ = write!(s, "-{month:02}");
     }
 
     if let Some(day) = date.day {
-        let _ = write!(s, "-{:02}", day);
+        let _ = write!(s, "-{day:02}");
     }
 
     if let Some(time) = time {
         let _ = write!(s, "T{:02}", time.hours);
 
         if let Some(minutes) = time.minutes {
-            let _ = write!(s, ":{:02}", minutes);
+            let _ = write!(s, ":{minutes:02}");
         }
 
         if let Some(seconds) = time.seconds {
-            let _ = write!(s, ":{:02}", seconds);
+            let _ = write!(s, ":{seconds:02}");
         }
 
         match (time.tz_offset_hours, time.tz_offset_minutes) {
@@ -360,7 +360,7 @@ mod test {
         roundtrip("+1000".to_string());
         roundtrip("-0010".to_string());
         roundtrip("-0000".to_string());
-        roundtrip("+1000T10".to_string())
+        roundtrip("+1000T10".to_string());
     }
 
     #[test]

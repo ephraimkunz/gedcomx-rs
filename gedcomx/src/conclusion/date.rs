@@ -48,6 +48,7 @@ impl Arbitrary for Date {
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
+    use yaserde::ser::Config;
 
     use super::*;
 
@@ -66,7 +67,7 @@ mod test {
                 original: Some("the original text".to_string()),
                 formal: Some("+0987-01-25T23:59Z".parse().unwrap())
             }
-        )
+        );
     }
 
     #[test]
@@ -81,7 +82,7 @@ mod test {
                 original: None,
                 formal: None
             }
-        )
+        );
     }
 
     #[test]
@@ -96,7 +97,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"original":"the original text","formal":"+0987-01-25T23:59Z"}"#
-        )
+        );
     }
 
     #[test]
@@ -108,7 +109,7 @@ mod test {
 
         let json = serde_json::to_string(&date).unwrap();
 
-        assert_eq!(json, r#"{}"#)
+        assert_eq!(json, r#"{}"#);
     }
 
     #[test]
@@ -127,7 +128,7 @@ mod test {
                 original: Some("the original text".to_string()),
                 formal: Some("+0987-01-25T23:59Z".parse().unwrap())
             }
-        )
+        );
     }
 
     #[test]
@@ -142,7 +143,7 @@ mod test {
                 original: None,
                 formal: None
             }
-        )
+        );
     }
 
     #[test]
@@ -152,14 +153,16 @@ mod test {
             formal: Some("+0987-01-25T23:59Z".parse().unwrap()),
         };
 
-        let mut config = yaserde::ser::Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&date, &config).unwrap();
 
         assert_eq!(
             xml,
             r#"<Date xmlns="http://gedcomx.org/v1/"><original>the original text</original><formal>+0987-01-25T23:59Z</formal></Date>"#
-        )
+        );
     }
 
     #[test]
@@ -169,11 +172,13 @@ mod test {
             formal: None,
         };
 
-        let mut config = yaserde::ser::Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&date, &config).unwrap();
 
-        assert_eq!(xml, r#"<Date xmlns="http://gedcomx.org/v1/" />"#)
+        assert_eq!(xml, r#"<Date xmlns="http://gedcomx.org/v1/" />"#);
     }
 
     #[quickcheck_macros::quickcheck]

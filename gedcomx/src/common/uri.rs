@@ -34,13 +34,13 @@ impl From<String> for Uri {
 
 impl From<Id> for Uri {
     fn from(id: Id) -> Self {
-        Self(format!("#{}", id))
+        Self(format!("#{id}"))
     }
 }
 
 impl From<&Id> for Uri {
     fn from(id: &Id) -> Self {
-        Self(format!("#{}", id))
+        Self(format!("#{id}"))
     }
 }
 
@@ -106,7 +106,7 @@ mod test {
                 .id("test")
                 .build();
         let uri = Uri::try_from(&source_description);
-        assert_eq!(uri.unwrap(), Uri::from("#test"))
+        assert_eq!(uri.unwrap(), Uri::from("#test"));
     }
 
     #[test]
@@ -117,14 +117,14 @@ mod test {
         assert_eq!(
             uri.unwrap_err().to_string(),
             GedcomxError::no_id_error(&source_description).to_string()
-        )
+        );
     }
 
     #[test]
     fn from_place_description() {
         let place_description = PlaceDescription::builder("name").id("test").build();
         let uri = Uri::try_from(&place_description);
-        assert_eq!(uri.unwrap(), Uri::from("#test"))
+        assert_eq!(uri.unwrap(), Uri::from("#test"));
     }
 
     #[test]
@@ -134,7 +134,7 @@ mod test {
         assert_eq!(
             uri.unwrap_err().to_string(),
             GedcomxError::no_id_error(&place_description).to_string()
-        )
+        );
     }
 
     #[test]

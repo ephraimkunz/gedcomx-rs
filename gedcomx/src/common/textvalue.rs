@@ -51,6 +51,8 @@ impl Arbitrary for TextValue {
 
 #[cfg(test)]
 mod test {
+    use yaserde::ser::Config;
+
     use super::*;
 
     #[test]
@@ -67,7 +69,7 @@ mod test {
                 lang: Some("en".into()),
                 value: "text of the value".to_string(),
             }
-        )
+        );
     }
 
     #[test]
@@ -77,7 +79,7 @@ mod test {
         }"#;
 
         let text_value: TextValue = serde_json::from_str(json).unwrap();
-        assert_eq!(text_value, TextValue::from("text of the value"))
+        assert_eq!(text_value, TextValue::from("text of the value"));
     }
 
     #[test]
@@ -89,7 +91,7 @@ mod test {
 
         let json = serde_json::to_string(&text_value).unwrap();
 
-        assert_eq!(json, r#"{"lang":"en","value":"text of the value"}"#)
+        assert_eq!(json, r#"{"lang":"en","value":"text of the value"}"#);
     }
 
     #[test]
@@ -98,30 +100,32 @@ mod test {
 
         let json = serde_json::to_string(&text_value).unwrap();
 
-        assert_eq!(json, r#"{"value":"text of the value"}"#)
+        assert_eq!(json, r#"{"value":"text of the value"}"#);
     }
 
     #[test]
     fn xml_serialize() {
         let textvalue = TextValue::new("...textual value...", Some("en"));
 
-        let mut config = yaserde::ser::Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
 
         let xml = yaserde::ser::to_string_with_config(&textvalue, &config).unwrap();
 
         let expected = r##"<TextValue xml:lang="en">...textual value...</TextValue>"##;
 
-        assert_eq!(xml, expected)
+        assert_eq!(xml, expected);
     }
 
     #[test]
     fn xml_deserialize() {
         let xml = r##"<TextValue xml:lang="en">...textual value...</TextValue>"##;
 
-        let textvalue: TextValue = yaserde::de::from_str(&xml).unwrap();
+        let textvalue: TextValue = yaserde::de::from_str(xml).unwrap();
         let expected = TextValue::new("...textual value...", Some("en"));
-        assert_eq!(textvalue, expected)
+        assert_eq!(textvalue, expected);
     }
 
     #[quickcheck_macros::quickcheck]

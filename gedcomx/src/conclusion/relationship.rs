@@ -313,7 +313,7 @@ impl fmt::Display for RelationshipType {
             Self::EnslavedBy => write!(f, "http://gedcomx.org/EnslavedBy"),
             Self::Godparent => write!(f, "http://gedcomx.org/Godparent"),
             Self::ParentChild => write!(f, "http://gedcomx.org/ParentChild"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -371,7 +371,7 @@ mod test {
 
         let relationship: Relationship = serde_json::from_str(json).unwrap();
 
-        assert_eq!(relationship, expected_relationship)
+        assert_eq!(relationship, expected_relationship);
     }
 
     #[test]
@@ -398,7 +398,7 @@ mod test {
 
         let relationship: Relationship = yaserde::de::from_str(xml).unwrap();
 
-        assert_eq!(relationship, expected_relationship)
+        assert_eq!(relationship, expected_relationship);
     }
 
     #[test]
@@ -419,7 +419,7 @@ mod test {
 
         let expected_json = r##"{"type":"http://gedcomx.org/Couple","person1":{"resource":"#http://identifier/for/person/1"},"person2":{"resource":"#http://identifier/for/person/2"}}"##;
 
-        assert_eq!(json, expected_json)
+        assert_eq!(json, expected_json);
     }
 
     #[test]
@@ -447,7 +447,7 @@ mod test {
 
         let expected_xml = r##"<Relationship xmlns="http://gedcomx.org/v1/" id="local_id" extracted="false" type="http://gedcomx.org/Couple"><person1 resource="#http://identifier/for/person/1" /><person2 resource="#http://identifier/for/person/2" /></Relationship>"##;
 
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 
     #[quickcheck_macros::quickcheck]

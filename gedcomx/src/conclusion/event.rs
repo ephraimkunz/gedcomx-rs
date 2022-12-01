@@ -419,7 +419,7 @@ impl fmt::Display for EventType {
             Self::Naturalization => write!(f, "http://gedcomx.org/Naturalization"),
             Self::Ordination => write!(f, "http://gedcomx.org/Ordination"),
             Self::Retirement => write!(f, "http://gedcomx.org/Retirement"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -477,6 +477,7 @@ impl Arbitrary for EventType {
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
+    use yaserde::ser::Config;
 
     use super::*;
 
@@ -495,7 +496,7 @@ mod test {
                 .event_type(EventType::Marriage)
                 .date(Date::new(Some("date"), None))
                 .build()
-        )
+        );
     }
 
     #[test]
@@ -510,7 +511,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"type":"http://gedcomx.org/Marriage","date":{"original":"date"}}"#
-        )
+        );
     }
 
     #[test]
@@ -531,7 +532,7 @@ mod test {
                 .event_type(EventType::Marriage)
                 .date(Date::new(Some("date"), None))
                 .build()
-        )
+        );
     }
 
     #[test]
@@ -542,14 +543,16 @@ mod test {
             .date(Date::new(Some("date"), None))
             .build();
 
-        let mut config = yaserde::ser::Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&event, &config).unwrap();
 
         assert_eq!(
             xml,
             r#"<Event xmlns="http://gedcomx.org/v1/" id="local_id" type="http://gedcomx.org/Marriage"><date><original>date</original></date></Event>"#
-        )
+        );
     }
 
     #[quickcheck_macros::quickcheck]

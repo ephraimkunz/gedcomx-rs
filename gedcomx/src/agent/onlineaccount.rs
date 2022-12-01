@@ -68,7 +68,7 @@ mod test {
                 service_homepage: ResourceReference::from("http://familysearch.org/"),
                 account_name: "Family Search Account".to_string(),
             }
-        )
+        );
     }
 
     #[test]
@@ -83,7 +83,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"serviceHomepage":{"resource":"http://familysearch.org/"},"accountName":"Family Search Account"}"#
-        )
+        );
     }
 
     #[test]
@@ -98,7 +98,7 @@ mod test {
                 service_homepage: ResourceReference::from("http://familysearch.org/"),
                 account_name: "Family Search Account".to_string(),
             }
-        )
+        );
     }
 
     #[test]
@@ -108,14 +108,16 @@ mod test {
             account_name: "Family Search Account".to_string(),
         };
 
-        let mut config = Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&online_account, &config).unwrap();
 
         assert_eq!(
             xml,
             r#"<account xmlns="http://gedcomx.org/v1/"><serviceHomepage resource="http://familysearch.org/" /><accountName>Family Search Account</accountName></account>"#
-        )
+        );
     }
 
     #[quickcheck_macros::quickcheck]

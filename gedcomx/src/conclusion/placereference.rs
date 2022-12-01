@@ -106,7 +106,7 @@ mod test {
                     "http://identifier/of/place-description/being/referenced".into()
                 )
             }
-        )
+        );
     }
 
     #[test]
@@ -125,7 +125,7 @@ mod test {
                     "http://identifier/of/place/description/being/referenced".into()
                 )
             }
-        )
+        );
     }
 
     #[test]
@@ -134,7 +134,7 @@ mod test {
 
         let place_ref: PlaceReference = serde_json::from_str(json).unwrap();
 
-        assert_eq!(place_ref, PlaceReference::default())
+        assert_eq!(place_ref, PlaceReference::default());
     }
 
     #[test]
@@ -149,7 +149,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"original":"the original text","description":"http://identifier/of/place/description/being/referenced"}"#
-        )
+        );
     }
 
     #[test]
@@ -169,7 +169,7 @@ mod test {
         assert_eq!(
             xml,
             r#"<PlaceReference xmlns="http://gedcomx.org/v1/" description="http://identifier/of/place/description/being/referenced"><original>the original text</original></PlaceReference>"#
-        )
+        );
     }
 
     #[test]
@@ -178,7 +178,7 @@ mod test {
 
         let json = serde_json::to_string(&place_ref).unwrap();
 
-        assert_eq!(json, r#"{}"#)
+        assert_eq!(json, r#"{}"#);
     }
 
     #[quickcheck_macros::quickcheck]

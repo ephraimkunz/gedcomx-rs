@@ -43,6 +43,6 @@ pub enum GedcomxError {
 
 impl GedcomxError {
     pub fn no_id_error<T: Debug>(t: &T) -> Self {
-        Self::NoId(format!("{:#?}", t))
+        Self::NoId(format!("{t:#?}"))
     }
 }

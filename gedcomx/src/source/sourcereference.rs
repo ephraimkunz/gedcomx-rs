@@ -234,7 +234,7 @@ mod test {
 
         let source_reference: SourceReference = serde_json::from_str(json).unwrap();
 
-        assert_eq!(source_reference, data.source_reference)
+        assert_eq!(source_reference, data.source_reference);
     }
 
     #[test]
@@ -253,7 +253,7 @@ mod test {
 
         let source_reference: SourceReference = yaserde::de::from_str(xml).unwrap();
 
-        assert_eq!(source_reference, data.source_reference)
+        assert_eq!(source_reference, data.source_reference);
     }
 
     #[test]
@@ -266,7 +266,7 @@ mod test {
         assert_eq!(
             source_reference,
             SourceReference::new(Uri::from("SD-1"), None, None, vec![])
-        )
+        );
     }
 
     #[test]
@@ -294,7 +294,7 @@ mod test {
 
         let expected_xml = r#"<SourceReference xmlns="http://gedcomx.org/v1/" description="SD-1" descriptionId="Description id of the target source"><attribution><contributor resource="A-1" /><modified>2014-03-07T07:00:00Z</modified></attribution><qualifier name="http://gedcomx.org/RectangleRegion">rectangle region value</qualifier></SourceReference>"#;
 
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 
     #[test]

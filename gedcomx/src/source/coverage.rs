@@ -63,7 +63,7 @@ mod test {
                 ),
                 Some(Date::new(Some("Original date"), None))
             )
-        )
+        );
     }
 
     #[test]
@@ -90,7 +90,7 @@ mod test {
                 ),
                 Some(Date::new(Some("Original date"), None))
             )
-        )
+        );
     }
 
     #[test]
@@ -108,7 +108,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"spatial":{"original":"Place reference"},"temporal":{"original":"Original date"}}"#
-        )
+        );
     }
 
     #[test]
@@ -131,7 +131,7 @@ mod test {
 
         let expected_xml = r#"<Coverage xmlns="http://gedcomx.org/v1/"><spatial><original>Place reference</original></spatial><temporal><original>Original date</original></temporal></Coverage>"#;
 
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 
     #[quickcheck_macros::quickcheck]

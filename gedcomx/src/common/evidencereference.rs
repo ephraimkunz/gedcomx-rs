@@ -92,7 +92,7 @@ mod test {
         }"#;
 
         let evidence_reference: EvidenceReference = serde_json::from_str(json).unwrap();
-        assert_eq!(evidence_reference, data.evidence_reference)
+        assert_eq!(evidence_reference, data.evidence_reference);
     }
 
     #[test]
@@ -105,7 +105,7 @@ mod test {
         assert_eq!(
             evidence_reference,
             EvidenceReference::new(Uri::from("S-1"), None)
-        )
+        );
     }
 
     #[test]
@@ -146,7 +146,7 @@ mod test {
             attribution: Some(Attribution::default()),
         };
 
-        assert_eq!(evidence_reference, expected_evidence_reference)
+        assert_eq!(evidence_reference, expected_evidence_reference);
     }
 
     #[test]
@@ -162,7 +162,7 @@ mod test {
             attribution: None,
         };
 
-        assert_eq!(evidence_reference, expected_evidence_reference)
+        assert_eq!(evidence_reference, expected_evidence_reference);
     }
 
     #[test]
@@ -172,13 +172,15 @@ mod test {
             attribution: Some(Attribution::default()),
         };
 
-        let mut config = Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&evidence_reference, &config).unwrap();
 
         let expected_xml = r#"<evidence xmlns="http://gedcomx.org/v1/" resource="http://identifier/for/data/being/referenced"><attribution /></evidence>"#;
 
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 
     #[test]
@@ -188,13 +190,16 @@ mod test {
             attribution: None,
         };
 
-        let mut config = Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
+
         let xml = yaserde::ser::to_string_with_config(&evidence_reference, &config).unwrap();
 
         let expected_xml = r#"<evidence xmlns="http://gedcomx.org/v1/" resource="http://identifier/for/data/being/referenced" />"#;
 
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 
     #[quickcheck_macros::quickcheck]

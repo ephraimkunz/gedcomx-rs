@@ -45,6 +45,8 @@ impl Arbitrary for Qualifier {
 
 #[cfg(test)]
 mod test {
+    use yaserde::ser::Config;
+
     use super::*;
 
     #[test]
@@ -55,8 +57,8 @@ mod test {
           }"##;
 
         let expected = Qualifier::new("http://gedcomx.org/QualifierName", Some("..."));
-        let qualifier: Qualifier = serde_json::from_str(&json).unwrap();
-        assert_eq!(qualifier, expected)
+        let qualifier: Qualifier = serde_json::from_str(json).unwrap();
+        assert_eq!(qualifier, expected);
     }
 
     #[test]
@@ -66,8 +68,8 @@ mod test {
         }"##;
 
         let expected = Qualifier::new("http://gedcomx.org/QualifierName", None::<String>);
-        let qualifier: Qualifier = serde_json::from_str(&json).unwrap();
-        assert_eq!(qualifier, expected)
+        let qualifier: Qualifier = serde_json::from_str(json).unwrap();
+        assert_eq!(qualifier, expected);
     }
 
     #[test]
@@ -76,7 +78,7 @@ mod test {
         let json = serde_json::to_string(&qualifier).unwrap();
         let expected = r##"{"name":"http://gedcomx.org/QualifierName","value":"..."}"##;
 
-        assert_eq!(json, expected)
+        assert_eq!(json, expected);
     }
 
     #[test]
@@ -85,7 +87,7 @@ mod test {
         let json = serde_json::to_string(&qualifier).unwrap();
         let expected = r##"{"name":"http://gedcomx.org/QualifierName"}"##;
 
-        assert_eq!(json, expected)
+        assert_eq!(json, expected);
     }
 
     #[test]
@@ -95,26 +97,28 @@ mod test {
             Some("...qualifier value..."),
         );
 
-        let mut config = yaserde::ser::Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
 
         let xml = yaserde::ser::to_string_with_config(&qualifier, &config).unwrap();
 
         let expected = r##"<Qualifier name="http://gedcomx.org/QualifierName">...qualifier value...</Qualifier>"##;
 
-        assert_eq!(xml, expected)
+        assert_eq!(xml, expected);
     }
 
     #[test]
     fn xml_deserialize() {
         let xml = r##"<Qualifier name="http://gedcomx.org/QualifierName">...qualifier value...</Qualifier>"##;
 
-        let qualifier: Qualifier = yaserde::de::from_str(&xml).unwrap();
+        let qualifier: Qualifier = yaserde::de::from_str(xml).unwrap();
         let expected = Qualifier::new(
             "http://gedcomx.org/QualifierName",
             Some("...qualifier value..."),
         );
-        assert_eq!(qualifier, expected)
+        assert_eq!(qualifier, expected);
     }
 
     #[quickcheck_macros::quickcheck]

@@ -128,7 +128,7 @@ mod test {
         let agent = Agent::builder().id("my id").build();
         let rr: ResourceReference = (&agent).try_into().unwrap();
         let expected = ResourceReference::from("#my id");
-        assert_eq!(rr, expected)
+        assert_eq!(rr, expected);
     }
 
     #[test]
@@ -136,7 +136,7 @@ mod test {
         let agent = Agent::default();
         let rr: Result<ResourceReference, GedcomxError> = (&agent).try_into();
         let expected = GedcomxError::no_id_error(&agent).to_string();
-        assert_eq!(rr.unwrap_err().to_string(), expected)
+        assert_eq!(rr.unwrap_err().to_string(), expected);
     }
 
     #[test]
@@ -144,7 +144,7 @@ mod test {
         let person = Person::builder().id("my id").build();
         let rr: ResourceReference = (&person).try_into().unwrap();
         let expected = ResourceReference::from("#my id");
-        assert_eq!(rr, expected)
+        assert_eq!(rr, expected);
     }
 
     #[test]
@@ -152,7 +152,7 @@ mod test {
         let person = Person::default();
         let rr: Result<ResourceReference, GedcomxError> = (&person).try_into();
         let expected = GedcomxError::no_id_error(&person).to_string();
-        assert_eq!(rr.unwrap_err().to_string(), expected)
+        assert_eq!(rr.unwrap_err().to_string(), expected);
     }
 
     #[test]
@@ -163,7 +163,7 @@ mod test {
             .build();
         let rr: ResourceReference = (&document).try_into().unwrap();
         let expected = ResourceReference::from("#my id");
-        assert_eq!(rr, expected)
+        assert_eq!(rr, expected);
     }
 
     #[test]
@@ -171,7 +171,7 @@ mod test {
         let document = Document::builder("").id("my id").build();
         let rr: ResourceReference = (&document).try_into().unwrap();
         let expected = ResourceReference::from("#my id");
-        assert_eq!(rr, expected)
+        assert_eq!(rr, expected);
     }
 
     #[test]
@@ -181,7 +181,7 @@ mod test {
             .build();
         let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
         let expected = GedcomxError::no_id_error(&document).to_string();
-        assert_eq!(rr.unwrap_err().to_string(), expected)
+        assert_eq!(rr.unwrap_err().to_string(), expected);
     }
 
     #[test]
@@ -196,7 +196,7 @@ mod test {
             actual: DocumentType::Abstract,
         }
         .to_string();
-        assert_eq!(rr.unwrap_err().to_string(), expected)
+        assert_eq!(rr.unwrap_err().to_string(), expected);
     }
 
     #[test]
@@ -204,6 +204,6 @@ mod test {
         let document = Document::default();
         let rr: Result<ResourceReference, GedcomxError> = (&document).try_into();
         let expected = GedcomxError::no_id_error(&document).to_string();
-        assert_eq!(rr.unwrap_err().to_string(), expected)
+        assert_eq!(rr.unwrap_err().to_string(), expected);
     }
 }

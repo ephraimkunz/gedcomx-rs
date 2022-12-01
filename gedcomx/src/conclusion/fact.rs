@@ -614,7 +614,7 @@ impl fmt::Display for FactType {
             Self::StepParent => write!(f, "http://gedcomx.org/StepParent"),
             Self::SociologicalParent => write!(f, "http://gedcomx.org/SociologicalParent"),
             Self::SurrogateParent => write!(f, "http://gedcomx.org/SurrogateParent"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -911,14 +911,14 @@ mod test {
     fn json_serialize_custom_fact_type() {
         let t = FactType::Custom("this is a custom fact".into());
         let json = serde_json::to_string(&t).unwrap();
-        assert_eq!(json, r#""this is a custom fact""#)
+        assert_eq!(json, r#""this is a custom fact""#);
     }
 
     #[test]
     fn json_deserialize_custom_fact_type() {
         let json = r#""this is a custom fact""#;
         let t: FactType = serde_json::from_str(json).unwrap();
-        assert_eq!(t, FactType::Custom("this is a custom fact".into()))
+        assert_eq!(t, FactType::Custom("this is a custom fact".into()));
     }
 
     #[test]
@@ -995,7 +995,7 @@ mod test {
                 }],
                 date: Some(Date::new(Some("date"), None))
             }
-        )
+        );
     }
 
     #[test]
@@ -1009,7 +1009,7 @@ mod test {
                 .value("Fact value")
                 .qualifier(Qualifier::new(FactQualifier::Cause, Some("Just because")))
                 .build()
-        )
+        );
     }
 
     #[test]
@@ -1073,7 +1073,7 @@ mod test {
                 qualifiers: vec![],
                 date: None
             }
-        )
+        );
     }
 
     #[test]
@@ -1120,7 +1120,7 @@ mod test {
             ..yaserde::ser::Config::default()
         };
         let xml = yaserde::ser::to_string_with_config(&fact, &config).unwrap();
-        assert_eq!(xml, "<Fact xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/Award\"><value>Fact value</value><qualifier name=\"http://gedcomx.org/Cause\">Just because</qualifier></Fact>")
+        assert_eq!(xml, "<Fact xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/Award\"><value>Fact value</value><qualifier name=\"http://gedcomx.org/Cause\">Just because</qualifier></Fact>");
     }
 
     #[test]

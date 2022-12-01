@@ -217,7 +217,7 @@ impl fmt::Display for EventRoleType {
             Self::Participant => write!(f, "http://gedcomx.org/Participant"),
             Self::Official => write!(f, "http://gedcomx.org/Official"),
             Self::Witness => write!(f, "http://gedcomx.org/Witness"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -312,7 +312,7 @@ mod test {
                 details: Some("details".to_string()),
                 person: ResourceReference::from("http://identifier/for/person/1")
             }
-        )
+        );
     }
 
     #[test]
@@ -376,7 +376,7 @@ mod test {
                 details: None,
                 person: ResourceReference::from("http://identifier/for/person/1")
             }
-        )
+        );
     }
 
     #[test]
@@ -401,7 +401,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"person":{"resource":"http://identifier/for/person/1"},"type":"http://gedcomx.org/Witness","details":"details"}"#
-        )
+        );
     }
 
     #[test]
@@ -426,7 +426,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"person":{"resource":"http://identifier/for/person/1"}}"#
-        )
+        );
     }
 
     #[test]
@@ -452,7 +452,7 @@ mod test {
                 details: None,
                 person: ResourceReference::from("http://identifier/for/person/1")
             }
-        )
+        );
     }
 
     #[test]
@@ -479,7 +479,7 @@ mod test {
         assert_eq!(
             xml,
             r#"<EventRole xmlns="http://gedcomx.org/v1/"><person resource="http://identifier/for/person/1" /></EventRole>"#
-        )
+        );
     }
 
     #[quickcheck_macros::quickcheck]

@@ -49,7 +49,7 @@ impl Arbitrary for SourceCitation {
 mod test {
     use pretty_assertions::assert_eq;
 
-    use super::super::*;
+    use super::super::SourceCitation;
 
     #[test]
     fn json_deserialize() {
@@ -65,7 +65,7 @@ mod test {
                 lang: Some("en".into()),
                 value: "a rendering of the full citation as a string".to_string(),
             }
-        )
+        );
     }
 
     #[test]
@@ -81,7 +81,7 @@ mod test {
                 lang: Some("en".into()),
                 value: "a rendering of the full citation as a string".to_string(),
             }
-        )
+        );
     }
 
     #[test]
@@ -97,7 +97,7 @@ mod test {
                 "a rendering of the full citation as a string".to_string(),
                 None
             )
-        )
+        );
     }
 
     #[test]
@@ -112,7 +112,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"lang":"en","value":"a rendering of the full citation as a string"}"#
-        )
+        );
     }
 
     #[test]
@@ -132,7 +132,7 @@ mod test {
         assert_eq!(
             xml,
             r#"<SourceCitation xmlns="http://gedcomx.org/v1/" xml:lang="en"><value>a rendering of the full citation as a string</value></SourceCitation>"#
-        )
+        );
     }
 
     #[test]
@@ -147,7 +147,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"value":"a rendering of the full citation as a string"}"#
-        )
+        );
     }
 
     #[quickcheck_macros::quickcheck]

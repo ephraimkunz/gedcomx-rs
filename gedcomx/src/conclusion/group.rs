@@ -270,7 +270,7 @@ mod test {
                 .date(Date::new(Some("date"), None))
                 .place(PlaceReference::new(Some("place"), None))
                 .build()
-        )
+        );
     }
 
     #[test]
@@ -286,7 +286,7 @@ mod test {
                 .date(Date::new(Some("date"), None))
                 .place(PlaceReference::new(Some("place"), None))
                 .build()
-        )
+        );
     }
 
     #[test]
@@ -302,7 +302,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"names":[{"lang":"en","value":"Monticello Plantation"},{"lang":"zh","value":"monticello种植园"}],"date":{"original":"date"},"place":{"original":"place"}}"#
-        )
+        );
     }
 
     #[test]
@@ -322,7 +322,7 @@ mod test {
         assert_eq!(
             xml,
             r#"<Group xmlns="http://gedcomx.org/v1/"><name xml:lang="en">Monticello Plantation</name><name xml:lang="zh">monticello种植园</name><date><original>date</original></date><place><original>place</original></place></Group>"#
-        )
+        );
     }
 
     #[quickcheck_macros::quickcheck]

@@ -104,6 +104,8 @@ impl NoteBuilder {
 
 #[cfg(test)]
 mod test {
+    use yaserde::ser::Config;
+
     use super::*;
     use crate::TestData;
 
@@ -122,7 +124,7 @@ mod test {
             .attribution(Attribution::default())
             .build();
 
-        assert_eq!(actual, expected)
+        assert_eq!(actual, expected);
     }
 
     #[test]
@@ -150,7 +152,7 @@ mod test {
                 text: "This is a note".to_string(),
                 attribution: Some(data.attribution),
             }
-        )
+        );
     }
 
     #[test]
@@ -160,7 +162,7 @@ mod test {
         }"#;
 
         let note: Note = serde_json::from_str(json).unwrap();
-        assert_eq!(note, Note::builder("This is a note").build())
+        assert_eq!(note, Note::builder("This is a note").build());
     }
 
     #[test]
@@ -199,12 +201,14 @@ mod test {
             .attribution(Attribution::default())
             .build();
 
-        let mut config = yaserde::ser::Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&note, &config).unwrap();
         let expected = r##"<note xmlns="http://gedcomx.org/v1/" xml:lang="en"><subject>...subject or title...</subject><text>...text of the note...</text><attribution /></note>"##;
 
-        assert_eq!(xml, expected)
+        assert_eq!(xml, expected);
     }
 
     #[test]
@@ -216,13 +220,13 @@ mod test {
         </attribution>    
         </note>"##;
 
-        let note: Note = yaserde::de::from_str(&xml).unwrap();
+        let note: Note = yaserde::de::from_str(xml).unwrap();
         let expected = Note::builder("...text of the note...")
             .lang("en")
             .subject("...subject or title...")
             .attribution(Attribution::default())
             .build();
-        assert_eq!(note, expected)
+        assert_eq!(note, expected);
     }
 
     #[quickcheck_macros::quickcheck]

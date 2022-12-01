@@ -233,7 +233,7 @@ fn cite_george_martha_and_marriage(
 
     relationship.source(&martha_source).unwrap();
 
-    return vec![george_source, martha_source];
+    vec![george_source, martha_source]
 }
 
 #[test]

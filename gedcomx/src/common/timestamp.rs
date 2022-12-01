@@ -141,7 +141,7 @@ impl FromStr for Timestamp {
         let s_with_timezone = if tz_provided {
             s.to_string()
         } else {
-            format!("{}Z", s)
+            format!("{s}Z")
         };
 
         match DateTime::parse_from_rfc3339(&s_with_timezone) {
@@ -168,22 +168,25 @@ impl fmt::Display for Timestamp {
             full.as_str()
         };
 
-        write!(f, "{}", partial)
+        write!(f, "{partial}")
     }
 }
 
 impl Arbitrary for Timestamp {
     fn arbitrary(g: &mut Gen) -> Self {
-        let naive = chrono::NaiveDate::from_ymd(
+        let naive = chrono::NaiveDate::from_ymd_opt(
             arbitrary_between!(i32; g, 1900, 2200),
             arbitrary_between!(u32; g, 1, 12),
             arbitrary_between!(u32; g, 1, 28),
         )
-        .and_hms(
-            arbitrary_between!(u32; g, 0, 23),
-            arbitrary_between!(u32; g, 0, 59),
-            arbitrary_between!(u32; g, 0, 59),
-        );
+        .and_then(|date| {
+            date.and_hms_opt(
+                arbitrary_between!(u32; g, 0, 23),
+                arbitrary_between!(u32; g, 0, 59),
+                arbitrary_between!(u32; g, 0, 59),
+            )
+        })
+        .expect("Unable to create arbitrary time");
 
         Utc.from_utc_datetime(&naive).into()
     }
@@ -198,22 +201,32 @@ mod test {
     #[test]
     fn json_deserialize() {
         let json = "1338494969";
-        let expected = Timestamp::from(Utc.timestamp_millis(1338494969));
-        assert_eq!(serde_json::from_str::<Timestamp>(&json).unwrap(), expected)
+        let chrono::LocalResult::Single(timestamp) = Utc.timestamp_millis_opt(1_338_494_969) else {
+            panic!("Invalid timestamp")
+        };
+
+        let expected = Timestamp::from(timestamp);
+        assert_eq!(serde_json::from_str::<Timestamp>(json).unwrap(), expected);
     }
 
     #[test]
     fn json_serialize() {
-        let timestamp = Timestamp::from(Utc.timestamp_millis(1338494969));
+        let timestamp = Timestamp::from(match Utc.timestamp_millis_opt(1_338_494_969) {
+            chrono::LocalResult::Single(t) => t,
+            _ => panic!("Invalid timestamp"),
+        });
         let expected = "1338494969";
-        assert_eq!(serde_json::to_string(&timestamp).unwrap(), expected)
+        assert_eq!(serde_json::to_string(&timestamp).unwrap(), expected);
     }
 
     #[test]
     fn xml_deserialize() {
         // No timezone.
-        let offset = FixedOffset::east(0);
-        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let offset = FixedOffset::east_opt(0).expect("Invalid offset");
+        let dt_utc = NaiveDate::from_ymd_opt(2020, 3, 7)
+            .and_then(|d| d.and_hms_opt(4, 40, 0))
+            .expect("Invalid date")
+            - offset;
         let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
 
         assert_eq!(
@@ -234,8 +247,11 @@ mod test {
         );
 
         // Positive offset.
-        let offset = FixedOffset::east(6 * 3600 + 30 * 60);
-        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let offset = FixedOffset::east_opt(6 * 3600 + 30 * 60).expect("Invalid offset");
+        let dt_utc = NaiveDate::from_ymd_opt(2020, 3, 7)
+            .and_then(|d| d.and_hms_opt(4, 40, 0))
+            .expect("Invalid date")
+            - offset;
         let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
         assert_eq!(
             Timestamp::from_str("2020-03-07T04:40:00+06:30"),
@@ -246,8 +262,11 @@ mod test {
         );
 
         // Negative offset.
-        let offset = FixedOffset::west(6 * 3600 + 30 * 60);
-        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let offset = FixedOffset::west_opt(6 * 3600 + 30 * 60).expect("Invalid offset");
+        let dt_utc = NaiveDate::from_ymd_opt(2020, 3, 7)
+            .and_then(|d| d.and_hms_opt(4, 40, 0))
+            .expect("Invalid date")
+            - offset;
         let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
         assert_eq!(
             Timestamp::from_str("2020-03-07T04:40:00-06:30"),
@@ -261,8 +280,11 @@ mod test {
     #[test]
     fn xml_serialize() {
         // Timezone +00:00.
-        let offset = FixedOffset::east(0);
-        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let offset = FixedOffset::east_opt(0).expect("Invalid offset");
+        let dt_utc = NaiveDate::from_ymd_opt(2020, 3, 7)
+            .and_then(|d| d.and_hms_opt(4, 40, 0))
+            .expect("Invalid date")
+            - offset;
         let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
         assert_eq!(
             Timestamp {
@@ -274,8 +296,11 @@ mod test {
         );
 
         // Positive offset.
-        let offset = FixedOffset::east(6 * 3600 + 30 * 60);
-        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let offset = FixedOffset::east_opt(6 * 3600 + 30 * 60).expect("Invalid offset");
+        let dt_utc = NaiveDate::from_ymd_opt(2020, 3, 7)
+            .and_then(|d| d.and_hms_opt(4, 40, 0))
+            .expect("Invalid date")
+            - offset;
         let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
         assert_eq!(
             Timestamp {
@@ -287,8 +312,11 @@ mod test {
         );
 
         // Negative offset.
-        let offset = FixedOffset::west(6 * 3600 + 30 * 60);
-        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let offset = FixedOffset::west_opt(6 * 3600 + 30 * 60).expect("Invalid offset");
+        let dt_utc = NaiveDate::from_ymd_opt(2020, 3, 7)
+            .and_then(|d| d.and_hms_opt(4, 40, 0))
+            .expect("Invalid date")
+            - offset;
         let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
         assert_eq!(
             Timestamp {
@@ -300,8 +328,11 @@ mod test {
         );
 
         // Undetermined timezone.
-        let offset = FixedOffset::west(0);
-        let dt_utc = NaiveDate::from_ymd(2020, 3, 7).and_hms(4, 40, 0) - offset;
+        let offset = FixedOffset::west_opt(0).expect("Invalid offset");
+        let dt_utc = NaiveDate::from_ymd_opt(2020, 3, 7)
+            .and_then(|d| d.and_hms_opt(4, 40, 0))
+            .expect("Invalid date")
+            - offset;
         let dt = DateTime::<FixedOffset>::from_utc(dt_utc, offset).with_timezone(&Utc);
         assert_eq!(
             Timestamp {

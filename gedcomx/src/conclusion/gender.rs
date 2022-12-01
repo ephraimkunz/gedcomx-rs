@@ -192,7 +192,7 @@ impl fmt::Display for GenderType {
             Self::Female => write!(f, "http://gedcomx.org/Female"),
             Self::Unknown => write!(f, "http://gedcomx.org/Unknown"),
             Self::Intersex => write!(f, "http://gedcomx.org/Intersex"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -274,7 +274,7 @@ mod test {
                 attribution: data.conclusion_data.attribution,
                 gender_type: GenderType::Male,
             }
-        )
+        );
     }
 
     #[test]
@@ -306,7 +306,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"type":"http://gedcomx.org/Male"}"#
-        )
+        );
     }
 
     #[test]

@@ -285,7 +285,7 @@ mod test {
 
         let person: Person = serde_json::from_str(json).unwrap();
 
-        assert_eq!(person, expected_person)
+        assert_eq!(person, expected_person);
     }
 
     #[test]
@@ -317,7 +317,7 @@ mod test {
             .build();
         let person: Person = yaserde::de::from_str(xml).unwrap();
 
-        assert_eq!(person, expected_person)
+        assert_eq!(person, expected_person);
     }
 
     #[test]
@@ -342,7 +342,7 @@ mod test {
 
         let expected = r##"<Person xmlns="http://gedcomx.org/v1/" id="P-2" extracted="true"><source description="#S-4" /><name><nameForm><fullText>Lo Yau</fullText></nameForm></name><name type="http://gedcomx.org/AlsoKnownAs"><nameForm><fullText>Young Hong Wong</fullText></nameForm></name></Person>"##;
 
-        assert_eq!(xml, expected)
+        assert_eq!(xml, expected);
     }
 
     #[test]
@@ -362,7 +362,7 @@ mod test {
 
         let expected = r##"{"id":"P-2","extracted":true,"names":[{"nameForms":[{"fullText":"Lo Yau"}]},{"type":"http://gedcomx.org/AlsoKnownAs","nameForms":[{"fullText":"Young Hong Wong"}]}]}"##;
 
-        assert_eq!(json, expected)
+        assert_eq!(json, expected);
     }
 
     #[quickcheck_macros::quickcheck]

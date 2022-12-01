@@ -187,7 +187,8 @@ impl TestData {
             contributor: Some(ResourceReference::from("A-1")),
             modified: Some(
                 chrono::DateTime::from_utc(
-                    chrono::NaiveDateTime::from_timestamp(1_394_175_600, 0),
+                    chrono::NaiveDateTime::from_timestamp_opt(1_394_175_600, 0)
+                        .expect("Invalid date"),
                     chrono::Utc,
                 )
                 .into(),

@@ -297,7 +297,7 @@ impl fmt::Display for NameType {
             Self::AdoptiveName => write!(f, "http://gedcomx.org/AdoptiveName"),
             Self::FormalName => write!(f, "http://gedcomx.org/FormalName"),
             Self::ReligiousName => write!(f, "http://gedcomx.org/ReligiousName"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -608,7 +608,7 @@ impl fmt::Display for NamePartType {
             Self::Suffix => write!(f, "http://gedcomx.org/Suffix"),
             Self::Given => write!(f, "http://gedcomx.org/Given"),
             Self::Surname => write!(f, "http://gedcomx.org/Surname"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -862,7 +862,7 @@ mod test {
                     }]
                 }]
             }
-        )
+        );
     }
 
     #[test]
@@ -898,7 +898,7 @@ mod test {
 
         let deser: Name = yaserde::de::from_str(xml).unwrap();
 
-        assert_eq!(deser, name)
+        assert_eq!(deser, name);
     }
 
     #[test]
@@ -965,7 +965,7 @@ mod test {
                     parts: vec![]
                 }]
             }
-        )
+        );
     }
 
     #[test]
@@ -1007,7 +1007,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"type":"http://gedcomx.org/BirthName","nameForms":[{"lang":"en","fullText":"full text of the name form","parts":[{"type":"http://gedcomx.org/Surname","value":"value of the name part","qualifiers":[{"name":"http://gedcomx.org/Family"},{"name":"http://gedcomx.org/Patronymic"}]}]}],"date":{"original":"date"}}"#
-        )
+        );
     }
 
     #[test]
@@ -1036,7 +1036,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"id":"local_id","lang":"en","sources":[{"description":"SD-1","descriptionId":"Description id of the target source","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"qualifiers":[{"name":"http://gedcomx.org/RectangleRegion","value":"rectangle region value"}]}],"analysis":{"resource":"http://identifier/for/analysis/document"},"notes":[{"lang":"en","subject":"subject","text":"This is a note","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000}}],"confidence":"http://gedcomx.org/High","attribution":{"contributor":{"resource":"A-1"},"modified":1394175600000},"nameForms":[{}]}"#
-        )
+        );
     }
 
     #[test]
@@ -1077,7 +1077,7 @@ mod test {
         assert_eq!(
             xml,
             "<Name xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/BirthName\"><nameForm><fullText>Ephraim Howard Kunz</fullText><part type=\"http://gedcomx.org/Given\" value=\"Ephraim\"><qualifier name=\"http://gedcomx.org/Familiar\"></qualifier></part><part type=\"http://gedcomx.org/Given\" value=\"Howard\"><qualifier name=\"http://gedcomx.org/Middle\"></qualifier></part><part type=\"http://gedcomx.org/Surname\" value=\"Kunz\"><qualifier name=\"http://gedcomx.org/RootName\">Test value</qualifier></part></nameForm></Name>"
-        )
+        );
     }
 
     #[test]

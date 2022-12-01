@@ -221,7 +221,7 @@ impl fmt::Display for DocumentType {
             Self::Abstract => write!(f, "http://gedcomx.org/Abstract"),
             Self::Transcription => write!(f, "http://gedcomx.org/Transcription"),
             Self::Translation => write!(f, "http://gedcomx.org/Translation"),
-            Self::Custom(c) => write!(f, "{}", c),
+            Self::Custom(c) => write!(f, "{c}"),
         }
     }
 }
@@ -299,6 +299,7 @@ impl Arbitrary for TextType {
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
+    use yaserde::ser::Config;
 
     use super::*;
 
@@ -320,7 +321,7 @@ mod test {
                 .extracted(false)
                 .text_type(TextType::Plain)
                 .build()
-        )
+        );
     }
 
     #[test]
@@ -336,7 +337,7 @@ mod test {
         assert_eq!(
             json,
             r#"{"type":"http://gedcomx.org/Analysis","extracted":false,"textType":"plain","text":"...text of the document..."}"#
-        )
+        );
     }
 
     #[test]
@@ -355,7 +356,7 @@ mod test {
                 .extracted(false)
                 .text_type(TextType::Plain)
                 .build()
-        )
+        );
     }
 
     #[test]
@@ -366,14 +367,16 @@ mod test {
             .text_type(TextType::Plain)
             .build();
 
-        let mut config = yaserde::ser::Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&document, &config).unwrap();
 
         assert_eq!(
             xml,
             r#"<Document xmlns="http://gedcomx.org/v1/" type="http://gedcomx.org/Analysis" extracted="false" textType="plain"><text>...text of the document...</text></Document>"#
-        )
+        );
     }
 
     #[quickcheck_macros::quickcheck]

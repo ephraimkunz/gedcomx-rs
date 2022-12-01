@@ -267,7 +267,7 @@ mod test {
             .unwrap()
             .build();
 
-        assert_eq!(agent_1, agent_2)
+        assert_eq!(agent_1, agent_2);
     }
 
     #[test]
@@ -277,7 +277,7 @@ mod test {
         assert_eq!(
             agent.unwrap_err().to_string(),
             GedcomxError::no_id_error(&person).to_string()
-        )
+        );
     }
 
     #[test]
@@ -307,7 +307,7 @@ mod test {
             .phone("fax:+1-201-555-5555")
             .build();
 
-        assert_eq!(serde_json::from_str::<Agent>(&json).unwrap(), agent)
+        assert_eq!(serde_json::from_str::<Agent>(json).unwrap(), agent);
     }
 
     #[test]
@@ -324,7 +324,7 @@ mod test {
             .phone("fax:+1-201-555-5555")
             .build();
 
-        assert_eq!(serde_json::to_string(&agent).unwrap(), expected)
+        assert_eq!(serde_json::to_string(&agent).unwrap(), expected);
     }
 
     #[test]
@@ -374,7 +374,7 @@ mod test {
             .build();
         let agent: Agent = yaserde::de::from_str(xml).unwrap();
 
-        assert_eq!(agent, expected_agent)
+        assert_eq!(agent, expected_agent);
     }
 
     #[test]
@@ -402,11 +402,13 @@ mod test {
             .unwrap()
             .build();
 
-        let mut config = Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Config::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&agent, &config).unwrap();
         let expected_xml = r##"<agent xmlns="http://gedcomx.org/v1/" id="local_id"><identifier type="http://gedcomx.org/Primary">primaryIdentifier</identifier><name>Ephraim Kunz</name><name xml:lang="es">Ephraim Kunz Spanish</name><homepage resource="www.ephraimkunz.com" /><openid resource="some_openid_value" /><account><serviceHomepage resource="http://familysearch.org/" /><accountName>Family Search Account</accountName></account><email resource="mailto:someone@gedcomx.org" /><email resource="mailto:someone2@gedcomx.org" /><phone resource="tel:+1-201-555-0123" /><address><country>United States</country></address><person resource="#P-1" /></agent>"##;
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 
     #[quickcheck_macros::quickcheck]

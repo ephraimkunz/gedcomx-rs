@@ -170,7 +170,7 @@ mod test {
             .created(Timestamp::default())
             .build();
 
-        assert_eq!(actual, expected)
+        assert_eq!(actual, expected);
     }
 
     #[test]
@@ -190,7 +190,7 @@ mod test {
         assert_eq!(
             actual.unwrap_err().to_string(),
             GedcomxError::no_id_error(&creator).to_string()
-        )
+        );
     }
 
     #[test]
@@ -214,7 +214,8 @@ mod test {
                 contributor: Some(ResourceReference::from("http://identifier/for/contributor")),
                 modified: Some(
                     chrono::DateTime::from_utc(
-                        chrono::NaiveDateTime::from_timestamp(1338494, 969000000),
+                        chrono::NaiveDateTime::from_timestamp_opt(1_338_494, 969_000_000)
+                            .expect("Invalid date"),
                         chrono::Utc
                     )
                     .into()
@@ -223,13 +224,14 @@ mod test {
                 creator: Some(ResourceReference::from("http://identifier/for/creator")),
                 created: Some(
                     chrono::DateTime::from_utc(
-                        chrono::NaiveDateTime::from_timestamp(1338394, 969000000),
+                        chrono::NaiveDateTime::from_timestamp_opt(1_338_394, 969_000_000)
+                            .expect("Invalid date"),
                         chrono::Utc
                     )
                     .into()
                 ),
             }
-        )
+        );
     }
 
     #[test]
@@ -237,7 +239,7 @@ mod test {
         let json = r#"{}"#;
 
         let attribution: Attribution = serde_json::from_str(json).unwrap();
-        assert_eq!(attribution, Attribution::default())
+        assert_eq!(attribution, Attribution::default());
     }
 
     #[test]
@@ -246,7 +248,8 @@ mod test {
             contributor: Some(ResourceReference::from("http://identifier/for/contributor")),
             modified: Some(
                 chrono::DateTime::from_utc(
-                    chrono::NaiveDateTime::from_timestamp(1338494, 969000000),
+                    chrono::NaiveDateTime::from_timestamp_opt(1_338_494, 969_000_000)
+                        .expect("Invalid date"),
                     chrono::Utc,
                 )
                 .into(),
@@ -255,7 +258,8 @@ mod test {
             creator: Some(ResourceReference::from("http://identifier/for/creator")),
             created: Some(
                 chrono::DateTime::from_utc(
-                    chrono::NaiveDateTime::from_timestamp(1338394, 969000000),
+                    chrono::NaiveDateTime::from_timestamp_opt(1_338_394, 969_000_000)
+                        .expect("Invalid date"),
                     chrono::Utc,
                 )
                 .into(),
@@ -300,7 +304,7 @@ mod test {
             created: Some("2012-05-29T00:00:00".parse().unwrap()),
         };
 
-        assert_eq!(attribution, expected_attribution)
+        assert_eq!(attribution, expected_attribution);
     }
 
     #[test]
@@ -312,7 +316,7 @@ mod test {
         let attribution: Attribution = yaserde::de::from_str(xml).unwrap();
 
         let expected_attribution = Attribution::default();
-        assert_eq!(attribution, expected_attribution)
+        assert_eq!(attribution, expected_attribution);
     }
 
     #[test]
@@ -325,26 +329,30 @@ mod test {
             created: Some("2012-05-29T00:00:00".parse().unwrap()),
         };
 
-        let mut config = Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&attribution, &config).unwrap();
 
         let expected_xml = r#"<attribution xmlns="http://gedcomx.org/v1/"><contributor resource="http://identifier/for/contributor" /><modified>2012-06-29T00:00:00</modified><changeMessage>...change message here...</changeMessage><creator resource="http://identifier/for/creator" /><created>2012-05-29T00:00:00</created></attribution>"#;
 
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 
     #[test]
     fn xml_serialize_optional_fields() {
         let attribution = Attribution::default();
 
-        let mut config = Config::default();
-        config.write_document_declaration = false;
+        let config = Config {
+            write_document_declaration: false,
+            ..Default::default()
+        };
         let xml = yaserde::ser::to_string_with_config(&attribution, &config).unwrap();
 
         let expected_xml = r#"<attribution xmlns="http://gedcomx.org/v1/" />"#;
 
-        assert_eq!(xml, expected_xml)
+        assert_eq!(xml, expected_xml);
     }
 
     #[quickcheck_macros::quickcheck]
