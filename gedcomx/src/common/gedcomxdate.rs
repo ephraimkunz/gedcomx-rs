@@ -56,8 +56,7 @@ impl yaserde::YaDeserialize for GedcomxDate {
             let expected_name = "formal".to_owned();
             if name.local_name != expected_name {
                 return Err(format!(
-                    "Wrong StartElement name: {}, expected: {}",
-                    name, expected_name
+                    "Wrong StartElement name: {name}, expected: {expected_name}"
                 ));
             }
             let _next = reader.next_event();

@@ -104,15 +104,13 @@ impl yaserde::YaDeserialize for Identifier {
             let expected_name = "identifier".to_owned();
             if element_name.local_name != expected_name {
                 return Err(format!(
-                    "Wrong StartElement name: {}, expected: {}",
-                    element_name, expected_name
+                    "Wrong StartElement name: {element_name}, expected: {expected_name}"
                 ));
             }
 
             if attributes.len() > 1 {
                 return Err(format!(
-                    "Too many attributes: {:?}, expected 0 or 1",
-                    attributes
+                    "Too many attributes: {attributes:?}, expected 0 or 1"
                 ));
             }
 
