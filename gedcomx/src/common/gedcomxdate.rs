@@ -111,19 +111,19 @@ impl fmt::Display for GedcomxDate {
                     s.push('A');
                 }
 
-                date_time_into_string(&simple.date, &simple.time, &mut s);
+                date_time_into_string(&simple.date, &simple.time, &mut s)?;
             }
             gedcomx_date::GedcomxDate::Range(range) => {
-                range_into_string(&range.start, &range.end, range.approximate, &mut s);
+                range_into_string(&range.start, &range.end, range.approximate, &mut s)?;
             }
             gedcomx_date::GedcomxDate::Recurring(recurring) => {
                 if let Some(count) = recurring.count {
-                    let _ = write!(s, "R{count}/");
+                    write!(s, "R{count}/").map_err(|_| fmt::Error)?;
                 } else {
                     s.push_str("R/");
                 }
 
-                range_into_string(&Some(recurring.start), &Some(recurring.end), false, &mut s);
+                range_into_string(&Some(recurring.start), &Some(recurring.end), false, &mut s)?;
             }
         };
 
@@ -135,27 +135,27 @@ fn date_time_into_string(
     date: &gedcomx_date::Date,
     time: &Option<gedcomx_date::Time>,
     s: &mut String,
-) {
+) -> fmt::Result {
     s.push(if date.year >= 0 { '+' } else { '-' });
-    let _ = write!(s, "{:04}", date.year.abs());
+    write!(s, "{:04}", date.year.abs()).map_err(|_| fmt::Error)?;
 
     if let Some(month) = date.month {
-        let _ = write!(s, "-{month:02}");
+        write!(s, "-{month:02}").map_err(|_| fmt::Error)?;
     }
 
     if let Some(day) = date.day {
-        let _ = write!(s, "-{day:02}");
+        write!(s, "-{day:02}").map_err(|_| fmt::Error)?;
     }
 
     if let Some(time) = time {
-        let _ = write!(s, "T{:02}", time.hours);
+        write!(s, "T{:02}", time.hours).map_err(|_| fmt::Error)?;
 
         if let Some(minutes) = time.minutes {
-            let _ = write!(s, ":{minutes:02}");
+            write!(s, ":{minutes:02}").map_err(|_| fmt::Error)?;
         }
 
         if let Some(seconds) = time.seconds {
-            let _ = write!(s, ":{seconds:02}");
+            write!(s, ":{seconds:02}").map_err(|_| fmt::Error)?;
         }
 
         match (time.tz_offset_hours, time.tz_offset_minutes) {
@@ -168,7 +168,8 @@ fn date_time_into_string(
                     } else {
                         '-'
                     });
-                    let _ = write!(s, "{:02}:{:02}", tz_hours.abs(), tz_minutes.abs());
+                    write!(s, "{:02}:{:02}", tz_hours.abs(), tz_minutes.abs())
+                        .map_err(|_| fmt::Error)?;
                 }
             }
 
@@ -177,7 +178,7 @@ fn date_time_into_string(
                     s.push('Z');
                 } else {
                     s.push(if tz_hours > 0 { '+' } else { '-' });
-                    let _ = write!(s, "{:02}", tz_hours.abs());
+                    write!(s, "{:02}", tz_hours.abs()).map_err(|_| fmt::Error)?;
                 }
             }
 
@@ -187,8 +188,10 @@ fn date_time_into_string(
                 // timezone data (local time).
                 // In both cases, just don't write anything out.
             }
-        }
+        };
     }
+
+    Ok(())
 }
 
 fn range_into_string(
@@ -196,59 +199,63 @@ fn range_into_string(
     end: &Option<gedcomx_date::DateTimeOrDuration>,
     approximate: bool,
     s: &mut String,
-) {
+) -> fmt::Result {
     if approximate {
         s.push('A');
     }
 
     if let Some(start) = start {
-        date_time_into_string(&start.date, &start.time, s);
+        date_time_into_string(&start.date, &start.time, s)?;
     }
 
     s.push('/');
 
     match end {
         Some(gedcomx_date::DateTimeOrDuration::DateTime(datetime)) => {
-            date_time_into_string(&datetime.date, &datetime.time, s);
+            date_time_into_string(&datetime.date, &datetime.time, s)?;
         }
         Some(gedcomx_date::DateTimeOrDuration::Duration(duration)) => {
-            duration_into_string(duration, s);
+            duration_into_string(duration, s)?;
         }
 
         _ => {}
-    }
+    };
+
+    Ok(())
 }
 
-fn duration_into_string(duration: &gedcomx_date::Duration, s: &mut String) {
+fn duration_into_string(duration: &gedcomx_date::Duration, s: &mut String) -> fmt::Result {
     s.push('P');
 
     if duration.years != 0 {
-        let _ = write!(s, "{}Y", duration.years);
+        write!(s, "{}Y", duration.years).map_err(|_| fmt::Error)?;
     }
 
     if duration.months != 0 {
-        let _ = write!(s, "{}M", duration.months);
+        write!(s, "{}M", duration.months).map_err(|_| fmt::Error)?;
     }
 
     if duration.days != 0 {
-        let _ = write!(s, "{}D", duration.days);
+        write!(s, "{}D", duration.days).map_err(|_| fmt::Error)?;
     }
 
     if duration.hours != 0 || duration.minutes != 0 || duration.seconds != 0 {
         s.push('T');
 
         if duration.hours != 0 {
-            let _ = write!(s, "{}H", duration.hours);
+            write!(s, "{}H", duration.hours).map_err(|_| fmt::Error)?;
         }
 
         if duration.minutes != 0 {
-            let _ = write!(s, "{}M", duration.minutes);
+            write!(s, "{}M", duration.minutes).map_err(|_| fmt::Error)?;
         }
 
         if duration.seconds != 0 {
-            let _ = write!(s, "{}S", duration.seconds);
+            write!(s, "{}S", duration.seconds).map_err(|_| fmt::Error)?;
         }
     }
+
+    Ok(())
 }
 
 impl Arbitrary for GedcomxDate {
