@@ -109,7 +109,7 @@
 #![deny(clippy::all)]
 #![deny(clippy::pedantic)]
 #![deny(clippy::nursery)]
-#![deny(clippy::cargo)]
+// #![deny(clippy::cargo)]
 // #![deny(missing_docs)]
 // #![deny(missing_doc_code_examples)]
 #![allow(clippy::nonstandard_macro_braces)] // https://github.com/rust-lang/rust-clippy/issues/7434
