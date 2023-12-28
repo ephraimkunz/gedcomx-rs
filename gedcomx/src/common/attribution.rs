@@ -213,22 +213,18 @@ mod test {
             Attribution {
                 contributor: Some(ResourceReference::from("http://identifier/for/contributor")),
                 modified: Some(
-                    chrono::DateTime::from_utc(
-                        chrono::NaiveDateTime::from_timestamp_opt(1_338_494, 969_000_000)
-                            .expect("Invalid date"),
-                        chrono::Utc
-                    )
-                    .into()
+                    chrono::NaiveDateTime::from_timestamp_opt(1_338_494, 969_000_000)
+                        .expect("Invalid date")
+                        .and_utc()
+                        .into()
                 ),
                 change_message: Some(String::from("...change message here...")),
                 creator: Some(ResourceReference::from("http://identifier/for/creator")),
                 created: Some(
-                    chrono::DateTime::from_utc(
-                        chrono::NaiveDateTime::from_timestamp_opt(1_338_394, 969_000_000)
-                            .expect("Invalid date"),
-                        chrono::Utc
-                    )
-                    .into()
+                    chrono::NaiveDateTime::from_timestamp_opt(1_338_394, 969_000_000)
+                        .expect("Invalid date")
+                        .and_utc()
+                        .into()
                 ),
             }
         );
@@ -247,22 +243,18 @@ mod test {
         let attribution = Attribution {
             contributor: Some(ResourceReference::from("http://identifier/for/contributor")),
             modified: Some(
-                chrono::DateTime::from_utc(
-                    chrono::NaiveDateTime::from_timestamp_opt(1_338_494, 969_000_000)
-                        .expect("Invalid date"),
-                    chrono::Utc,
-                )
-                .into(),
+                chrono::NaiveDateTime::from_timestamp_opt(1_338_494, 969_000_000)
+                    .expect("Invalid date")
+                    .and_utc()
+                    .into(),
             ),
             change_message: Some(String::from("...change message here...")),
             creator: Some(ResourceReference::from("http://identifier/for/creator")),
             created: Some(
-                chrono::DateTime::from_utc(
-                    chrono::NaiveDateTime::from_timestamp_opt(1_338_394, 969_000_000)
-                        .expect("Invalid date"),
-                    chrono::Utc,
-                )
-                .into(),
+                chrono::NaiveDateTime::from_timestamp_opt(1_338_394, 969_000_000)
+                    .expect("Invalid date")
+                    .and_utc()
+                    .into(),
             ),
         };
 

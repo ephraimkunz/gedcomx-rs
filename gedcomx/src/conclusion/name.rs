@@ -153,7 +153,7 @@ impl Name {
     }
 
     pub fn part_for_type(&self, name_type: &NamePartType) -> Option<&str> {
-        self.name_forms.get(0)?.parts.iter().find_map(|n| {
+        self.name_forms.first()?.parts.iter().find_map(|n| {
             if n.part_type == Some(name_type.clone()) {
                 Some(n.value.as_ref())
             } else {
