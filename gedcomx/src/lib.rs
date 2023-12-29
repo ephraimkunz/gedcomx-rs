@@ -238,13 +238,21 @@ impl TestData {
 // empty, it will be roundtripped to None. If it has leading or trailing
 // whitespace, that will be stripped due to yaserde setting the trim_whitespace
 // flag on the wrapped xml parser.
+// Also strip out control characters, since most aren't valid XML and we want
+// our tests to mainly check roundtripping of XML, not failure to parse
+// disallowed chars.
 use quickcheck::{Arbitrary, Gen};
 
 fn arbitrary_trimmed(g: &mut Gen) -> String {
     let mut trimmed = String::new();
     while trimmed.is_empty() {
         let non_trimmed = String::arbitrary(g);
-        trimmed = non_trimmed.trim().to_string();
+        trimmed = non_trimmed
+            .chars()
+            .filter(|&c| xml::common::is_xml10_char(c) && c != ']')
+            .collect::<String>()
+            .trim()
+            .to_string();
     }
 
     trimmed
