@@ -641,6 +641,7 @@ impl Arbitrary for NamePartType {
 #[derive(Debug, PartialEq, Clone, Eq)]
 #[non_exhaustive]
 pub enum NamePartQualifier {
+    #[allow(clippy::doc_markdown)]
     /// A designation for honorifics (e.g. Dr., Rev., His Majesty, Haji), ranks
     /// (e.g. Colonel, General, Knight, Esquire), positions (e.g. Count, Chief,
     /// Father, King) or other titles (e.g., PhD, MD).
@@ -701,7 +702,7 @@ pub enum NamePartQualifier {
 
     /// The "root" of a name part as distinguished from prefixes or suffixes.
     /// For example, the root of the Polish name "Wilkówna" is "Wilk". A
-    /// RootName qualifier MUST provide a value property.
+    /// `RootName` qualifier MUST provide a value property.
     RootName { value: String },
 }
 

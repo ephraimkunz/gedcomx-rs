@@ -12,7 +12,7 @@ pub enum GedcomxError {
     #[error("Can't get a non-None id for `{0}`")]
     NoId(String),
 
-    /// An object with a certain DocumentType variant was needed for an
+    /// An object with a certain `DocumentType` variant was needed for an
     /// operation, but the object had a different type.
     #[error("Wrong DocumentType. Expected: {expected}, Actual: {actual}")]
     WrongDocumentType {
