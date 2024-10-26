@@ -246,6 +246,8 @@ impl Arbitrary for DocumentType {
     }
 }
 
+/// The styling or layout of type of text.
+///
 /// In some cases, a text value must include styling or layout to fully convey
 /// its intended meaning. Where such a requirement has been identified,
 /// implementers can designate that a text value may include such styling or

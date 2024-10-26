@@ -5,9 +5,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::GedcomxError;
 
-/// Newtype wrapping `GedcomxDate` from the `gedcomx_date` crate and adding the
-/// ability to generate a formal string (via the `Display` trait), failably
-/// parse from a string (via the `FromStr` trait), and serialize and
+/// Newtype wrapping `GedcomxDate` from the `gedcomx_date` crate.
+///
+/// Adds the ability to generate a formal string (via the `Display` trait),
+/// failably parse from a string (via the `FromStr` trait), and serialize and
 /// deseserialize into JSON and XML.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[serde(try_from = "String", into = "String")]
@@ -111,10 +112,15 @@ impl fmt::Display for GedcomxDate {
                     s.push('A');
                 }
 
-                date_time_into_string(&simple.date, &simple.time, &mut s)?;
+                date_time_into_string(&simple.date, simple.time.as_ref(), &mut s)?;
             }
             gedcomx_date::GedcomxDate::Range(range) => {
-                range_into_string(&range.start, &range.end, range.approximate, &mut s)?;
+                range_into_string(
+                    range.start.as_ref(),
+                    range.end.as_ref(),
+                    range.approximate,
+                    &mut s,
+                )?;
             }
             gedcomx_date::GedcomxDate::Recurring(recurring) => {
                 if let Some(count) = recurring.count {
@@ -123,7 +129,7 @@ impl fmt::Display for GedcomxDate {
                     s.push_str("R/");
                 }
 
-                range_into_string(&Some(recurring.start), &Some(recurring.end), false, &mut s)?;
+                range_into_string(Some(&recurring.start), Some(&recurring.end), false, &mut s)?;
             }
         };
 
@@ -133,7 +139,7 @@ impl fmt::Display for GedcomxDate {
 
 fn date_time_into_string(
     date: &gedcomx_date::Date,
-    time: &Option<gedcomx_date::Time>,
+    time: Option<&gedcomx_date::Time>,
     s: &mut String,
 ) -> fmt::Result {
     s.push(if date.year >= 0 { '+' } else { '-' });
@@ -195,8 +201,8 @@ fn date_time_into_string(
 }
 
 fn range_into_string(
-    start: &Option<gedcomx_date::DateTime>,
-    end: &Option<gedcomx_date::DateTimeOrDuration>,
+    start: Option<&gedcomx_date::DateTime>,
+    end: Option<&gedcomx_date::DateTimeOrDuration>,
     approximate: bool,
     s: &mut String,
 ) -> fmt::Result {
@@ -205,14 +211,14 @@ fn range_into_string(
     }
 
     if let Some(start) = start {
-        date_time_into_string(&start.date, &start.time, s)?;
+        date_time_into_string(&start.date, start.time.as_ref(), s)?;
     }
 
     s.push('/');
 
     match end {
         Some(gedcomx_date::DateTimeOrDuration::DateTime(datetime)) => {
-            date_time_into_string(&datetime.date, &datetime.time, s)?;
+            date_time_into_string(&datetime.date, datetime.time.as_ref(), s)?;
         }
         Some(gedcomx_date::DateTimeOrDuration::Duration(duration)) => {
             duration_into_string(duration, s)?;

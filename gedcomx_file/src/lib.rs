@@ -72,7 +72,7 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
     fn file_entry_from_entry(
         mut entry: ZipFile,
     ) -> Result<GedcomxFileEntry<impl Read + '_>, GedcomxFileError> {
-        if entry.enclosed_name() == Some(Path::new(MANIFEST_STR)) {
+        if entry.enclosed_name() == Some(Path::new(MANIFEST_STR).to_path_buf()) {
             return Ok(GedcomxFileEntry::Manifest(GedcomxManifest::from_reader(
                 entry,
             )?));
@@ -80,6 +80,7 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
 
         match entry
             .enclosed_name()
+            .as_ref()
             .and_then(|n| n.extension())
             .and_then(|e| e.to_str())
         {

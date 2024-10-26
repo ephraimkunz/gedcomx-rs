@@ -186,9 +186,8 @@ impl TestData {
         let attribution = Attribution {
             contributor: Some(ResourceReference::from("A-1")),
             modified: Some(
-                chrono::NaiveDateTime::from_timestamp_opt(1_394_175_600, 0)
+                chrono::DateTime::from_timestamp(1_394_175_600, 0)
                     .expect("Invalid date")
-                    .and_utc()
                     .into(),
             ),
             ..Attribution::default()
