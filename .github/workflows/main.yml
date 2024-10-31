@@ -62,26 +62,3 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
-
-  coverage:
-    name: Code coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-
-      - name: Run cargo-tarpaulin
-        uses: actions-rs/tarpaulin@v0.1
-        with:
-          args: '--ignore-tests --verbose --all-features --workspace --timeout 120 --out Xml'
-
-      - name: Upload to codecov.io
-        uses: codecov/codecov-action@v1
-        with:
-          fail_ci_if_error: true
