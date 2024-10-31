@@ -140,13 +140,15 @@ pub struct Event {
     pub event_type: Option<EventType>,
 
     /// The date of the event.
+    #[yaserde(prefix = "gx")]
     pub date: Option<Date>,
 
     /// A reference to the place applicable to this event.
+    #[yaserde(prefix = "gx")]
     pub place: Option<PlaceReference>,
 
     /// Information about how persons participated in the event.
-    #[yaserde(rename = "role")]
+    #[yaserde(rename = "role", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub roles: Vec<EventRole>,
 }
@@ -517,7 +519,7 @@ mod test {
     #[test]
     fn xml_deserialize() {
         let xml = r#"
-        <Event id="local_id" type="http://gedcomx.org/Marriage" >    
+        <Event xmlns="http://gedcomx.org/v1/" id="local_id" type="http://gedcomx.org/Marriage" >    
         <date>
           <original>date</original>
         </date>

@@ -70,7 +70,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r#"  <SourceCitation xml:lang="en">
+        let xml = r#"<SourceCitation xmlns="http://gedcomx.org/v1/" xml:lang="en">
         <value>a rendering of the full citation as a string</value>    
       </SourceCitation>"#;
 

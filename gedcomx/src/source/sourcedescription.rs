@@ -527,7 +527,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r##"<SourceDescription id="local_id" about="about" mediaType="media_type" resourceType="http://gedcomx.org/PhysicalArtifact">
+        let xml = r##"<SourceDescription xmlns="http://gedcomx.org/v1/" id="local_id" about="about" mediaType="media_type" resourceType="http://gedcomx.org/PhysicalArtifact">
         <citation xml:lang="en">
           <value>citation</value>
         </citation>

@@ -88,7 +88,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r#"<account><serviceHomepage resource="http://familysearch.org/"/>
+        let xml = r#"<account xmlns="http://gedcomx.org/v1/"><serviceHomepage resource="http://familysearch.org/"/>
         <accountName>Family Search Account</accountName></account>"#;
 
         let online_account: OnlineAccount = yaserde::de::from_str(xml).unwrap();

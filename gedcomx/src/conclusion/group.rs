@@ -275,7 +275,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r#"<Group><name lang="en">Monticello Plantation</name><name lang="zh">monticello种植园</name><date><original>date</original></date><place><original>place</original></place></Group>"#;
+        let xml = r#"<Group xmlns="http://gedcomx.org/v1/"><name lang="en">Monticello Plantation</name><name lang="zh">monticello种植园</name><date><original>date</original></date><place><original>place</original></place></Group>"#;
 
         let group: Group = yaserde::de::from_str(xml).unwrap();
 

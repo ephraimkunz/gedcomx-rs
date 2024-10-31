@@ -312,7 +312,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r#"<address>
+        let xml = r#"<address xmlns="http://gedcomx.org/v1/">
             <city>East Palo Alto</city>
             <country>United States</country>
             <postalCode>94303</postalCode>

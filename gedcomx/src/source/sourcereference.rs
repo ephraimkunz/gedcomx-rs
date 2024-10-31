@@ -242,7 +242,7 @@ mod test {
         let data = TestData::new();
 
         let xml = r#"
-        <SourceReference description="SD-1" descriptionId="Description id of the target source">
+        <SourceReference xmlns="http://gedcomx.org/v1/" description="SD-1" descriptionId="Description id of the target source">
         <attribution>
           <contributor resource="A-1" />
           <modified>2014-03-07T07:00:00</modified>

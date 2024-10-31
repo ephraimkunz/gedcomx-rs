@@ -274,7 +274,7 @@ mod test {
     #[test]
     fn xml_deserialize() {
         let xml = r#"
-        <attribution>
+        <attribution xmlns="http://gedcomx.org/v1/">
             <contributor resource="http://identifier/for/contributor"/>
             <modified>2012-06-29T00:00:00</modified>
             <changeMessage>...change message here...</changeMessage>

@@ -111,7 +111,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r#"<PlaceReference description="http://identifier/of/place/description/being/referenced">
+        let xml = r#"<PlaceReference xmlns="http://gedcomx.org/v1/" description="http://identifier/of/place/description/being/referenced">
         <original>the original text</original>
       </PlaceReference>"#;
 

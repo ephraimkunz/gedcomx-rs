@@ -364,7 +364,7 @@ mod test {
     #[test]
     fn xml_deserialize() {
         let xml = r#"
-        <PlaceDescription type="http://identifier/for/the/place/type">
+        <PlaceDescription xmlns="http://gedcomx.org/v1/" type="http://identifier/for/the/place/type">
         <name lang="en">Pope's Creek, Westmoreland, Virginia, United States</name>
         <name lang="zh">教皇的小河，威斯特摩兰，弗吉尼亚州，美国</name>
         <place resource="..."/>

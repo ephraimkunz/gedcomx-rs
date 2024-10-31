@@ -330,7 +330,7 @@ mod test {
     #[test]
     fn xml_deserialize() {
         let xml = r##"
-        <agent id="local_id">
+        <agent xmlns="http://gedcomx.org/v1/" id="local_id">
             <identifier type="http://gedcomx.org/Primary">primaryIdentifier</identifier>
             <name>Ephraim Kunz</name>
             <name lang="es">Ephraim Kunz Spanish</name>

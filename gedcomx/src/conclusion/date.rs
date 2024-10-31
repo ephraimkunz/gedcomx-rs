@@ -115,7 +115,7 @@ mod test {
     #[test]
     fn xml_deserialize() {
         let xml = r#"
-        <date>
+        <date xmlns="http://gedcomx.org/v1/">
             <original>the original text</original>
             <formal>+0987-01-25T23:59Z</formal>
         </date>"#;

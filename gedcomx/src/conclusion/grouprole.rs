@@ -300,7 +300,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r##"<GroupRole type="hello"><person resource="#pid" /><date><original>date</original></date><details>details</details></GroupRole>"##;
+        let xml = r##"<GroupRole xmlns="http://gedcomx.org/v1/" type="hello"><person resource="#pid" /><date><original>date</original></date><details>details</details></GroupRole>"##;
         let group_role: GroupRole = yaserde::de::from_str(xml).unwrap();
 
         let person = Person::builder().id("pid").build();

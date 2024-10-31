@@ -290,7 +290,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r##"<person extracted="true" id="P-2">
+        let xml = r##"<person xmlns="http://gedcomx.org/v1/" extracted="true" id="P-2">
         <source description="#S-4"/>
         <name>
             <nameForm>

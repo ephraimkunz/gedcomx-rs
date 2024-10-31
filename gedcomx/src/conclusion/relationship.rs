@@ -376,7 +376,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r##"  <Relationship id="local_id" type="http://gedcomx.org/Couple" extracted="false">
+        let xml = r##"<Relationship xmlns="http://gedcomx.org/v1/" id="local_id" type="http://gedcomx.org/Couple" extracted="false">
         <person1 resource="#http://identifier/for/person/1"/>
         <person2 resource="#http://identifier/for/person/2"/>
 

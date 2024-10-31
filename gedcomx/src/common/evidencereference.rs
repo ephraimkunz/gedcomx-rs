@@ -134,7 +134,7 @@ mod test {
     #[test]
     fn xml_deserialize() {
         let xml = r#"
-        <evidence resource="http://identifier/for/data/being/referenced">
+        <evidence xmlns="http://gedcomx.org/v1/" resource="http://identifier/for/data/being/referenced">
             <attribution>
             </attribution>
         </evidence>"#;

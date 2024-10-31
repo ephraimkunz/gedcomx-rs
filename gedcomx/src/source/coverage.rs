@@ -68,7 +68,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r#"  <Coverage>
+        let xml = r#"<Coverage xmlns="http://gedcomx.org/v1/">
         <spatial>
           <original>Place reference</original>
         </spatial>

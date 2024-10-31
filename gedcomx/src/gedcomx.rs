@@ -31,6 +31,7 @@ pub struct Gedcomx {
     pub lang: Option<Lang>,
 
     /// The attribution of this data set.
+    #[yaserde(prefix = "gx")]
     pub attribution: Option<Attribution>,
 
     /// The list of persons contained in the data set.
@@ -39,37 +40,37 @@ pub struct Gedcomx {
     pub persons: Vec<Person>,
 
     /// The list of relationships contained in the data set.
-    #[yaserde(rename = "relationship")]
+    #[yaserde(rename = "relationship", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub relationships: Vec<Relationship>,
 
     /// The list of source descriptions contained in the data set.
-    #[yaserde(rename = "sourceDescription")]
+    #[yaserde(rename = "sourceDescription", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub source_descriptions: Vec<SourceDescription>,
 
     /// The list of agents contained in the data set.
-    #[yaserde(rename = "agent")]
+    #[yaserde(rename = "agent", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub agents: Vec<Agent>,
 
     /// The list of events contained in the data set.
-    #[yaserde(rename = "event")]
+    #[yaserde(rename = "event", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub events: Vec<Event>,
 
     /// The list of documents contained in the data set.
-    #[yaserde(rename = "document")]
+    #[yaserde(rename = "document", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub documents: Vec<Document>,
 
     /// The list of places contained in the data set.
-    #[yaserde(rename = "place")]
+    #[yaserde(rename = "place", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub places: Vec<PlaceDescription>,
 
     /// The list of groups contained in the data set.
-    #[yaserde(rename = "group")]
+    #[yaserde(rename = "group", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub groups: Vec<Group>,
 
@@ -431,7 +432,6 @@ mod test {
     fn roundtrip_xml(input: Gedcomx) -> bool {
         let xml = yaserde::ser::to_string(&input).unwrap();
         let from_xml: Gedcomx = yaserde::de::from_str(&xml).unwrap();
-        assert_eq!(input, from_xml);
         input == from_xml
     }
 }

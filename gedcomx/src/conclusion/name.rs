@@ -118,10 +118,11 @@ pub struct Name {
     /// At least one name form MUST be provided. All included name forms SHOULD
     /// be representations of the same name, and NOT variants of
     /// the name (i.e., not nicknames or spelling variations).
-    #[yaserde(rename = "nameForm")]
+    #[yaserde(rename = "nameForm", prefix = "gx")]
     pub name_forms: Vec<NameForm>,
 
     /// The date of applicability of the name.
+    #[yaserde(prefix = "gx")]
     pub date: Option<Date>,
 }
 

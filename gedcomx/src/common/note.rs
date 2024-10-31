@@ -213,7 +213,7 @@ mod test {
 
     #[test]
     fn xml_deserialize() {
-        let xml = r##"<note xml:lang="en">
+        let xml = r##"<note xmlns="http://gedcomx.org/v1/" xml:lang="en">
         <subject>...subject or title...</subject>
         <text>...text of the note...</text>
         <attribution>
