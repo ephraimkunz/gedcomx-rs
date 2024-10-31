@@ -421,7 +421,7 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "gedcomx"
-version = "0.1.6"
+version = "0.1.7"
 dependencies = [
  "assert-json-diff",
  "chrono",
@@ -441,9 +441,9 @@ dependencies = [
 
 [[package]]
 name = "gedcomx"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "854ebb3584a00e27297d7488ecb2760008f412594a76371d5149b0bf503e7d96"
+checksum = "c92a3884c62feb18549ec24e618d12c1b1c3bc80793c9c6ca21e944415de43f5"
 dependencies = [
  "chrono",
  "gedcomx_date",
@@ -468,9 +468,9 @@ dependencies = [
 
 [[package]]
 name = "gedcomx_file"
-version = "0.2.0-alpha.0"
+version = "0.3.0-alpha.0"
 dependencies = [
- "gedcomx 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gedcomx 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror",
  "zip",
 ]
