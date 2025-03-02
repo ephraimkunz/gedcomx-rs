@@ -2,7 +2,7 @@
 name = "gedcomx"
 version = "0.1.7"
 authors = ["Ephraim Kunz <ephraimkunz@me.com>"]
-edition = "2021"
+edition = "2024"
 description = "The core data structures and serialization / deserialization of the GEDCOM X format."
 keywords = ["genealogy", "gedcomx", "family-trees"]
 categories = ["encoding", "parsing"]
@@ -14,8 +14,8 @@ readme = "README.md"
 serde = { version = "1", features = ["derive"] }
 serde_with = "3"
 chrono = { version = "0.4", features = ["serde"] }
-thiserror = "1"
-yaserde = "0.11"
+thiserror = "2"
+yaserde = "0.12"
 yaserde_derive = "0.11"
 gedcomx_date = "0.1"
 serde_json = "1"

@@ -415,7 +415,7 @@ mod test {
         let json = gedcomx.to_xml_string().unwrap();
         assert_eq!(
             json,
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?><gedcomx xmlns=\"http://gedcomx.org/v1/\" \
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><gedcomx xmlns=\"http://gedcomx.org/v1/\" \
              />"
         );
     }

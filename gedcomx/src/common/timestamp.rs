@@ -1,6 +1,6 @@
 use std::{fmt, str::FromStr};
 
-use chrono::{serde::ts_milliseconds, DateTime, NaiveDateTime, ParseError, TimeZone, Utc};
+use chrono::{DateTime, NaiveDateTime, ParseError, TimeZone, Utc, serde::ts_milliseconds};
 use quickcheck::{Arbitrary, Gen};
 use serde::{Deserialize, Serialize};
 use yaserde::{YaDeserialize, YaSerialize};

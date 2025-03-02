@@ -1120,7 +1120,10 @@ mod test {
             ..yaserde::ser::Config::default()
         };
         let xml = yaserde::ser::to_string_with_config(&fact, &config).unwrap();
-        assert_eq!(xml, "<Fact xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/Award\"><value>Fact value</value><qualifier name=\"http://gedcomx.org/Cause\">Just because</qualifier></Fact>");
+        assert_eq!(
+            xml,
+            "<Fact xmlns=\"http://gedcomx.org/v1/\" type=\"http://gedcomx.org/Award\"><value>Fact value</value><qualifier name=\"http://gedcomx.org/Cause\">Just because</qualifier></Fact>"
+        );
     }
 
     #[test]

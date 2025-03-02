@@ -151,9 +151,9 @@ pub mod serde_vec_identifier_to_map {
     use std::{collections::HashMap, fmt};
 
     use serde::{
+        Deserialize, Serialize,
         de::{Deserializer, MapAccess, Visitor},
         ser::{SerializeMap, Serializer},
-        Deserialize, Serialize,
     };
 
     use crate::{EnumAsString, Identifier, Uri};
