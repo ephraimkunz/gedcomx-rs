@@ -40,9 +40,9 @@ use crate::{
 /// this name's common nickname, "Саша" (rendered as "Sasha" in English).
 ///
 /// It is tempting to think that this situation should be modeled with one Name
-/// instance that has several alternate `NameForms`. The model is not designed to
-/// be used in this way. Instead, this person's names ought to be modeled such
-/// that the birth name and the nickname are modeled as two separate Name
+/// instance that has several alternate `NameForms`. The model is not designed
+/// to be used in this way. Instead, this person's names ought to be modeled
+/// such that the birth name and the nickname are modeled as two separate Name
 /// instances: one instance for the birth name, and one for the nickname. The
 /// type property MAY be provided to distinguish the birth name from the
 /// nickname. Each Name instance MAY have two `NameForm` instances: one with the
