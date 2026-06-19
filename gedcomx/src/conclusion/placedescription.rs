@@ -85,9 +85,9 @@ pub struct PlaceDescription {
     ///
     /// Media references SHOULD be ordered by priority such that applications
     /// that wish to display a single media item (such as an image) MAY choose
-    /// the first applicable media reference. Note that the SourceReference is
+    /// the first applicable media reference. Note that the `SourceReference` is
     /// used for multimedia references and therefore MUST resolve to a
-    /// SourceDescription of the resource, which in turn provides a reference to
+    /// `SourceDescription` of the resource, which in turn provides a reference to
     /// the resource itself.
     #[yaserde(prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
@@ -117,11 +117,11 @@ pub struct PlaceDescription {
 
     /// An identifier for the place being described.
     ///
-    /// Descriptions that provide the same value for place are interpreted as alternate descriptions of the same place. If provided, MUST NOT use a base URI of http://gedcomx.org/. If provided, the value MAY resolve to an external resource that is application-specific and outside the scope of this specification.
+    /// Descriptions that provide the same value for place are interpreted as alternate descriptions of the same place. If provided, MUST NOT use a base URI of <http://gedcomx.org//>. If provided, the value MAY resolve to an external resource that is application-specific and outside the scope of this specification.
     #[yaserde(prefix = "gx")]
     pub place: Option<ResourceReference>,
 
-    /// A reference to a description of the jurisdiction of this place.	If provided, MUST resolve to an instance of http://gedcomx.org/v1/PlaceDescription.
+    /// A reference to a description of the jurisdiction of this place.	If provided, MUST resolve to an instance of <http://gedcomx.org/v1/PlaceDescription/>.
     #[yaserde(prefix = "gx")]
     pub jurisdiction: Option<ResourceReference>,
 

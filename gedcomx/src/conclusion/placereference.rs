@@ -25,7 +25,7 @@ pub struct PlaceReference {
 
     /// A reference to a description of this place.
     ///
-    /// MUST resolve to a PlaceDescription.
+    /// MUST resolve to a `PlaceDescription`.
     #[yaserde(attribute, rename = "description")]
     #[serde(rename = "description")]
     pub description_ref: Option<Uri>,

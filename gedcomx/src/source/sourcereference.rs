@@ -24,7 +24,7 @@ use crate::{Attribution, GedcomxError, Id, Qualifier, Result, SourceDescription,
 pub struct SourceReference {
     /// Reference to a description of the target source.
     ///
-    /// MUST resolve to an instance of http://gedcomx.org/v1/SourceDescription.
+    /// MUST resolve to an instance of <http://gedcomx.org/v1/SourceDescription/>.
     #[yaserde(attribute)]
     pub description: Uri,
 

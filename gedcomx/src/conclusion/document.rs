@@ -252,12 +252,13 @@ impl Arbitrary for DocumentType {
 /// its intended meaning. Where such a requirement has been identified,
 /// implementers can designate that a text value may include such styling or
 /// layout by specifying an alternate text type.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq, Default)]
 #[non_exhaustive]
 #[serde(from = "EnumAsString", into = "EnumAsString")]
 pub enum TextType {
     /// The `Plain` text type identifies plain text. `Plain` is the default text
     /// type for text without an explicitly specified type.
+    #[default]
     Plain,
 
     /// The `Xhtml` text type identifies XHTML text complying with the [XHTML 1.0 W3C Recommendation](http://www.w3.org/TR/xhtml1/).
@@ -282,12 +283,6 @@ impl fmt::Display for TextType {
             Self::Plain => write!(f, "plain"),
             Self::Xhtml => write!(f, "xhtml"),
         }
-    }
-}
-
-impl Default for TextType {
-    fn default() -> Self {
-        Self::Plain
     }
 }
 

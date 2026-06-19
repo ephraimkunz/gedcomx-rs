@@ -86,9 +86,9 @@ pub struct Relationship {
     ///
     /// Media references SHOULD be ordered by priority such that applications
     /// that wish to display a single media item (such as an image) MAY choose
-    /// the first applicable media reference. Note that the SourceReference is
+    /// the first applicable media reference. Note that the `SourceReference` is
     /// used for multimedia references and therefore MUST resolve to a
-    /// SourceDescription of the resource, which in turn provides a reference to
+    /// `SourceDescription` of the resource, which in turn provides a reference to
     /// the resource itself.
     #[yaserde(prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
@@ -110,13 +110,13 @@ pub struct Relationship {
 
     /// Reference to the first person in the relationship.
     ///
-    /// MUST resolve to an instance of http://gedcomx.org/v1/Person.
+    /// MUST resolve to an instance of <http://gedcomx.org/v1/Person/>.
     #[yaserde(prefix = "gx")]
     pub person1: ResourceReference,
 
     /// Reference to the second person in the relationship.
     ///
-    /// MUST resolve to an instance of http://gedcomx.org/v1/Person.
+    /// MUST resolve to an instance of <http://gedcomx.org/v1/Person/>.
     #[yaserde(prefix = "gx")]
     pub person2: ResourceReference,
 

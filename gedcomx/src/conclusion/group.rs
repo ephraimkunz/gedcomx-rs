@@ -85,9 +85,9 @@ pub struct Group {
     ///
     /// Media references SHOULD be ordered by priority such that applications
     /// that wish to display a single media item (such as an image) MAY choose
-    /// the first applicable media reference. Note that the SourceReference is
+    /// the first applicable media reference. Note that the `SourceReference` is
     /// used for multimedia references and therefore MUST resolve to a
-    /// SourceDescription of the resource, which in turn provides a reference to
+    /// `SourceDescription` of the resource, which in turn provides a reference to
     /// the resource itself.
     #[yaserde(prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]

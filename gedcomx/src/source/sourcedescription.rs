@@ -50,20 +50,20 @@ pub struct SourceDescription {
 
     /// A reference to the entity that mediates access to the described source.
     ///
-    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
+    /// If provided, MUST resolve to an instance of <http://gedcomx.org/v1/Agent/>.
     #[yaserde(prefix = "gx")]
     pub mediator: Option<ResourceReference>,
 
     /// A reference to the entity responsible for making the described source
     /// available.
     ///
-    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
+    /// If provided, MUST resolve to an instance of <http://gedcomx.org/v1/Agent/>.
     #[yaserde(prefix = "gx")]
     pub publisher: Option<ResourceReference>,
 
     /// A reference to the entities that authored the described source.
     ///
-    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
+    /// If provided, MUST resolve to an instance of <http://gedcomx.org/v1/Agent/>.
     #[yaserde(rename = "author", prefix = "gx")]
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub authors: Vec<ResourceReference>,
@@ -75,7 +75,7 @@ pub struct SourceDescription {
 
     /// A reference to a document containing analysis about this source.
     ///
-    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Document of type http://gedcomx.org/Analysis.
+    /// If provided, MUST resolve to an instance of <http://gedcomx.org/v1/Document/> of type <http://gedcomx.org/Analysis/>.
     #[yaserde(prefix = "gx")]
     pub analysis: Option<ResourceReference>,
 
@@ -148,7 +148,7 @@ pub struct SourceDescription {
 
     /// A reference to the repository that contains the described resource.
     ///
-    /// If provided, MUST resolve to an instance of http://gedcomx.org/v1/Agent.
+    /// If provided, MUST resolve to an instance of <http://gedcomx.org/v1/Agent/>.
     #[yaserde(prefix = "gx")]
     pub repository: Option<ResourceReference>,
 }

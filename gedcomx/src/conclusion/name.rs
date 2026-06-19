@@ -40,12 +40,12 @@ use crate::{
 /// this name's common nickname, "Саша" (rendered as "Sasha" in English).
 ///
 /// It is tempting to think that this situation should be modeled with one Name
-/// instance that has several alternate NameForms. The model is not designed to
+/// instance that has several alternate `NameForms`. The model is not designed to
 /// be used in this way. Instead, this person's names ought to be modeled such
 /// that the birth name and the nickname are modeled as two separate Name
 /// instances: one instance for the birth name, and one for the nickname. The
 /// type property MAY be provided to distinguish the birth name from the
-/// nickname. Each Name instance MAY have two NameForm instances: one with the
+/// nickname. Each Name instance MAY have two `NameForm` instances: one with the
 /// native form of the name and another with the
 // alternate form. Using an informal pseudo code, it might look something like the following:
 /// ```text
@@ -497,7 +497,7 @@ pub struct NamePart {
     /// A name part value MAY contain more than one term from the full name,
     /// such as in the name part "John Fitzgerald" from the full name "John
     /// Fitzgerald Kennedy". If multiple terms are detailed in a single
-    /// NamePart, these terms SHOULD be separated using the name separator
+    /// `NamePart`, these terms SHOULD be separated using the name separator
     /// appropriate to the locale applicable to the containing name form.
     #[yaserde(attribute)]
     pub value: String,

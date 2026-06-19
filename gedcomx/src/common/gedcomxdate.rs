@@ -131,7 +131,7 @@ impl fmt::Display for GedcomxDate {
 
                 range_into_string(Some(&recurring.start), Some(&recurring.end), false, &mut s)?;
             }
-        };
+        }
 
         write!(f, "{s}")
     }
@@ -194,7 +194,7 @@ fn date_time_into_string(
                 // timezone data (local time).
                 // In both cases, just don't write anything out.
             }
-        };
+        }
     }
 
     Ok(())
@@ -225,7 +225,7 @@ fn range_into_string(
         }
 
         _ => {}
-    };
+    }
 
     Ok(())
 }

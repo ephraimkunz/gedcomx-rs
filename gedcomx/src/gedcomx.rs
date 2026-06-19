@@ -76,7 +76,7 @@ pub struct Gedcomx {
 
     /// Reference to the description of this data set.
     ///
-    /// If provided, MUST resolve to an instance of SourceDescription.
+    /// If provided, MUST resolve to an instance of `SourceDescription`.
     #[yaserde(attribute)]
     pub description: Option<Uri>,
 }

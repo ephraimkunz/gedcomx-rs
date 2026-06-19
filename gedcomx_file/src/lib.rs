@@ -70,7 +70,7 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
     }
 
     fn file_entry_from_entry(
-        mut entry: ZipFile,
+        mut entry: ZipFile<'_>,
     ) -> Result<GedcomxFileEntry<impl Read + '_>, GedcomxFileError> {
         if entry.enclosed_name() == Some(Path::new(MANIFEST_STR).to_path_buf()) {
             return Ok(GedcomxFileEntry::Manifest(GedcomxManifest::from_reader(
@@ -122,8 +122,7 @@ impl<R: io::Read + io::Seek> GedcomxFile<R> {
     ) -> Result<HashMap<String, String>, GedcomxFileError> {
         let name = {
             let entry = self.inner.by_index(file_number)?;
-            let name = entry.name().to_string();
-            name
+            entry.name().to_string()
         };
         self.attributes_by_name(&name)
     }
