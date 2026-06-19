@@ -403,6 +403,24 @@ dependencies = [
 [[package]]
 name = "gedcomx"
 version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c92a3884c62feb18549ec24e618d12c1b1c3bc80793c9c6ca21e944415de43f5"
+dependencies = [
+ "chrono",
+ "gedcomx_date",
+ "quickcheck",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "thiserror 1.0.69",
+ "xml-rs",
+ "yaserde 0.11.2",
+ "yaserde_derive",
+]
+
+[[package]]
+name = "gedcomx"
+version = "0.1.8"
 dependencies = [
  "assert-json-diff",
  "chrono",
@@ -421,24 +439,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gedcomx"
-version = "0.1.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c92a3884c62feb18549ec24e618d12c1b1c3bc80793c9c6ca21e944415de43f5"
-dependencies = [
- "chrono",
- "gedcomx_date",
- "quickcheck",
- "serde",
- "serde_json",
- "serde_with",
- "thiserror 1.0.69",
- "xml-rs",
- "yaserde 0.11.2",
- "yaserde_derive",
-]
-
-[[package]]
 name = "gedcomx_date"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -449,9 +449,9 @@ dependencies = [
 
 [[package]]
 name = "gedcomx_file"
-version = "0.3.0-alpha.0"
+version = "0.4.0-alpha.0"
 dependencies = [
- "gedcomx 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gedcomx 0.1.7",
  "thiserror 2.0.18",
  "zip",
 ]

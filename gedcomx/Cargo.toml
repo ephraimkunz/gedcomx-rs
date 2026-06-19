@@ -1,6 +1,6 @@
 [package]
 name = "gedcomx"
-version = "0.1.7"
+version = "0.1.8"
 authors = ["Ephraim Kunz <ephraimkunz@me.com>"]
 edition = "2024"
 description = "The core data structures and serialization / deserialization of the GEDCOM X format."
